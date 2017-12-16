@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 
 import custom_components.CustomJFrame;
 import database.DatabaseConnection;
+import file_handling.DatabaseCredentialsManager;
 import toolset.Tools;
 
 import java.awt.Color;
@@ -24,9 +25,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.swing.SwingConstants;
+import javax.xml.crypto.Data;
 
 public class Settings extends CustomJFrame {
 
@@ -60,7 +63,7 @@ public class Settings extends CustomJFrame {
 				handleWindowClosingEvent(e);
 			} 
 		});
-		
+
 		setBounds((windowSize.width - appSize.width) / 2, (windowSize.height - appSize.height) / 2, 1222, 750);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
@@ -125,7 +128,6 @@ public class Settings extends CustomJFrame {
 		panel_3.setLayout(null);
 		
 		dbHost = new JTextField();
-		dbHost.setText(DatabaseConnection.dbHost);
 		dbHost.setBounds(95, 11, 411, 38);
 		panel_3.add(dbHost);
 		dbHost.setColumns(10);
@@ -139,7 +141,6 @@ public class Settings extends CustomJFrame {
 		panel_3.add(btnNewButton);
 		
 		dbPort = new JTextField();
-		dbPort.setText(String.valueOf(DatabaseConnection.dbPort));
 		dbPort.setColumns(10);
 		dbPort.setBounds(95, 60, 159, 38);
 		panel_3.add(dbPort);
@@ -161,7 +162,6 @@ public class Settings extends CustomJFrame {
 		panel_3.add(btnDatabas);
 		
 		dbName = new JTextField();
-		dbName.setText(DatabaseConnection.dbName);
 		dbName.setColumns(10);
 		dbName.setBounds(347, 60, 159, 38);
 		panel_3.add(dbName);
@@ -180,7 +180,6 @@ public class Settings extends CustomJFrame {
 		panel_3.add(dbPassword);
 		
 		dbUsername = new JTextField(DatabaseConnection.dbUser);
-		dbUsername.setText("postgres");
 		dbUsername.setColumns(10);
 		dbUsername.setBounds(95, 109, 159, 38);
 		panel_3.add(dbUsername);
@@ -345,7 +344,7 @@ public class Settings extends CustomJFrame {
 						String password = String.valueOf(Settings.dbPassword.getPassword());
 						
 						
-						new MainFrame(new DatabaseConnection(host, port, database, user, password)).setVisible(true);;
+						new MainFrame(new DatabaseConnection(host, port, database, user, password)).setVisible(true);
 						;
 					} catch (ClassNotFoundException e1) {
 						// TODO Auto-generated catch block
@@ -380,6 +379,21 @@ public class Settings extends CustomJFrame {
 		btnSave.setBackground(Color.DARK_GRAY);
 		btnSave.setBounds(908, 662, 139, 38);
 		contentPane.add(btnSave);
+
+		// Get DB params from credential manager
+		String host = "";
+		int port = 0;
+		String database = "";
+		String user = "";
+		try {
+			DatabaseCredentialsManager databaseCredentialsManager = new DatabaseCredentialsManager();
+			dbHost.setText(databaseCredentialsManager.host);
+			dbPort.setText(String.valueOf(databaseCredentialsManager.port));
+			dbName.setText(databaseCredentialsManager.database);
+			dbUsername.setText(databaseCredentialsManager.user);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		btnSave.addActionListener(new ActionListener() {
 			
@@ -397,13 +411,20 @@ public class Settings extends CustomJFrame {
 			
 			// DB Params
 			
-			DatabaseConnection.dbName = dbName.getText().toString();
-			DatabaseConnection.dbUser = dbUsername.getText().toString();
-			DatabaseConnection.dbHost = dbHost.getText().toString();
-			DatabaseConnection.dbPort = Integer.parseInt(dbPort.getText().toString());
+			DatabaseConnection.dbName = dbName.getText();
+			DatabaseConnection.dbUser = dbUsername.getText();
+			DatabaseConnection.dbHost = dbHost.getText();
+			DatabaseConnection.dbPort = Integer.parseInt(dbPort.getText());
 			
-			MainFrame.dbConnection = new DatabaseConnection(DatabaseConnection.dbHost, DatabaseConnection.dbPort, DatabaseConnection.dbName, DatabaseConnection.dbUser, String.valueOf(dbPassword.getPassword()) );
-			
+			MainFrame.dbConnection = new DatabaseConnection(DatabaseConnection.dbHost, DatabaseConnection.dbPort,
+					DatabaseConnection.dbName, DatabaseConnection.dbUser, String.valueOf(dbPassword.getPassword()) );
+
+			// Save DB Params
+
+			DatabaseCredentialsManager databaseCredentialsManager = new DatabaseCredentialsManager();
+			databaseCredentialsManager.setDatabaseCredentials(dbHost.getText(), Integer.parseInt(dbPort.getText()),
+					dbName.getText(), dbUsername.getText());
+
 			// Drawing settings
 			// TODO: Drawing settings
 			
