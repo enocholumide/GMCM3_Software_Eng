@@ -60,15 +60,16 @@ public class DatabaseConnection {
      * @return A string ArrayList containing all the unique table names.
      * @throws SQLException
      */
-    public ArrayList<String> getTables() throws SQLException {
+    public ArrayList<String[]>getTables() throws SQLException {
 
-        ArrayList<String> returnArrayList = new ArrayList<>();
+        ArrayList<String[]> returnArrayList = new ArrayList<>();
 
-            PreparedStatement selectStatement = conn.prepareStatement("SELECT DISTINCT table_name FROM geo_data;");
+            PreparedStatement selectStatement = conn.prepareStatement("SELECT DISTINCT table_name, type FROM geo_data;");
             ResultSet resultSet = selectStatement.executeQuery();
 
             while (resultSet.next()) {
-                returnArrayList.add(resultSet.getString("table_name"));
+                returnArrayList.add(new String[] {resultSet.getString("table_name"), resultSet.getString("type")});
+                //returnArrayList.add(resultSet.getString("table_name"));
             }
 
         return returnArrayList;
@@ -118,11 +119,10 @@ public class DatabaseConnection {
         List<Feature> featureList = layer.getListOfFeatures();
         Feature feature;
         int featureId;
-        String featureType;
         String layerType = layer.getLayerType();
         boolean isEllipse;
         double xCoords[], yCoords[];
-        double xRadius = 0 , yRadius = 0;
+        double xRadius, yRadius;
 
         // Iterate through feature list & write each to the database
         for (int i=0; i<featureList.size(); i++) {
@@ -130,7 +130,6 @@ public class DatabaseConnection {
             feature = featureList.get(i);
 
             featureId = feature.getId();
-            featureType = feature.getFeatureType();
             isEllipse = feature.isEllipse();
 
             xCoords = feature.getCoordinatesArrayXY()[0];
@@ -141,7 +140,9 @@ public class DatabaseConnection {
                 xCoordsObject[j] = Double.toString(xCoords[j]);
                 yCoordsObject[j] = Double.toString(yCoords[j]);
             }
-            
+
+            xRadius = 0;
+            yRadius = 0;
             if (isEllipse) {
             	
                 xRadius = feature.getRadiusX();

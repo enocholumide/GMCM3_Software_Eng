@@ -75,10 +75,10 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 				db = new DefaultMutableTreeNode(DatabaseConnection.dbName);
 				geoTable = new DefaultMutableTreeNode("geo_data");
 				
-				for(String table : MainFrame.dbConnection.getTables()){
+				for(String[] table : MainFrame.dbConnection.getTables()){
 					
-					DefaultMutableTreeNode layers = new DefaultMutableTreeNode(table);
-					layers.setUserObject(table);
+					DefaultMutableTreeNode layers = new DefaultMutableTreeNode(table[0]);
+					layers.setUserObject(table[0]);
 					geoTable.add(layers);		
 				};
 
