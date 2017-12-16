@@ -741,7 +741,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 			// ------------------------------------------------
 			if(MainFrame.getCurrentFeatureType() != null) {
 					
-				if(MainFrame.getCurrentFeatureType().equals("Hexagon")) {
+				if(MainFrame.getCurrentFeatureType().equals("Freeform Polygon")) {
 
 					// 1.1 Ensure that at least one point have been drawn
 					// ------------------------------------------------
@@ -1434,7 +1434,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 				if(!SwingUtilities.isRightMouseButton(e)) {
 					
 					//--------------------------------------------------------------------
-					//                        HEXAGONS 
+					//                        HEXAGONS
 					//                   (FREE FORM POLYGON)
 					//--------------------------------------------------------------------
 					if(MainFrame.getCurrentFeatureType().equals("Ellipse")) {
@@ -1495,7 +1495,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 						}
 					}
 					
-					else if(MainFrame.getCurrentFeatureType().equals("Hexagon")) {
+					else if(MainFrame.getCurrentFeatureType().equals("Freeform Polygon")) {
 	
 						
 						// 2. Add the vertex to the current list of vertex and the global snap points

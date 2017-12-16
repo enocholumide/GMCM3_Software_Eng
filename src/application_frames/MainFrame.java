@@ -494,12 +494,12 @@ public class MainFrame extends CustomJFrame {
 		
 		drawButtonGroup.add(geomCircle);
 		
-		DrawIconButton geomHexagon = new DrawIconButton("Hexagon", Settings.POLYGON_GEOMETRY, "/images/polygon.png", 30, 30);
-		geomHexagon.setToolTipText("Hexagon");
-		geomHexagon.setBounds(145, 21, 35, 35);
-		drawRibbon.add(geomHexagon);
+		DrawIconButton geomFreeformPolygon = new DrawIconButton("Freeform Polygon", Settings.POLYGON_GEOMETRY, "/images/polygon.png", 30, 30);
+		geomFreeformPolygon.setToolTipText("Freeform Polygon");
+		geomFreeformPolygon.setBounds(145, 21, 35, 35);
+		drawRibbon.add(geomFreeformPolygon);
 		
-		drawButtonGroup.add(geomHexagon);
+		drawButtonGroup.add(geomFreeformPolygon);
 		
 		DrawIconButton geomPoint = new DrawIconButton("Point", Settings.POINT_GEOMETRY, "/images/point.png", 25, 25);
 		geomPoint.setToolTipText("Point");
@@ -856,8 +856,8 @@ public class MainFrame extends CustomJFrame {
 			 
  		   // Check for name:
  		   boolean layerDoesNotExist = true;
- 		   for(String existingTable : dbConnection.getTables()) {
- 			   if(existingTable.equals(layer.getLayerName())) {
+ 		   for(String existingTable[] : dbConnection.getTables()) {
+ 			   if(existingTable[0].equals(layer.getLayerName())) {
  				  layerDoesNotExist = false;
  				  break;
  			   }
