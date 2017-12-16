@@ -26,7 +26,7 @@ public class Layer  {
 	private int lineWeight = Settings.DEFAULT_LAYER_LINE_WEIGHT;
 	
 	private boolean isVisible = true;
-	private boolean notSaved = true;
+	private boolean notSaved = false;
 	
 	private int id = 0;
 	
@@ -46,6 +46,8 @@ public class Layer  {
 		this.tableData = new Object[] {isVisible, layerType, layerName, "", id};
 		
 	}
+	
+	
 	
 	/**
 	 * @return the id
@@ -70,7 +72,8 @@ public class Layer  {
 	 * @return the tableData
 	 */
 	public Object[] getTableData() {
-		return tableData;
+		
+		return this.tableData;
 	}
 
 	/**
@@ -199,6 +202,13 @@ public class Layer  {
 
 	public void removeLastItem() {
 		listOfFeatures.remove(getSize()-1);
+	}
+
+	/**
+	 * @param tableData the tableData to set
+	 */
+	public void setTableData(Object[] tableData) {
+		this.tableData = tableData;
 	}
 	
 }
