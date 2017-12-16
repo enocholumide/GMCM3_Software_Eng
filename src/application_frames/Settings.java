@@ -50,22 +50,9 @@ public class Settings extends CustomJFrame {
 	public static JLabel settingsMessage;
 
 	/**
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Settings frame = new Settings();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
 	 * Create the frame.
 	 */
-	public Settings() {
+	public Settings(boolean openMainFrame) {
 		super("Settings");
 		addWindowListener(new WindowAdapter() {
 			@Override 
@@ -138,7 +125,7 @@ public class Settings extends CustomJFrame {
 		panel_3.setLayout(null);
 		
 		dbHost = new JTextField();
-		dbHost.setText(DatabaseConnection.dbhost);
+		dbHost.setText(DatabaseConnection.dbHost);
 		dbHost.setBounds(95, 11, 411, 38);
 		panel_3.add(dbHost);
 		dbHost.setColumns(10);
@@ -187,7 +174,7 @@ public class Settings extends CustomJFrame {
 		btnPassword.setBounds(264, 109, 86, 38);
 		panel_3.add(btnPassword);
 		
-		dbPassword = new JPasswordField(DatabaseConnection.dbPass);
+		dbPassword = new JPasswordField();
 		dbPassword.setColumns(10);
 		dbPassword.setBounds(347, 109, 159, 38);
 		panel_3.add(dbPassword);
@@ -347,7 +334,30 @@ public class Settings extends CustomJFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				if(openMainFrame) {
+					
+					try {
+						
+						String host = (Settings.dbHost.getText());
+						int port = Integer.parseInt((Settings.dbPort.getText()));
+						String database = (Settings.dbName.getText());
+						String user = Settings.dbUsername.getText();
+						String password = String.valueOf(Settings.dbPassword.getPassword());
+						
+						
+						new MainFrame(new DatabaseConnection(host, port, database, user, password)).setVisible(true);;
+						;
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					
+					
+				}
 				dispose();
 			}
 			
@@ -389,11 +399,10 @@ public class Settings extends CustomJFrame {
 			
 			DatabaseConnection.dbName = dbName.getText().toString();
 			DatabaseConnection.dbUser = dbUsername.getText().toString();
-			DatabaseConnection.dbPass = String.valueOf(dbPassword.getPassword());
-			DatabaseConnection.dbhost = dbHost.getText().toString();
+			DatabaseConnection.dbHost = dbHost.getText().toString();
 			DatabaseConnection.dbPort = Integer.parseInt(dbPort.getText().toString());
 			
-			MainFrame.dbConnection = new DatabaseConnection(DatabaseConnection.dbhost, DatabaseConnection.dbPort, DatabaseConnection.dbName, DatabaseConnection.dbUser, DatabaseConnection.dbPass );
+			MainFrame.dbConnection = new DatabaseConnection(DatabaseConnection.dbHost, DatabaseConnection.dbPort, DatabaseConnection.dbName, DatabaseConnection.dbUser, String.valueOf(dbPassword.getPassword()) );
 			
 			// Drawing settings
 			// TODO: Drawing settings
@@ -466,4 +475,5 @@ public class Settings extends CustomJFrame {
 	public static final Color HIGHLIGHTED_STATE_COLOR = new Color(239, 66, 14);
 	public static final Color FEATURE_CREATED_COLOR = new Color (16, 91, 26);
 	public static final Color FEATURE_HIGHLIGHTED_STATE_COLOR = Color.CYAN;
+	public static final int MONITOR_SCREEN = 1;
 }

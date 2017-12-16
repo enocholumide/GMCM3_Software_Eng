@@ -230,12 +230,12 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 								g2d.setStroke(new BasicStroke(layer.getLineWeight()));
 								g2d.draw(feature.getShape());
 								
-								
-								
 								// Render the shape vertices
-								for(Shape shape : feature.getVertices()) {
-									g2d.setColor(c);
-									g2d.fill(shape);
+								if(!feature.isEllipse()) {
+									for(Shape shape : feature.getVertices()) {
+										g2d.setColor(c);
+										g2d.fill(shape);
+									}
 								}
 							}
 						}
@@ -1132,66 +1132,6 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	}
 	
 	/**
-	 * Finish drawing of a path, if the current layer is a polygon, the path will be closed and filled<br>
-	 * Creates a new feature in the current layer<br>
-	 * @param pointList pointList current list of points, should be more than 3!
-	 */
-	public Path2D finishPath(List<Rectangle2D> pointList, Layer currentLayer) {
-		
-		// Construct a new (open) path
-		Path2D path = new Path2D.Double();
-		
-		// Start at the first item on the list
-		path.moveTo(pointList.get(0).getCenterX(), pointList.get(0).getCenterY());
-		
-		// Create a new feature with an ID
-		
-		
-		// Connect the path and add all the vertices to the feature
-		for(Rectangle2D vertex : pointList) {
-			path.lineTo(vertex.getCenterX(), vertex.getCenterY());
-		}
-		
-		// Close path , if the current layer is a polygon
-		if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY)){
-			
-			path.closePath();
-			
-			PolygonItem featurePolygon = new PolygonItem(currentLayer.getNextFeatureID(), path);
-			featurePolygon.getVertices().addAll(pointList);
-			// Set the path as the shape of the feature
-			featurePolygon.setShape(path);
-			featurePolygon.setFeatureType(currentFeatureType);
-			
-			// Add to the current list of features in the layer
-			currentLayer.getListOfFeatures().add(featurePolygon);
-			
-			// Change the status of the layer to be unsaved
-			currentLayer.setNotSaved(true);
-		}
-		
-		else if (currentLayer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)) {
-			
-			PolylineItem featurePolyline = new PolylineItem(currentLayer.getNextFeatureID(), path);
-			featurePolyline.getVertices().addAll(pointList);
-			// Set the path as the shape of the feature
-			featurePolyline.setShape(path);
-			featurePolyline.setFeatureType(currentFeatureType);
-			
-			// Add to the current list of features in the layer
-			currentLayer.getListOfFeatures().add(featurePolyline);
-			
-			// Change the status of the layer to be unsaved
-			currentLayer.setNotSaved(true);
-			
-		}
-		
-		repaint();
-		
-		return path;
-	}
-	
-	/**
 	 * General handler for updating the message on the mouse tool tip.
 	 * Can be disabled at the settings. <br>
 	 * This is done at every mouse move event. <br>
@@ -1543,7 +1483,9 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 							ellipse.setEllipse(true, new Point2D.Double(centerX, centerY), diamX / 2, diamY / 2);
 							ellipse.setShape(shape);
 							ellipse.setFeatureType("Ellipse");
-							ellipse.setVertices(vertexList);
+							List<Rectangle2D> tempL = new ArrayList<Rectangle2D>();
+							tempL.add(new Rectangle2D.Double(centerX - (snapSize/2), centerY - (snapSize/2), snapSize, snapSize));
+							ellipse.setVertices(tempL);
 							
 							// Add to the current layer's feature list
 							currentLayer.getListOfFeatures().add(ellipse);
@@ -1699,7 +1641,9 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 							// 3.3 Create a new feature
 							Feature circle = new Feature(currentLayer.getNextFeatureID());
 							circle.setLayerID(currentLayer.getId());
-							circle.setVertices(vertexList);
+							List<Rectangle2D> tempL = new ArrayList<Rectangle2D>();
+							tempL.add(new Rectangle2D.Double(centerPoint.getX() - (snapSize/2), centerPoint.getY() - (snapSize/2), snapSize, snapSize));
+							circle.setVertices(tempL);
 							circle.setFeatureType("Circle");
 							circle.setEllipse(true, centerPoint, radius, radius);
 							circle.setShape(circleShape);
@@ -1846,6 +1790,66 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		}
 	}
 	
+	/**
+	 * Finish drawing of a path, if the current layer is a polygon, the path will be closed and filled<br>
+	 * Creates a new feature in the current layer<br>
+	 * @param pointList pointList current list of points, should be more than 3!
+	 */
+	public Path2D finishPath(List<Rectangle2D> pointList, Layer currentLayer) {
+		
+		// Construct a new (open) path
+		Path2D path = new Path2D.Double();
+		
+		// Start at the first item on the list
+		path.moveTo(pointList.get(0).getCenterX(), pointList.get(0).getCenterY());
+		
+		// Create a new feature with an ID
+		
+		
+		// Connect the path and add all the vertices to the feature
+		for(Rectangle2D vertex : pointList) {
+			path.lineTo(vertex.getCenterX(), vertex.getCenterY());
+		}
+		
+		// Close path , if the current layer is a polygon
+		if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY)){
+			
+			path.closePath();
+			
+			PolygonItem featurePolygon = new PolygonItem(currentLayer.getNextFeatureID(), path);
+			featurePolygon.getVertices().addAll(pointList);
+			// Set the path as the shape of the feature
+			featurePolygon.setShape(path);
+			featurePolygon.setFeatureType(currentFeatureType);
+			
+			// Add to the current list of features in the layer
+			currentLayer.getListOfFeatures().add(featurePolygon);
+			
+			// Change the status of the layer to be unsaved
+			currentLayer.setNotSaved(true);
+		}
+		
+		else if (currentLayer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)) {
+			
+			PolylineItem featurePolyline = new PolylineItem(currentLayer.getNextFeatureID(), path);
+			featurePolyline.getVertices().addAll(pointList);
+			// Set the path as the shape of the feature
+			featurePolyline.setShape(path);
+			featurePolyline.setFeatureType(currentFeatureType);
+			
+			// Add to the current list of features in the layer
+			currentLayer.getListOfFeatures().add(featurePolyline);
+			
+			// Change the status of the layer to be unsaved
+			currentLayer.setNotSaved(true);
+			
+		}
+		
+		repaint();
+		
+		return path;
+	}
+
 	/**
 	 * Cleans up the drawing. 
 	 * Panel repainted authomatically.

@@ -16,7 +16,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -49,7 +48,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultCaret;
 
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -61,8 +59,6 @@ import core_components.TableOfContents;
 import core_components.ToolIconButton;
 import custom_components.CustomJFrame;
 import database.DatabaseConnection;
-import features.PolygonItem;
-import features.PolylineItem;
 import toolset.Tools;
 
 
@@ -136,6 +132,10 @@ public class MainFrame extends CustomJFrame {
 	/**Database connection object*/
 	public static DatabaseConnection dbConnection;
 	
+	private DatabaseCatalog dbCatalog;
+	
+	private Settings settingsFrame;
+	
 	public static List<ToolIconButton> buttonsList = new ArrayList<ToolIconButton>();
 	
 	/**
@@ -143,8 +143,21 @@ public class MainFrame extends CustomJFrame {
 	 */
 	public MainFrame() {
 		
-		new Settings().setVisible(false);
 		connectToDatabase();
+		
+	}
+	
+	/**
+	 * Constructs the main frame
+	 */
+	public MainFrame(DatabaseConnection dbConnection) {
+		
+		MainFrame.dbConnection = dbConnection;
+		initialize();
+
+		log("Application started. GMCM3 Software Engineering HSKA Karlsruhe "
+				+ "https://github.com/enocholumide/GMCM3_Software_Eng.git "
+				+ "\t Database connected");
 		
 	}
 	
@@ -361,17 +374,17 @@ public class MainFrame extends CustomJFrame {
 		layerListComboBox.setBackground(Settings.DEFAULT_STATE_COLOR);
 		layerListComboBox.setForeground(Color.WHITE);
 		
-		ToolIconButton btnSnap = new ToolIconButton("Save edit", "/images/snap.png", 35,35);
+		ToolIconButton btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
 		btnSnap.setBounds(210, 62, 35, 35);
 		editorRibbon.add(btnSnap);
 		btnSnap.setToolTipText("Turn of snap");
 		
-		ToolIconButton btnOrthoMode = new ToolIconButton("Save edit", "/images/ortho.png", 35, 35);
+		ToolIconButton btnOrthoMode = new ToolIconButton("Ortho", "/images/ortho.png", 35, 35);
 		btnOrthoMode.setBounds(255, 62, 35, 35);
 		editorRibbon.add(btnOrthoMode);
 		btnOrthoMode.setToolTipText("Turn of ortho mode");
 		
-		ToolIconButton btnShowGrid = new ToolIconButton("Save edit", "/images/grid.png", 35, 35);
+		ToolIconButton btnShowGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
 		btnShowGrid.setBounds(300, 62, 35, 35);
 		editorRibbon.add(btnShowGrid);
 		btnShowGrid.setToolTipText("Turn on grid");
@@ -380,6 +393,28 @@ public class MainFrame extends CustomJFrame {
 		btnSaveEdit.setBounds(419, 22, 90, 75);
 		editorRibbon.add(btnSaveEdit);
 		btnSaveEdit.setToolTipText("Save edited layers");
+		
+		btnSaveEdit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if(layerListComboBox.getItemCount() > 0) {
+					
+					int index = layerListComboBox.getSelectedIndex();
+			        int layerid = (int) tableOfContents.getModel().getValueAt(index, TableOfContents.LAYER_ID_COL_INDEX);
+			        Layer layer = TableOfContents.findLayerWithID(layerid);
+			        
+			        if(layer.isNotSaved()) {
+			        	
+			        	saveLayerToDB(layer);
+			        	
+			        } else { log("Nothing to save"); }
+			        
+				} else
+					log("No layer selected");
+			}
+		});
 		
 		ToolIconButton btnAddLayer = new ToolIconButton("Save edit", "/images/add_layer.png", 80,80);
 		btnAddLayer.setBounds(519, 22, 90, 75);
@@ -401,9 +436,14 @@ public class MainFrame extends CustomJFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				if(dbCatalog != null) {
+					dbCatalog.dispose();
+				} 
 
-
-				new DatabaseCatalog().setVisible(true);
+				dbCatalog = new DatabaseCatalog();
+				dbCatalog.setVisible(true);
+				
 				
 			}
 		});
@@ -416,9 +456,13 @@ public class MainFrame extends CustomJFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				new Settings().setVisible(true);;
 				
+				if(settingsFrame != null) {
+					settingsFrame.dispose();
+				} 
+
+				settingsFrame = new Settings(false);
+				settingsFrame.setVisible(true);				
 			}
 		});
 		
@@ -767,7 +811,7 @@ public class MainFrame extends CustomJFrame {
         	   if(response == JOptionPane.YES_OPTION) {
         		   
         		   // Save the items to the database!
-        		   handleLayerSavingToDB(layer);
+        		   saveLayerToDB(layer);
    
         		   
 
@@ -805,7 +849,7 @@ public class MainFrame extends CustomJFrame {
 	 * @param layer
 	 * @return
 	 */
-	public static boolean handleLayerSavingToDB(Layer layer) {
+	public static boolean saveLayerToDB(Layer layer) {
 
 
 		try {
@@ -825,6 +869,8 @@ public class MainFrame extends CustomJFrame {
 				
 				panel.showAnimatedHint("Saved!", Settings.FEATURE_CREATED_COLOR);
 				log("Layer saved to DB");
+				
+				layer.setNotSaved(false);
 
 				return true;
 				
@@ -841,6 +887,8 @@ public class MainFrame extends CustomJFrame {
  				
  				 panel.showAnimatedHint("Saved!", Settings.FEATURE_CREATED_COLOR);
  				 log("Layer saved to DB");
+ 				
+ 				 layer.setNotSaved(false);
 
  				 return true;
  			  }
@@ -889,13 +937,21 @@ public class MainFrame extends CustomJFrame {
 			
 			
 			Toolkit.getDefaultToolkit().beep();
-			JOptionPane.showMessageDialog( null, "Database connection cannot be established \n\n"
-					+ e.getMessage() + "\n\n Remind me later?", "Database connection error", JOptionPane.ERROR_MESSAGE);
+			int response = JOptionPane.showConfirmDialog( null, "Database connection cannot be established \n\n"
+					+ e.getMessage() + "\n\n Setup database now ? ", "Database connection error", JOptionPane.YES_NO_OPTION);
+			
+			if(response == JOptionPane.YES_OPTION) {
+				settingsFrame = new Settings(true);
+				settingsFrame.setVisible(true);
+			}
+			
+			else {
 			
 			initialize();
 			log("Application started. GMCM3 Software Engineering HSKA Karlsruhe "
 					+ "https://github.com/enocholumide/GMCM3_Software_Eng.git "
-					+ "\t Database NOT CONNECTED!!!");		
+					+ "\t NO DATABASE CONNECTED!!!");
+			}
 		}
 	}
 
@@ -913,7 +969,12 @@ public class MainFrame extends CustomJFrame {
 		panel.showAnimatedHint(message, Settings.DEFAULT_STATE_COLOR);
 	
 	}
-
+	
+	/**
+	 * 
+	 * @param resultSet
+	 * @param layerName
+	 */
 	public static void createLayerFromResultSet(ResultSet resultSet, String layerName) {
 	
 		try {
@@ -941,9 +1002,16 @@ public class MainFrame extends CustomJFrame {
 					Feature feature = new Feature(newLayer.getListOfFeatures().size());
 					Shape circleShape = new Ellipse2D.Double(x - rx, y - ry , rx * 2, ry * 2);
 					
+					String featureType = "Ellipse";
+					if(rx == ry) {
+						featureType = "Circle";
+					}
+					
 					feature.setEllipse(isEllipse, new Point2D.Double(x,y), rx, ry);
 					feature.setShape(circleShape);
+					feature.setFeatureType(featureType);
 					feature.setVisibile(true);
+					newLayer.setLayerType(layerType);
 					newLayer.getListOfFeatures().add(feature);
 					
 				
