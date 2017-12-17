@@ -1,11 +1,11 @@
 package application_frames;
 
 import java.awt.Dimension;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 
+import custom_components.CustomJFrame;
 import database.DatabaseConnection;
 import toolset.Tools;
 
@@ -28,7 +28,7 @@ import java.sql.SQLException;
 
 import javax.swing.SwingConstants;
 
-public class Settings extends JFrame {
+public class Settings extends CustomJFrame {
 
 	/**
 	 * 
@@ -36,6 +36,7 @@ public class Settings extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private Dimension appSize = new Dimension(1250,750);
+	
 	public static JTextField dbHost;
 	public static JTextField dbPort;
 	public static JTextField dbName;
@@ -45,25 +46,14 @@ public class Settings extends JFrame {
 	public static JTextField userProfile;
 	public static JTextField userSoftwareUse;
 	public static JTextField userOccupation;
+	
+	public static JLabel settingsMessage;
 
 	/**
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Settings frame = new Settings();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
 	 * Create the frame.
 	 */
-	public Settings() {
-		
+	public Settings(boolean openMainFrame) {
+		super("Settings");
 		addWindowListener(new WindowAdapter() {
 			@Override 
 			public void windowClosing(WindowEvent e) { 
@@ -117,7 +107,7 @@ public class Settings extends JFrame {
 		separator.setBounds(79, 176, 1127, 2);
 		contentPane.add(separator);
 		
-		JLabel settingsMessage = new JLabel("CLick to the green button to test connection to your database");
+		settingsMessage = new JLabel("CLick to the green button to test connection to your database");
 		settingsMessage.setFont(new Font("Tahoma", Font.BOLD, 12));
 		settingsMessage.setBounds(90, 151, 1106, 14);
 		contentPane.add(settingsMessage);
@@ -135,7 +125,7 @@ public class Settings extends JFrame {
 		panel_3.setLayout(null);
 		
 		dbHost = new JTextField();
-		dbHost.setText("localhost");
+		dbHost.setText(DatabaseConnection.dbHost);
 		dbHost.setBounds(95, 11, 411, 38);
 		panel_3.add(dbHost);
 		dbHost.setColumns(10);
@@ -149,7 +139,7 @@ public class Settings extends JFrame {
 		panel_3.add(btnNewButton);
 		
 		dbPort = new JTextField();
-		dbPort.setText("5432");
+		dbPort.setText(String.valueOf(DatabaseConnection.dbPort));
 		dbPort.setColumns(10);
 		dbPort.setBounds(95, 60, 159, 38);
 		panel_3.add(dbPort);
@@ -171,7 +161,7 @@ public class Settings extends JFrame {
 		panel_3.add(btnDatabas);
 		
 		dbName = new JTextField();
-		dbName.setText("softeng_db");
+		dbName.setText(DatabaseConnection.dbName);
 		dbName.setColumns(10);
 		dbName.setBounds(347, 60, 159, 38);
 		panel_3.add(dbName);
@@ -184,12 +174,12 @@ public class Settings extends JFrame {
 		btnPassword.setBounds(264, 109, 86, 38);
 		panel_3.add(btnPassword);
 		
-		dbPassword = new JPasswordField("12345");
+		dbPassword = new JPasswordField();
 		dbPassword.setColumns(10);
 		dbPassword.setBounds(347, 109, 159, 38);
 		panel_3.add(dbPassword);
 		
-		dbUsername = new JTextField();
+		dbUsername = new JTextField(DatabaseConnection.dbUser);
 		dbUsername.setText("postgres");
 		dbUsername.setColumns(10);
 		dbUsername.setBounds(95, 109, 159, 38);
@@ -344,6 +334,30 @@ public class Settings extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if(openMainFrame) {
+					
+					try {
+						
+						String host = (Settings.dbHost.getText());
+						int port = Integer.parseInt((Settings.dbPort.getText()));
+						String database = (Settings.dbName.getText());
+						String user = Settings.dbUsername.getText();
+						String password = String.valueOf(Settings.dbPassword.getPassword());
+						
+						
+						new MainFrame(new DatabaseConnection(host, port, database, user, password)).setVisible(true);;
+						;
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					
+					
+				}
 				dispose();
 			}
 			
@@ -358,8 +372,54 @@ public class Settings extends JFrame {
 		lblcLicense.setFont(new Font("Tahoma", Font.ITALIC, 13));
 		lblcLicense.setBounds(90, 674, 310, 20);
 		contentPane.add(lblcLicense);
+		
+		JButton btnSave = new JButton("Save");
+		btnSave.setForeground(Color.WHITE);
+		btnSave.setFocusPainted(false);
+		btnSave.setBorderPainted(false);
+		btnSave.setBackground(Color.DARK_GRAY);
+		btnSave.setBounds(908, 662, 139, 38);
+		contentPane.add(btnSave);
+		
+		btnSave.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveAllChanges();
+			}
+		});
 	}
 	
+	protected void saveAllChanges() {
+		
+		
+		try {
+			
+			// DB Params
+			
+			DatabaseConnection.dbName = dbName.getText().toString();
+			DatabaseConnection.dbUser = dbUsername.getText().toString();
+			DatabaseConnection.dbHost = dbHost.getText().toString();
+			DatabaseConnection.dbPort = Integer.parseInt(dbPort.getText().toString());
+			
+			MainFrame.dbConnection = new DatabaseConnection(DatabaseConnection.dbHost, DatabaseConnection.dbPort, DatabaseConnection.dbName, DatabaseConnection.dbUser, String.valueOf(dbPassword.getPassword()) );
+			
+			// Drawing settings
+			// TODO: Drawing settings
+			
+			// Log some messages
+			
+			settingsMessage.setText("Settings saved");
+			settingsMessage.setForeground(Settings.defaultColor);
+			
+		} catch (Exception e) {
+			
+			settingsMessage.setText("Something went wrong:  " + e.getMessage());
+			settingsMessage.setForeground(Settings.DEFAULT_ERROR_COLOR);
+		}
+		
+	}
+
 	protected void handleWindowClosingEvent(WindowEvent e) {
 		dispose();
 	}
@@ -405,6 +465,7 @@ public class Settings extends JFrame {
 	
 	public static Color cursorColor = new Color(244, 98, 66);
 	public static Color defaultColor = Color.BLACK;
+	public static Color DEFAULT_ERROR_COLOR = Color.RED;
 	
 	public static final Color DEFAULT_SELECTION_COLOR = new Color (135, 234, 105);
 	public static final Color DEFAULT_LAYER_COLOR = Color.BLACK;
@@ -414,5 +475,5 @@ public class Settings extends JFrame {
 	public static final Color HIGHLIGHTED_STATE_COLOR = new Color(239, 66, 14);
 	public static final Color FEATURE_CREATED_COLOR = new Color (16, 91, 26);
 	public static final Color FEATURE_HIGHLIGHTED_STATE_COLOR = Color.CYAN;
-	
+	public static final int MONITOR_SCREEN = 1;
 }

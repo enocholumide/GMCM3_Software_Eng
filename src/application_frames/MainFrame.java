@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +13,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,6 +44,11 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultCaret;
 
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
+import core_classes.Feature;
 import core_classes.Layer;
 import core_components.DrawIconButton;
 import core_components.DrawingJPanel;
@@ -122,6 +129,10 @@ public class MainFrame extends CustomJFrame {
 	/**Database connection object*/
 	public static DatabaseConnection dbConnection;
 	
+	private DatabaseCatalog dbCatalog;
+	
+	private Settings settingsFrame;
+	
 	public static List<ToolIconButton> buttonsList = new ArrayList<ToolIconButton>();
 	
 	/**
@@ -129,8 +140,21 @@ public class MainFrame extends CustomJFrame {
 	 */
 	public MainFrame() {
 		
-		new Settings().setVisible(false);
 		connectToDatabase();
+		
+	}
+	
+	/**
+	 * Constructs the main frame
+	 */
+	public MainFrame(DatabaseConnection dbConnection) {
+		
+		MainFrame.dbConnection = dbConnection;
+		initialize();
+
+		log("Application started. GMCM3 Software Engineering HSKA Karlsruhe "
+				+ "https://github.com/enocholumide/GMCM3_Software_Eng.git "
+				+ "\t Database connected");
 		
 	}
 	
@@ -347,17 +371,17 @@ public class MainFrame extends CustomJFrame {
 		layerListComboBox.setBackground(Settings.DEFAULT_STATE_COLOR);
 		layerListComboBox.setForeground(Color.WHITE);
 		
-		ToolIconButton btnSnap = new ToolIconButton("Save edit", "/images/snap.png", 35,35);
+		ToolIconButton btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
 		btnSnap.setBounds(210, 62, 35, 35);
 		editorRibbon.add(btnSnap);
 		btnSnap.setToolTipText("Turn of snap");
 		
-		ToolIconButton btnOrthoMode = new ToolIconButton("Save edit", "/images/ortho.png", 35, 35);
+		ToolIconButton btnOrthoMode = new ToolIconButton("Ortho", "/images/ortho.png", 35, 35);
 		btnOrthoMode.setBounds(255, 62, 35, 35);
 		editorRibbon.add(btnOrthoMode);
 		btnOrthoMode.setToolTipText("Turn of ortho mode");
 		
-		ToolIconButton btnShowGrid = new ToolIconButton("Save edit", "/images/grid.png", 35, 35);
+		ToolIconButton btnShowGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
 		btnShowGrid.setBounds(300, 62, 35, 35);
 		editorRibbon.add(btnShowGrid);
 		btnShowGrid.setToolTipText("Turn on grid");
@@ -366,6 +390,28 @@ public class MainFrame extends CustomJFrame {
 		btnSaveEdit.setBounds(419, 22, 90, 75);
 		editorRibbon.add(btnSaveEdit);
 		btnSaveEdit.setToolTipText("Save edited layers");
+		
+		btnSaveEdit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if(layerListComboBox.getItemCount() > 0) {
+					
+					int index = layerListComboBox.getSelectedIndex();
+			        int layerid = (int) tableOfContents.getModel().getValueAt(index, TableOfContents.LAYER_ID_COL_INDEX);
+			        Layer layer = TableOfContents.findLayerWithID(layerid);
+			        
+			        if(layer.isNotSaved()) {
+			        	
+			        	saveLayerToDB(layer);
+			        	
+			        } else { log("Nothing to save"); }
+			        
+				} else
+					log("No layer selected");
+			}
+		});
 		
 		ToolIconButton btnAddLayer = new ToolIconButton("Save edit", "/images/add_layer.png", 80,80);
 		btnAddLayer.setBounds(519, 22, 90, 75);
@@ -379,9 +425,25 @@ public class MainFrame extends CustomJFrame {
 		configureRibbon.setBackground(Color.WHITE);
 		getContentPane().add(configureRibbon);
 		
-		ToolIconButton toolIconButton_4 = new ToolIconButton("Database", "/images/database.png", 60, 60);
-		toolIconButton_4.setBounds(13, 22, 90, 75);
-		configureRibbon.add(toolIconButton_4);
+		ToolIconButton databseButton = new ToolIconButton("Database", "/images/database.png", 60, 60);
+		databseButton.setBounds(13, 22, 90, 75);
+		configureRibbon.add(databseButton);
+		
+		databseButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if(dbCatalog != null) {
+					dbCatalog.dispose();
+				} 
+
+				dbCatalog = new DatabaseCatalog();
+				dbCatalog.setVisible(true);
+				
+				
+			}
+		});
 		
 		ToolIconButton settingsButton = new ToolIconButton("Settings", "/images/settings.png", 60, 60);
 		settingsButton.setBounds(113, 22, 90, 75);
@@ -391,9 +453,13 @@ public class MainFrame extends CustomJFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				new Settings().setVisible(true);;
 				
+				if(settingsFrame != null) {
+					settingsFrame.dispose();
+				} 
+
+				settingsFrame = new Settings(false);
+				settingsFrame.setVisible(true);				
 			}
 		});
 		
@@ -425,12 +491,12 @@ public class MainFrame extends CustomJFrame {
 		
 		drawButtonGroup.add(geomCircle);
 		
-		DrawIconButton geomHexagon = new DrawIconButton("Hexagon", Settings.POLYGON_GEOMETRY, "/images/polygon.png", 30, 30);
-		geomHexagon.setToolTipText("Hexagon");
-		geomHexagon.setBounds(145, 21, 35, 35);
-		drawRibbon.add(geomHexagon);
+		DrawIconButton geomFreeformPolygon = new DrawIconButton("Freeform Polygon", Settings.POLYGON_GEOMETRY, "/images/polygon.png", 30, 30);
+		geomFreeformPolygon.setToolTipText("Freeform Polygon");
+		geomFreeformPolygon.setBounds(145, 21, 35, 35);
+		drawRibbon.add(geomFreeformPolygon);
 		
-		drawButtonGroup.add(geomHexagon);
+		drawButtonGroup.add(geomFreeformPolygon);
 		
 		DrawIconButton geomPoint = new DrawIconButton("Point", Settings.POINT_GEOMETRY, "/images/point.png", 25, 25);
 		geomPoint.setToolTipText("Point");
@@ -643,6 +709,7 @@ public class MainFrame extends CustomJFrame {
 		JComboBox<String> geomList = new JComboBox<String>(geom);
 		
 	    // a. Create a Jpanel and set the layout
+		
 	    JPanel layerPanel = new JPanel();
 	    layerPanel.setLayout(new GridLayout(4,1));
 	  
@@ -677,8 +744,7 @@ public class MainFrame extends CustomJFrame {
 				
 				createNewLayer(geomList.getSelectedItem().toString(), layerName);
 				
-			} else
-				JOptionPane.showOptionDialog(null, "Only Polygon and Polyline and Point supported for now", "WORK IN PROGRESS", JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+			}
 		}
 	}
 	
@@ -742,6 +808,9 @@ public class MainFrame extends CustomJFrame {
         	   if(response == JOptionPane.YES_OPTION) {
         		   
         		   // Save the items to the database!
+        		   saveLayerToDB(layer);
+   
+        		   
 
         	   } else if(response == JOptionPane.NO_OPTION) {
         		   
@@ -771,6 +840,69 @@ public class MainFrame extends CustomJFrame {
 			}
 		}
 	}
+	
+	/**
+	 * 
+	 * @param layer
+	 * @return
+	 */
+	public static boolean saveLayerToDB(Layer layer) {
+
+
+		try {
+			 
+ 		   // Check for name:
+ 		   boolean layerDoesNotExist = true;
+ 		   for(String existingTable[] : dbConnection.getTables()) {
+ 			   if(existingTable[0].equals(layer.getLayerName())) {
+ 				  layerDoesNotExist = false;
+ 				  break;
+ 			   }
+ 		   }
+ 		   
+ 		   if(layerDoesNotExist) {
+ 			   
+ 			   	dbConnection.writeTable(layer.getLayerName(), layer);
+				
+				panel.showAnimatedHint("Saved!", Settings.FEATURE_CREATED_COLOR);
+				log("Layer saved to DB");
+				
+				layer.setNotSaved(false);
+
+				return true;
+				
+ 		   } else {
+ 			   
+ 			  panel.showAnimatedHint("Layer name exists!", Settings.DEFAULT_ERROR_COLOR);
+ 			  log("Layer name exists, overwrite?");
+ 			  
+ 			  int response = JOptionPane.showConfirmDialog(null, "Overwrite/ confirm", "Confirm", JOptionPane.YES_NO_OPTION );
+ 			  
+ 			  if(response == JOptionPane.YES_OPTION) {
+ 				  
+ 				 dbConnection.writeTable(layer.getLayerName(), layer);
+ 				
+ 				 panel.showAnimatedHint("Saved!", Settings.FEATURE_CREATED_COLOR);
+ 				 log("Layer saved to DB");
+ 				
+ 				 layer.setNotSaved(false);
+
+ 				 return true;
+ 			  }
+ 		   }
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+			panel.showAnimatedHint("Something went wrong /n Cannot save to DB", Settings.DEFAULT_ERROR_COLOR);
+			log(e.getMessage());
+			
+			return false;
+		}
+		
+		return false;
+	}
 
 	/**
 	 * Closes the application appropriately
@@ -783,11 +915,11 @@ public class MainFrame extends CustomJFrame {
 
 	private void connectToDatabase() {
 		
-		String host = (Settings.dbHost.getText());
-		int port = Integer.parseInt((Settings.dbPort.getText()));
-		String database = (Settings.dbName.getText());
-		String user = Settings.dbUsername.getText();
-		String password = String.valueOf(Settings.dbPassword.getPassword());
+		String host = "localhost";
+		int port = 5432;
+		String database = "softeng_db";
+		String user = "postgres";
+		String password = "12345";
 		
 		try {
 			
@@ -802,17 +934,25 @@ public class MainFrame extends CustomJFrame {
 			
 			
 			Toolkit.getDefaultToolkit().beep();
-			JOptionPane.showMessageDialog( null, "Database connection cannot be established \n\n"
-					+ e.getMessage() + "\n\n Remind me later?", "Database connection error", JOptionPane.ERROR_MESSAGE);
+			int response = JOptionPane.showConfirmDialog( null, "Database connection cannot be established \n\n"
+					+ e.getMessage() + "\n\n Setup database now ? ", "Database connection error", JOptionPane.YES_NO_OPTION);
+			
+			if(response == JOptionPane.YES_OPTION) {
+				settingsFrame = new Settings(true);
+				settingsFrame.setVisible(true);
+			}
+			
+			else {
 			
 			initialize();
 			log("Application started. GMCM3 Software Engineering HSKA Karlsruhe "
 					+ "https://github.com/enocholumide/GMCM3_Software_Eng.git "
-					+ "\t Database NOT CONNECTED!!!");		
+					+ "\t NO DATABASE CONNECTED!!!");
+			}
 		}
 	}
 
-	private void createNewLayer(String layerType, String layerName) {
+	public static void createNewLayer(String layerType, String layerName) {
 		
 		// 1. Create a new layer
 		Layer newLayer = new Layer(TableOfContents.getNewLayerID(), true, layerType, layerName );
@@ -825,6 +965,77 @@ public class MainFrame extends CustomJFrame {
 		log(message);
 		panel.showAnimatedHint(message, Settings.DEFAULT_STATE_COLOR);
 	
+	}
+	
+	/**
+	 * 
+	 * @param resultSet
+	 * @param layerName
+	 */
+	public static void createLayerFromResultSet(ResultSet resultSet, String layerName) {
+	
+		try {
+			
+			String layerType = "";
+			Layer newLayer = new Layer(TableOfContents.getNewLayerID(), true, "", layerName);
+
+			while (resultSet.next()) {
+				
+				boolean isEllipse = resultSet.getBoolean(3);
+				
+				layerType = resultSet.getString(2);
+				
+				Double[] aX = (Double[]) resultSet.getArray(4).getArray();
+				Double[] aY = (Double[]) resultSet.getArray(5).getArray();
+				
+				if(isEllipse) {
+					
+					double x = aX[0];
+					double y = aY[0];
+					double rx = resultSet.getDouble(6);
+					double ry = resultSet.getDouble(7);
+						
+					// Ellipse
+					Feature feature = new Feature(newLayer.getListOfFeatures().size());
+					Shape circleShape = new Ellipse2D.Double(x - rx, y - ry , rx * 2, ry * 2);
+					
+					String featureType = "Ellipse";
+					if(rx == ry) {
+						featureType = "Circle";
+					}
+					
+					feature.setEllipse(isEllipse, new Point2D.Double(x,y), rx, ry);
+					feature.setShape(circleShape);
+					feature.setFeatureType(featureType);
+					feature.setVisibile(true);
+					newLayer.setLayerType(layerType);
+					newLayer.getListOfFeatures().add(feature);
+					
+				
+				} else {
+					
+					// Normal path - polygon and polyline
+					List<Rectangle2D> vertices = new ArrayList<Rectangle2D>();
+
+					for(int i = 0; i < Math.min(aX.length, aY.length); i++) {
+						vertices.add(new Rectangle2D.Double(aX[i] - (Settings.snappingTolerance / 2), aY[i] - (Settings.snappingTolerance / 2),
+								Settings.snappingTolerance, Settings.snappingTolerance));
+					}
+
+					newLayer.setLayerType(layerType); // ! important
+					
+					panel.finishPath(vertices, newLayer);
+
+				}		
+			}
+			
+			newLayer.setNotSaved(false);
+			tableOfContents.addRowLayer(newLayer);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static String getCurrentFeatureType() {

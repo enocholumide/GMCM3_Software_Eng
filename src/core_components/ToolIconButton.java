@@ -9,8 +9,10 @@ import application_frames.Settings;
 import toolset.Tools;
 
 /**
- * Blue print for the tool buttons
- * Uses background image and can change background dynamically
+ * Blue print for the tool buttons<br>
+ * Uses background image and can change background dynamically<br>
+ * Responds to mouse over and mouse exited by changing the background of the button
+ * 
  * @author OlumideEnoch
  *
  */
@@ -39,10 +41,12 @@ public class ToolIconButton extends JButton {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (getActionCommand().equals("Editing") || 
-					getActionCommand().equals("Query") || 
-					getActionCommand().equals("Select")
-					){
+				if (getActionCommand().equals("Editing")|| 
+					getActionCommand().equals("Query")  || 
+					getActionCommand().equals("Select") ||
+					getActionCommand().equals("Snap") ||
+					getActionCommand().equals("Grid") ||
+					getActionCommand().equals("Ortho")){
 					
 					if (buttonReleased) {
 						buttonReleased = false;
@@ -50,9 +54,7 @@ public class ToolIconButton extends JButton {
 						buttonReleased = true;
 					} 
 				}
-					
 			}
-			
 		});
 		
 		addMouseListener(new MouseAdapter() {
