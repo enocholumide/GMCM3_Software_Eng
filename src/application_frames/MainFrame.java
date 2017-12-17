@@ -139,8 +139,8 @@ public class MainFrame extends CustomJFrame {
 	 * Constructs the main frame
 	 */
 	public MainFrame() {
-		
-		connectToDatabase();
+
+		startup();
 		
 	}
 	
@@ -913,43 +913,11 @@ public class MainFrame extends CustomJFrame {
 		System.exit(0);
 	}
 
-	private void connectToDatabase() {
-		
-		String host = "localhost";
-		int port = 5432;
-		String database = "softeng_db";
-		String user = "postgres";
-		String password = "12345";
-		
-		try {
-			
-			dbConnection = new DatabaseConnection(host, port, database, user, password);
-			
-			initialize();
-			log("Application started. GMCM3 Software Engineering HSKA Karlsruhe "
-					+ "https://github.com/enocholumide/GMCM3_Software_Eng.git "
-					+ "\t Database connected");
-			
-		} catch (ClassNotFoundException | SQLException e) {
-			
-			
-			Toolkit.getDefaultToolkit().beep();
-			int response = JOptionPane.showConfirmDialog( null, "Database connection cannot be established \n\n"
-					+ e.getMessage() + "\n\n Setup database now ? ", "Database connection error", JOptionPane.YES_NO_OPTION);
-			
-			if(response == JOptionPane.YES_OPTION) {
-				settingsFrame = new Settings(true);
-				settingsFrame.setVisible(true);
-			}
-			
-			else {
-			
-			initialize();
-			log("Application started. GMCM3 Software Engineering HSKA Karlsruhe "
-					+ "https://github.com/enocholumide/GMCM3_Software_Eng.git "
-					+ "\t NO DATABASE CONNECTED!!!");
-			}
-		}
+	private void startup() {
+
+		settingsFrame = new Settings(true);
+		settingsFrame.setVisible(true);
+
 	}
 
 	public static void createNewLayer(String layerType, String layerName) {

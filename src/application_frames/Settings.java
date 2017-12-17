@@ -1,32 +1,30 @@
 package application_frames;
 
-import java.awt.Dimension;
+import java.awt.*;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 
 import custom_components.CustomJFrame;
 import database.DatabaseConnection;
+import file_handling.DatabaseCredentialsManager;
 import toolset.Tools;
 
-import java.awt.Color;
 import javax.swing.JSeparator;
 import javax.swing.JLabel;
-import java.awt.Font;
-import java.awt.Insets;
 
 import javax.swing.JTextField;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import java.awt.SystemColor;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.swing.SwingConstants;
+import javax.xml.crypto.Data;
 
 public class Settings extends CustomJFrame {
 
@@ -49,6 +47,8 @@ public class Settings extends CustomJFrame {
 	
 	public static JLabel settingsMessage;
 
+	public int[] windowSize = getDefaultWindowSize();
+
 	/**
 	 * Create the frame.
 	 */
@@ -60,8 +60,8 @@ public class Settings extends CustomJFrame {
 				handleWindowClosingEvent(e);
 			} 
 		});
-		
-		setBounds((windowSize.width - appSize.width) / 2, (windowSize.height - appSize.height) / 2, 1222, 750);
+
+		setBounds((windowSize[0] - appSize.width) / 2, (windowSize[1] - appSize.height) / 2, 1222, 750);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -125,7 +125,6 @@ public class Settings extends CustomJFrame {
 		panel_3.setLayout(null);
 		
 		dbHost = new JTextField();
-		dbHost.setText(DatabaseConnection.dbHost);
 		dbHost.setBounds(95, 11, 411, 38);
 		panel_3.add(dbHost);
 		dbHost.setColumns(10);
@@ -139,7 +138,6 @@ public class Settings extends CustomJFrame {
 		panel_3.add(btnNewButton);
 		
 		dbPort = new JTextField();
-		dbPort.setText(String.valueOf(DatabaseConnection.dbPort));
 		dbPort.setColumns(10);
 		dbPort.setBounds(95, 60, 159, 38);
 		panel_3.add(dbPort);
@@ -161,7 +159,6 @@ public class Settings extends CustomJFrame {
 		panel_3.add(btnDatabas);
 		
 		dbName = new JTextField();
-		dbName.setText(DatabaseConnection.dbName);
 		dbName.setColumns(10);
 		dbName.setBounds(347, 60, 159, 38);
 		panel_3.add(dbName);
@@ -180,7 +177,6 @@ public class Settings extends CustomJFrame {
 		panel_3.add(dbPassword);
 		
 		dbUsername = new JTextField(DatabaseConnection.dbUser);
-		dbUsername.setText("postgres");
 		dbUsername.setColumns(10);
 		dbUsername.setBounds(95, 109, 159, 38);
 		panel_3.add(dbUsername);
@@ -345,7 +341,7 @@ public class Settings extends CustomJFrame {
 						String password = String.valueOf(Settings.dbPassword.getPassword());
 						
 						
-						new MainFrame(new DatabaseConnection(host, port, database, user, password)).setVisible(true);;
+						new MainFrame(new DatabaseConnection(host, port, database, user, password)).setVisible(true);
 						;
 					} catch (ClassNotFoundException e1) {
 						// TODO Auto-generated catch block
@@ -380,6 +376,21 @@ public class Settings extends CustomJFrame {
 		btnSave.setBackground(Color.DARK_GRAY);
 		btnSave.setBounds(908, 662, 139, 38);
 		contentPane.add(btnSave);
+
+		// Get DB params from credential manager
+		String host = "";
+		int port = 0;
+		String database = "";
+		String user = "";
+		try {
+			DatabaseCredentialsManager databaseCredentialsManager = new DatabaseCredentialsManager();
+			dbHost.setText(databaseCredentialsManager.host);
+			dbPort.setText(String.valueOf(databaseCredentialsManager.port));
+			dbName.setText(databaseCredentialsManager.database);
+			dbUsername.setText(databaseCredentialsManager.user);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		btnSave.addActionListener(new ActionListener() {
 			
@@ -389,7 +400,40 @@ public class Settings extends CustomJFrame {
 			}
 		});
 	}
-	
+
+	/**
+	 * Computes the width and height of the application.  If there are multiple displays attached, for some reason it
+	 * thinks that the first display's width is the sum of all display widths.  So we have to subtract the widths of
+	 * all other displays from the first if there are multiple displays attached.
+	 * @return int[] in which the first element is the width and the second is the height.
+	 */
+	public static int[] getDefaultWindowSize() {
+
+		// Get devices
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+
+		// If there is more than one device (gs.length > 1), subtract the widths of all subsequent displays from its width.
+		int width;
+		if (gs.length > 1) {
+			width = gs[0].getDisplayMode().getWidth();
+			int otherWidths = 0;
+			for (int i=1; i<gs.length; i++) {
+				otherWidths += gs[i].getDisplayMode().getWidth();
+			}
+			width = width - otherWidths;
+		// Otherwise, just take the first (and only) display's width.
+		} else {
+			width = gs[0].getDisplayMode().getWidth();
+		}
+
+		// Height should stay the same.
+		int height = gs[0].getDisplayMode().getHeight();
+
+		return new int[] {width, height};
+
+	}
+
 	protected void saveAllChanges() {
 		
 		
@@ -397,13 +441,20 @@ public class Settings extends CustomJFrame {
 			
 			// DB Params
 			
-			DatabaseConnection.dbName = dbName.getText().toString();
-			DatabaseConnection.dbUser = dbUsername.getText().toString();
-			DatabaseConnection.dbHost = dbHost.getText().toString();
-			DatabaseConnection.dbPort = Integer.parseInt(dbPort.getText().toString());
+			DatabaseConnection.dbName = dbName.getText();
+			DatabaseConnection.dbUser = dbUsername.getText();
+			DatabaseConnection.dbHost = dbHost.getText();
+			DatabaseConnection.dbPort = Integer.parseInt(dbPort.getText());
 			
-			MainFrame.dbConnection = new DatabaseConnection(DatabaseConnection.dbHost, DatabaseConnection.dbPort, DatabaseConnection.dbName, DatabaseConnection.dbUser, String.valueOf(dbPassword.getPassword()) );
-			
+			MainFrame.dbConnection = new DatabaseConnection(DatabaseConnection.dbHost, DatabaseConnection.dbPort,
+					DatabaseConnection.dbName, DatabaseConnection.dbUser, String.valueOf(dbPassword.getPassword()) );
+
+			// Save DB Params
+
+			DatabaseCredentialsManager databaseCredentialsManager = new DatabaseCredentialsManager();
+			databaseCredentialsManager.setDatabaseCredentials(dbHost.getText(), Integer.parseInt(dbPort.getText()),
+					dbName.getText(), dbUsername.getText());
+
 			// Drawing settings
 			// TODO: Drawing settings
 			
@@ -426,10 +477,26 @@ public class Settings extends CustomJFrame {
 
 	// Software information
 	public static final String TITLE = "GMCM3_Software_Eng";
-	
-	// System configurations 
+
 	public static final int DEFAULT_DPI = java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
-	public static final Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+	private static GraphicsEnvironment ge;
+	public static GraphicsDevice[] gs;
+	private static DisplayMode bounds;
+	//public static final Dimension windowSize;
+
+	public void setDefaultWindowSize(GraphicsEnvironment ge, GraphicsDevice[] gs, DisplayMode bounds, Dimension windowSize) {
+
+		ge = ge;
+		gs = gs;
+		bounds = bounds;
+		windowSize = windowSize;
+
+	}
+
+	// System configurations 
+	//public static final int DEFAULT_DPI = java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
+	//public static final Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
 	
 	// Drawing settings
 	public static int gridSizeMM = 5;
