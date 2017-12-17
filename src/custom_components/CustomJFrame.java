@@ -1,10 +1,6 @@
 package custom_components;
 
-import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
-import java.awt.HeadlessException;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import java.awt.*;
 
 import javax.swing.JFrame;
 
@@ -16,7 +12,7 @@ public class CustomJFrame extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Dimension windowSize = Settings.windowSize;
+	private int[] windowSize;
 	
 	
 
@@ -27,7 +23,9 @@ public class CustomJFrame extends JFrame {
 		int taskBarSize = scnMax.bottom;
 		
 		// Set frame size and remove the task bar size from it
-		setBounds(0, 0, windowSize.width, windowSize.height - taskBarSize);
+		windowSize = Settings.getDefaultWindowSize();
+
+		setBounds(0, 0, windowSize[0], windowSize[1] - taskBarSize);
 		setResizable(false);
 	}
 
