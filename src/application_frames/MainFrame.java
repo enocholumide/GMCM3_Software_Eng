@@ -1,6 +1,3 @@
-/**
- * 
- */
 package application_frames;
 
 import java.awt.Color;
@@ -546,7 +543,7 @@ public class MainFrame extends CustomJFrame {
 	
 	
 	/**
-	 * Updates the list of drawable geometies based on the current layer selected
+	 * Updates the list of drawable geometries based on the current layer selected
 	 * This is done when:
 	 * a. Before edit session is started
 	 * b. When the layer in the combo box is changed

@@ -38,7 +38,7 @@ public class AttributeTableFrame extends JFrame implements ActionListener {
 	
 	private static final long serialVersionUID = 2510826749504059745L;
 	
-	/**Feature ID column index on the attribute taable*/
+	/**Feature ID column index on the attribute table*/
 	protected static final int FEATURE_ID_COL_INDEX = 1;
 
 	/**Current table of the attribute table frame*/
@@ -53,7 +53,7 @@ public class AttributeTableFrame extends JFrame implements ActionListener {
 
 	/**
 	 * Create the frame.
-	 * @param features 
+	 * @param layer 
 	 */
 	public AttributeTableFrame(Layer layer) {
 		
@@ -144,7 +144,7 @@ public class AttributeTableFrame extends JFrame implements ActionListener {
 		// Empty data for now
 		Object[][] data = { };
 		
-		// Make the cell no editatble
+		// Make the cell no editable
 		table = new JTable() {
 			/**
 			 * 
@@ -225,7 +225,7 @@ public class AttributeTableFrame extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Event when rows are selected on the attibute table <br>
+	 * Event when rows are selected on the attribute table <br>
 	 * It highlights the features on the drawing panel
 	 * @param e
 	 */

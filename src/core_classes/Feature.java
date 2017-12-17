@@ -60,6 +60,7 @@ public class Feature {
 		this.vertices = vertices;
 	}
 	
+	
 	public void setVerticesFromArray(int[] xp, int[] yp) {
 		
 		double[] x = Tools.copyFromIntArray(xp);

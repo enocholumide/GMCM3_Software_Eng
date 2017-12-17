@@ -7,6 +7,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JColorChooser;
+
 import application_frames.Settings;
 
 /**
@@ -23,6 +25,7 @@ public class Layer  {
 	private String layerName = "";
 	private String layerType = "";
 	private Color layerColor = Settings.DEFAULT_LAYER_COLOR;
+	private Color selectedLayerColor =  JColorChooser.showDialog(null, "Set Layer Color",layerColor);
 	private int lineWeight = Settings.DEFAULT_LAYER_LINE_WEIGHT;
 	
 	private boolean isVisible = true;
@@ -112,7 +115,7 @@ public class Layer  {
 	 * @param layerColor the layerColor to set
 	 */
 	public void setLayerColor(Color layerColor) {
-		this.layerColor = layerColor;
+		this.layerColor = selectedLayerColor;
 	}
 
 	/**
