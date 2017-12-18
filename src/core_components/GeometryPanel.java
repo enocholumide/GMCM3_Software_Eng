@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
@@ -36,7 +37,7 @@ public class GeometryPanel extends DefaultCellEditor {
 		int id = (int) table.getModel().getValueAt(row, 4);
 		layer = TableOfContents.findLayerWithID(id);
 
-		layer.setLayerColor(new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256)));
+		layer.setLayerColor(JColorChooser.showDialog(null, "Set Layer Color",layer.getLayerColor()));
 		panel.setLayer(layer);
 		
 		return panel;

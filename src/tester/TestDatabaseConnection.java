@@ -1,4 +1,4 @@
-package tester;
+/*package tester;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -12,14 +12,14 @@ import database.DatabaseConnection;
 import features.PolygonItem;
 import features.PolylineItem;
 
-/**
+*//**
  * Created by isaac on 22/11/17.
- */
+ *//*
 public class TestDatabaseConnection {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-        /**
+        *//**
          * Class for testing database functionality.
          *   |                                                     |
          *   |                                                     |
@@ -27,7 +27,7 @@ public class TestDatabaseConnection {
          *   |                                                     |
          *   |                                                     |
          *   V                                                     v
-         */
+         *//*
         // Initialize database connection
         DatabaseConnection databaseConnection = new DatabaseConnection(
             "localhost",
@@ -117,3 +117,4 @@ public class TestDatabaseConnection {
     }
 
 }
+*/
