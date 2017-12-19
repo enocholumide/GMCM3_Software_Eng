@@ -390,6 +390,18 @@ public class MainFrame extends CustomJFrame {
 		btnDelete.setToolTipText("Delete selected items");
 		panel_5.add(btnDelete);
 		
+		btnDelete.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!panel.editModeIsOn) {
+					log("Attempted to delete feature, but edit mode is off");
+					panel.showAnimatedHint("Edit mode if off", Settings.DEFAULT_ERROR_COLOR);
+				} else
+					panel.deleteSelectedItem();
+			}
+		});
+		
 		btnDrawEdit = new ToolIconButton("Editing", "/images/edit.png", 60,60);
 		panel_5.add(btnDrawEdit);
 		btnDrawEdit.setToolTipText("Start edit session");

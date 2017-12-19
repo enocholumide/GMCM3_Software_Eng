@@ -2106,4 +2106,21 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 			}
 		}
 	}
+
+	/**
+	 * Deletes currently selected item
+	 */
+	public void deleteSelectedItem() {
+		
+		if(DrawingJPanel.currentLayer != null) {
+			for(int i = 0; i < DrawingJPanel.currentLayer.getListOfFeatures().size(); i++) {
+				Feature feature = DrawingJPanel.currentLayer.getListOfFeatures().get(i);
+				if(feature.isHighlighted()) {
+					DrawingJPanel.currentLayer.getListOfFeatures().remove(feature);
+					repaint();
+				}
+			}
+		}
+	}
+	
 }
