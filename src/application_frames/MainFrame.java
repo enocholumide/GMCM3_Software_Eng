@@ -2,20 +2,13 @@ package application_frames;
 
 import java.awt.EventQueue;
 
-import javax.swing.JPanel;
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
+import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 import java.awt.Color;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultCaret;
 
 import core_classes.Feature;
@@ -26,23 +19,18 @@ import core_components.TableOfContents;
 import core_components.ToolIconButton;
 import custom_components.CustomJFrame;
 import database.DatabaseConnection;
+import file_handling.SessionManager;
 import toolset.Tools;
 
 import javax.swing.border.EmptyBorder;
 import java.awt.GridLayout;
 import java.awt.Shape;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -54,17 +42,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
 import java.awt.Font;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.border.LineBorder;
 
 /**
@@ -544,21 +523,92 @@ public class MainFrame extends CustomJFrame {
 		drawButtonGroup.add(geomSingleLine);
 		drawButtonGroup.add(geomMultiLine);
 		drawButtonGroup.add(geomEllipse);
-		
-		
-		filesBtn.addActionListener(new ActionListener() {
-			
+
+
+		filesBtn.addMouseListener(new MouseAdapter() {
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					dbConnection.getTables();
-					System.out.println("Worked");
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
+			public void mouseClicked(MouseEvent e) {
+
+				// Initialize a SessionManager with all the active layers & a file extension filter for later
+				SessionManager sessionManager = new SessionManager(tableOfContents);
+				FileNameExtensionFilter sessionFileFilter = new FileNameExtensionFilter("GMCM Application Session Files", "gmcm");
+
+				// Build & display the save/close menu for the files button
+				JPopupMenu sessionMenu = new JPopupMenu();
+				JMenuItem saveSessionMenuItem = new JMenuItem ("Save Session");
+				JMenuItem openSessionMenuItem = new JMenuItem ("Open Session");
+				sessionMenu.add(saveSessionMenuItem);
+				sessionMenu.add(openSessionMenuItem);
+				sessionMenu.setLocation(e.getXOnScreen(), e.getYOnScreen());
+				sessionMenu.setVisible(true);
+
+				// Add action listener for "Save Session" option.
+				saveSessionMenuItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+
+						// Hide the menu once clicked and open a save dialog.
+						sessionMenu.setVisible(false);
+						JFileChooser saveSessionFileChooser = new JFileChooser();
+						saveSessionFileChooser.addChoosableFileFilter(sessionFileFilter);
+
+						// Once the user selects a file name, write the session to it.
+						int saveSessionReturnVal = saveSessionFileChooser.showSaveDialog(filesBtn);
+						if (saveSessionReturnVal == JFileChooser.APPROVE_OPTION) {
+							File saveSession = saveSessionFileChooser.getSelectedFile();
+							String saveSessionPath = saveSession.getPath();
+							if (!saveSessionPath.substring(saveSessionPath.length()-5).equals(".gmcm")) {
+								saveSessionPath += ".gmcm";
+							}
+							sessionManager.saveCurrentSession(saveSessionPath);
+						}
+					}
+				});
+
+				// Add action listener for "Open Session" option.
+				openSessionMenuItem.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+
+						// Hide the menu once clicked and open an open dialog.
+						sessionMenu.setVisible(false);
+						JFileChooser openSessionFileChooser = new JFileChooser();
+						openSessionFileChooser.addChoosableFileFilter(sessionFileFilter);
+
+						// When the user selects a file, read it with the SessionManager and try to add the layers from the database, if they exist.
+						int openSessionReturnVal = openSessionFileChooser.showOpenDialog(filesBtn);
+						if (openSessionReturnVal == JFileChooser.APPROVE_OPTION) {
+							File openSession = openSessionFileChooser.getSelectedFile();
+							ArrayList<String> layersToOpen = sessionManager.openSession(openSession.getPath());
+							for (int i=0; i<layersToOpen.size(); i++) {
+								String layerName = layersToOpen.get(i);
+								try {
+									ResultSet layerContents = dbConnection.readTable(layerName);
+									createLayerFromResultSet(layerContents, layerName);
+								} catch (Exception ex) {
+									log("Table '" + layerName + "' does not exist in database.");
+								}
+							}
+						}
+					}
+				});
+
+				sessionMenu.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusLost(FocusEvent arg0) {
+						sessionMenu.setVisible(false);
+					}
+
+					@Override
+					public void focusGained(FocusEvent arg0) {
+					}
+
+				});
+
 			}
+
 		});
 		
 		selectionButton.addActionListener(new ActionListener() {

@@ -70,7 +70,7 @@ public class DatabaseConnection {
 
     /**
      * Retrieves the names of all tables stored in the database.
-     * @return A string ArrayList containing all the unique table names.
+     * @return A string[2] ArrayList containing all the unique table names, along with their feature type.
      * @throws SQLException Throws an SQLEXception
      */
     public ArrayList<String[]>getTables() throws SQLException {
@@ -82,7 +82,6 @@ public class DatabaseConnection {
 
             while (resultSet.next()) {
                 returnArrayList.add(new String[] {resultSet.getString("table_name"), resultSet.getString("type")});
-                //returnArrayList.add(resultSet.getString("table_name"));
             }
 
         return returnArrayList;
