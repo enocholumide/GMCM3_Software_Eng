@@ -12,15 +12,25 @@ import application_frames.MainFrame;
 import application_frames.Settings;
 import toolset.Tools;
 
+/**
+ * Class for the creation of the DrawIconButton
+ *
+ */
 public class DrawIconButton extends JToggleButton {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private String featureType ;
 	private String geometryFamily;
+	
+	/**
+	 * Creates the DrawIconButton
+	 * @param name the name of the DrawIconButton to set
+	 * @param geometryFamily the geometryFamily of the DrawIconButton to set
+	 * @param iconPath the iconPath of the DrawIconButton to set
+	 * @param x the x position of the DrawIconButton to set
+	 * @param y the y position of the DrawIconButton to set
+	 */
 	
 	public DrawIconButton(String name, String geometryFamily, String iconPath, int x, int y) {
 		super();
@@ -71,6 +81,7 @@ public class DrawIconButton extends JToggleButton {
 	}
 
 	/**
+	 * Returns the featureType
 	 * @return the featureType
 	 */
 	public String getFeatureType() {
@@ -78,6 +89,7 @@ public class DrawIconButton extends JToggleButton {
 	}
 
 	/**
+	 * Returns the geometryFamily
 	 * @return the geometryFamily
 	 */
 	public String getGeometryFamily() {

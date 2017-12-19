@@ -12,20 +12,27 @@ import javax.swing.JPanel;
 import application_frames.MainFrame;
 import core_classes.Layer;
 
+/**
+ * Class for creating the GeometryTableIcon
+ */
 public class GeometryTableIcon extends JPanel {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private Color color = Color.PINK;
 	private String type ="";
 	
+	/**
+	 * Creates the GeometryTableIcon
+	 */
 	public GeometryTableIcon() {
 		super();
 		
 	}
 	
+	/**
+	 * Sets the LayerType
+	 * @param type the type to set
+	 */
 	public void setLayerType(String type) {
 		this.type = type;
 	}

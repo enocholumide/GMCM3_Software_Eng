@@ -12,7 +12,7 @@ import javax.swing.JColorChooser;
 import application_frames.Settings;
 
 /**
- * 
+ * Class for the creation of a Layer
  * @author OlumideEnoch
  *
  */
@@ -33,12 +33,14 @@ public class Layer  {
 	
 	private int id = 0;
 	
+
+	
 	/**
-	 * @param id
-	 * @param layerName
-	 * @param isActive
-	 * @param layerColor
-	 * @param layerType
+	 * Creates an Object of the class Layer
+	 * @param id The ID of a Layer
+	 * @param isVisible The status of Visibility of a Layer
+	 * @param layerType The type of a Layer
+	 * @param layerName The name of a Layer
 	 */
 	public Layer(int id, boolean isVisible, String layerType,  String layerName) {
 		//super(id);
@@ -50,9 +52,8 @@ public class Layer  {
 		
 	}
 	
-	
-	
 	/**
+	 * Returns the ID of the Layer
 	 * @return the id
 	 */
 	public int getId() {
@@ -60,7 +61,8 @@ public class Layer  {
 	}
 
 	/**
-	 * @param id the id to set
+	 * Sets the ID of the Layer
+	 * @param id the ID to set
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -72,6 +74,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Returns the table data of a Layer
 	 * @return the tableData
 	 */
 	public Object[] getTableData() {
@@ -80,6 +83,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Returns the name of a Layer
 	 * @return the layerName
 	 */
 	public String getLayerName() {
@@ -87,6 +91,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Sets the name of a Layer
 	 * @param layerName the layerName to set
 	 */
 	public void setLayerName(String layerName) {
@@ -94,20 +99,23 @@ public class Layer  {
 	}
 
 	/**
-	 * @return the isActive
+	 * Returns the status of the visibility of a Layer
+	 * @return the isVisible
 	 */
 	public boolean isVisible() {
 		return isVisible;
 	}
 
 	/**
-	 * @param isActive the isActive to set
+	 * Sets the status of the visibility of a Layer
+	 * @param isVisible set isVisible parameter
 	 */
 	public void setVisible(boolean isVisible) {
 		this.isVisible = isVisible;
 	}
 
 	/**
+	 * Returns the Color of a Layer
 	 * @return the layerColor
 	 */
 	public Color getLayerColor() {
@@ -115,6 +123,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Sets the Color of a Layer
 	 * @param layerColor the layerColor to set
 	 */
 	public void setLayerColor(Color layerColor) {
@@ -122,6 +131,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Returns the type of a Layer
 	 * @return the layerType
 	 */
 	public String getLayerType() {
@@ -129,6 +139,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Sets the type of a Layer
 	 * @param layerType the layerType to set
 	 */
 	public void setLayerType(String layerType) {
@@ -136,6 +147,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Returns the saving status of a Layer
 	 * @return the notSaved
 	 */
 	public boolean isNotSaved() {
@@ -143,6 +155,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Sets the saving status of a Layer
 	 * @param notSaved the notSaved to set
 	 */
 	public void setNotSaved(boolean notSaved) {
@@ -150,6 +163,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Returns the feature list of a Layer
 	 * @return the listOfFeatures
 	 */
 	public List<Feature> getListOfFeatures() {
@@ -157,18 +171,23 @@ public class Layer  {
 	}
 
 	/**
+	 * Sets the feature list of a Layer
 	 * @param listOfFeatures the listOfFeatures to set
 	 */
 	public void setListOfFeatures(List<Feature> listOfFeatures) {
 		this.listOfFeatures = listOfFeatures;
 	}
 
+	/**
+	 * Returns the next Feature ID of a Layer
+	 * @return the next Feature ID
+	 */
 	public int getNextFeatureID() {
-
 		return this.listOfFeatures.size() + 1;
 	}
 
 	/**
+	 * Returns the line weight of a Layer
 	 * @return the lineWeight
 	 */
 	public int getLineWeight() {
@@ -176,38 +195,54 @@ public class Layer  {
 	}
 
 	/**
+	 * Sets the line weight of a Layer
 	 * @param lineWeight the lineWeight to set
 	 */
 	public void setLineWeight(int lineWeight) {
 		this.lineWeight = lineWeight;
 	}
-
+	
+	/**
+	 * Sets the highlighting status of the Features of a Layer
+	 * @param cond the cond to set
+	 */
 	public void highlightAllFeatures(boolean cond) {
 		for(Feature feature : listOfFeatures) {
 			feature.setHighlighted(cond);
 		}
 	}
 	
+	/**
+	 * Returns a Feature by ID
+	 * @param id the Feature ID to set
+	 * @return the Feature
+	 */
 	public Feature getFeatureWithID(int id) {
-		
 		for(Feature feature : listOfFeatures) {
 			if(feature.getId() == id ) {
 				return feature;
 			}
-		}
-		
+		}	
 		return null;	
 	}
 	
+	/**
+	 * Returns the Size of a Feature list
+	 * @return listOfFeatures the Feature list size
+	 */
 	public int getSize() {
 		return listOfFeatures.size();
 	}
 
+	/**
+	 * Removes the last item of a Feature list
+	 */
 	public void removeLastItem() {
 		listOfFeatures.remove(getSize()-1);
 	}
 
 	/**
+	 * Sets the table Data of a Layer
 	 * @param tableData the tableData to set
 	 */
 	public void setTableData(Object[] tableData) {

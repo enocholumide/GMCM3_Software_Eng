@@ -48,7 +48,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 	private ToolIconButton delete, addToPanel; //addLayer;
 
 	/**
-	 * Create the frame.
+	 * Creates the Frame for the Database Catalog
 	 */
 	public DatabaseCatalog() {
 		
@@ -290,6 +290,10 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 		});
 	}
 
+	/**
+	 * Method for handling Changed Values 
+	 * @param e the TreeSelectionEvent to set
+	 */
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
 

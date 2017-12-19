@@ -1,6 +1,7 @@
 package application_frames;
 
 import java.awt.Dimension;
+
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
@@ -28,11 +29,12 @@ import java.sql.SQLException;
 
 import javax.swing.SwingConstants;
 
+/**
+ * In this class the general settings of the application are defined
+ *
+ */
 public class Settings extends CustomJFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private Dimension appSize = new Dimension(1250,750);
@@ -51,6 +53,7 @@ public class Settings extends CustomJFrame {
 
 	/**
 	 * Create the frame.
+	 * @param openMainFrame the openMainFrame to be set
 	 */
 	public Settings(boolean openMainFrame) {
 		super("Settings");
@@ -390,6 +393,9 @@ public class Settings extends CustomJFrame {
 		});
 	}
 	
+	/**
+	 * Saves all changes of the settings
+	 */
 	protected void saveAllChanges() {
 		
 		
@@ -420,6 +426,10 @@ public class Settings extends CustomJFrame {
 		
 	}
 
+	/**
+	 * Handles the Window Closing Event
+	 * @param e the WindowEvent to set
+	 */
 	protected void handleWindowClosingEvent(WindowEvent e) {
 		dispose();
 	}

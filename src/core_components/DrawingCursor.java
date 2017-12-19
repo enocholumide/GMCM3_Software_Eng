@@ -12,7 +12,7 @@ import java.util.List;
 import application_frames.Settings;
 
 /**
- * 
+ * Class for the creation of the DrawingCursor
  * WORK IN PROGRESS
  * @author OlumideEnoch
  *
@@ -22,9 +22,11 @@ public class DrawingCursor {
 	private Rectangle cursor;
 	private Color color = Settings.cursorColor;
 	private List<Line2D> lines = new ArrayList<Line2D>();
+	
 	/**
-	 * @param cursor
-	 * @param color
+	 * Creates the DrawCursor
+	 * @param cursor the cursor to set
+	 * @param color the color to set
 	 */
 	public DrawingCursor(Rectangle cursor, Color color) {
 		super();
@@ -33,17 +35,22 @@ public class DrawingCursor {
 		setLines();
 	}
 	
+	/**
+	 * Creates the DrawCursor
+	 */
 	public DrawingCursor() {
 		super();
 	}
 	
 	/**
+	 * Returns the cursor
 	 * @return the cursor
 	 */
 	public Rectangle getCursor() {
 		return cursor;
 	}
 	/**
+	 * Sets the cursor
 	 * @param cursor the cursor to set
 	 */
 	public void setCursor(Rectangle cursor) {
@@ -51,12 +58,14 @@ public class DrawingCursor {
 		setLines();
 	}
 	/**
+	 * Returns the color
 	 * @return the color
 	 */
 	public Color getColor() {
 		return color;
 	}
 	/**
+	 * Sets the color
 	 * @param color the color to set
 	 */
 	public void setColor(Color color) {
@@ -64,6 +73,7 @@ public class DrawingCursor {
 	}
 
 	/**
+	 * Returns the lines
 	 * @return the lines
 	 */
 	public List<Line2D> getLines() {
@@ -71,6 +81,7 @@ public class DrawingCursor {
 	}
 
 	/**
+	 * Sets the lines
 	 * @param lines the lines to set
 	 */
 	private void setLines() {

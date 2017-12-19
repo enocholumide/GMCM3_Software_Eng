@@ -70,13 +70,12 @@ import toolset.Tools;
  */
 public class MainFrame extends CustomJFrame {
 	
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Launch the application.
+	 * Launch the application
+	 * @param args the Arguments of the Application to set
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -146,6 +145,7 @@ public class MainFrame extends CustomJFrame {
 	
 	/**
 	 * Constructs the main frame
+	 * @param dbConnection the dbConnection to set
 	 */
 	public MainFrame(DatabaseConnection dbConnection) {
 		
@@ -538,8 +538,7 @@ public class MainFrame extends CustomJFrame {
 		logText.setBackground(Color.DARK_GRAY);
 		//logText
 		DefaultCaret caret = (DefaultCaret) logText.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-		
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);		
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(logText);
@@ -684,6 +683,9 @@ public class MainFrame extends CustomJFrame {
 			
 	}
 
+	/**
+	 * Disables all drawing buttons
+	 */
 	public static void disableAllDrawButtons() {
 		
 		for (Enumeration<AbstractButton> buttons = drawButtonGroup.getElements(); buttons.hasMoreElements();) {
@@ -693,7 +695,7 @@ public class MainFrame extends CustomJFrame {
 	}
 
 	/**
-	 * 
+	 * Handles a new Layer intent
 	 */
 	protected void handleAddNewLayerIntent() {
 		
@@ -842,9 +844,9 @@ public class MainFrame extends CustomJFrame {
 	}
 	
 	/**
-	 * 
-	 * @param layer
-	 * @return
+	 * Saves a Layer to a database
+	 * @param layer The Layer which has to be saved to the database
+	 * @return returns true, if a Layer was successfully saved to the database
 	 */
 	public static boolean saveLayerToDB(Layer layer) {
 
@@ -913,6 +915,9 @@ public class MainFrame extends CustomJFrame {
 		System.exit(0);
 	}
 
+	/**
+	 * Connection to the database
+	 */
 	private void connectToDatabase() {
 		
 		String host = "localhost";
@@ -951,6 +956,12 @@ public class MainFrame extends CustomJFrame {
 			}
 		}
 	}
+	
+	/**
+	 * Creates a new Layer
+	 * @param layerType the layerType to set
+	 * @param layerName the layerName to set
+	 */
 
 	public static void createNewLayer(String layerType, String layerName) {
 		
@@ -968,9 +979,9 @@ public class MainFrame extends CustomJFrame {
 	}
 	
 	/**
-	 * 
-	 * @param resultSet
-	 * @param layerName
+	 * Creates a new Layer from a result set
+	 * @param resultSet the resultSet to be set
+	 * @param layerName the layerName to be set
 	 */
 	public static void createLayerFromResultSet(ResultSet resultSet, String layerName) {
 	
@@ -1038,6 +1049,10 @@ public class MainFrame extends CustomJFrame {
 		}
 	}
 
+	/**
+	 * Returns the current Feature type
+	 * @return selectedFeatureType
+	 */
 	public static String getCurrentFeatureType() {
 		
 		if(drawButtonGroup.getSelection() != null) {
@@ -1089,7 +1104,7 @@ public class MainFrame extends CustomJFrame {
 	 * Updates the list of layer names on the combo box list. <br>
 	 * 
 	 * The index of an item on the list is equivalent to the index on the table of contents
-	 * @param listOfLayersInString
+	 * @param listOfLayersInString the listOfLayersInString to set
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void updateLayerComboBoxModel(String[] listOfLayersInString) {
@@ -1099,8 +1114,8 @@ public class MainFrame extends CustomJFrame {
 	}
 	
 	/**
-	 * 
-	 * @param name
+	 * Releases all other tool button than the currently selected
+	 * @param name the currently selected tool button
 	 */
 	public static void releaseAllOtherToolsButton(String name) {
 		

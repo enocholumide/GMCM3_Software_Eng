@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Shows attribute table of all features in a layer
+ * Shows attribute table of all Features in a Layer
  * 
  * WORK IN PROGRESS
  * 
@@ -52,8 +52,8 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 	
 
 	/**
-	 * Create the frame.
-	 * @param layer 
+	 * Creates the Attribute Table Frame
+	 * @param layer The Layer for which an Attribute Table should be created
 	 */
 	public AttributeTableFrame(Layer layer) {
 		super("Atrribute table");
@@ -225,8 +225,8 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 
 	/**
 	 * Event when rows are selected on the attribute table <br>
-	 * It highlights the features on the drawing panel
-	 * @param e
+	 * Highlights the Features on the drawing panel
+	 * @param e the ListSelectionEvent to set
 	 */
 	protected void handleListSelection(ListSelectionEvent e) {
 		
@@ -246,7 +246,7 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 
 	/**
 	 * Used for the items in the menu bar 
-	 * @param e
+	 * @param e the ActionEvent to set
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -311,7 +311,7 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 	
 	/**
 	 * Closes the frame
-	 * @param e
+	 * @param e the WindowEvent to set
 	 */
 	protected void handleWindowClosingEvent(WindowEvent e) {
 		
