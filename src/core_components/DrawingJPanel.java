@@ -618,7 +618,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	 * Changes the current layer, needed at each new edit session.
 	 * It finds the layer with same ID at the table of contents
 	 * @param layerIndex layer index from the combobox and the mainframe to set
-	 * @param featureType the feature type selected e.g circle, rectangle to set
+	 * @param the feature type selected e.g circle, rectangle to set
 	 */
 	private void changeCurrentLayerAndFeatureType(int layerIndex, String featureType) {
 		

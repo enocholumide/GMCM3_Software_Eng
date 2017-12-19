@@ -18,13 +18,17 @@ import toolset.Tools;
  */
 public class ToolIconButton extends JButton {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1387944835690709531L;
 	
 	private boolean buttonReleased = false;
 
+	/**
+	 * Creates the ToolIconButton
+	 * @param text the text to set
+	 * @param iconPath the iconPath to set
+	 * @param x the x coordinate to set
+	 * @param y the y coordinate to set
+	 */
 	public ToolIconButton(String text, String iconPath, int x, int y) {
 		
 		super();
@@ -79,6 +83,7 @@ public class ToolIconButton extends JButton {
 	}
 
 	/**
+	 * Returns whether the ToolIconButton is released or not
 	 * @return the buttonReleased
 	 */
 	public boolean isButtonReleased() {
@@ -86,6 +91,7 @@ public class ToolIconButton extends JButton {
 	}
 
 	/**
+	 * Sets the buttonReleased status of the ToolIconButton
 	 * @param buttonReleased the buttonReleased to set
 	 */
 	public void setButtonReleased(boolean buttonReleased) {

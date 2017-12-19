@@ -1,25 +1,24 @@
 package custom_components;
 
-import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
-import java.awt.HeadlessException;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import java.awt.*;
 
 import javax.swing.JFrame;
 
 import application_frames.Settings;
 
+/**
+ * Class for the creation of a CustomJFrame
+ */
 public class CustomJFrame extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	private Dimension windowSize = Settings.windowSize;
+	private int[] windowSize;
 	
 	
-
+	/**
+	 * Creates a CustomJFrame
+	 * @throws HeadlessException Throws an HeadlessException
+	 */
 	public CustomJFrame() throws HeadlessException {
 		
 		// Find task bar height
@@ -27,20 +26,36 @@ public class CustomJFrame extends JFrame {
 		int taskBarSize = scnMax.bottom;
 		
 		// Set frame size and remove the task bar size from it
-		setBounds(0, 0, windowSize.width, windowSize.height - taskBarSize);
+		windowSize = Settings.getDefaultWindowSize();
+
+		setBounds(0, 0, windowSize[0], windowSize[1] - taskBarSize);
 		setResizable(false);
 	}
 
+	/**
+	 * Creates a CustomJFrame
+	 * @param arg0 the GraphicsConfiguration arg0 to set
+	 */
 	public CustomJFrame(GraphicsConfiguration arg0) {
 		super(arg0);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Creates a CustomJFrame
+	 * @param arg0 the String arg0 to set
+	 * @throws HeadlessException Throws an HeadlessException
+	 */
 	public CustomJFrame(String arg0) throws HeadlessException {
 		super(arg0);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Creates a CustomJFrame
+	 * @param arg0 the String arg0 to set
+	 * @param arg1 the GraphicsConfiguration arg1 to set
+	 */
 	public CustomJFrame(String arg0, GraphicsConfiguration arg1) {
 		super(arg0, arg1);
 		// TODO Auto-generated constructor stub

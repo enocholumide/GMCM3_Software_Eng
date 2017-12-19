@@ -41,7 +41,7 @@ public class GeometryPanel extends DefaultCellEditor {
 	 * @param isSelected the isSelected to set
 	 * @param row the row to set
 	 * @param column the column to set
-	 * @return panel the panel
+	 * @return the panel
 	 */
 	@Override
 	public Component getTableCellEditorComponent(JTable table, Object obj, boolean isSelected, int row, int column ) {
@@ -59,7 +59,7 @@ public class GeometryPanel extends DefaultCellEditor {
 	
 	/**
 	 * Returns the CellEditorValue
-	 * @return getCellEditorValue the Object getCellEditorValue
+	 * @return the Object getCellEditorValue
 	 */
 	@Override
 	public Object getCellEditorValue() {
@@ -69,7 +69,7 @@ public class GeometryPanel extends DefaultCellEditor {
 	
 	/**
 	 * Returns the stopCellEditing
-	 * @return stopCellEditing the stopCellEditing
+	 * @return the stopCellEditing
 	 */
 	@Override
 	public boolean stopCellEditing() {
@@ -78,7 +78,7 @@ public class GeometryPanel extends DefaultCellEditor {
 	
 	/**
 	 * Returns the fireEditingStopped
-	 * @return fireEditingStopped the fireEditingStopped
+	 * @return the fireEditingStopped
 	 */
 	@Override
 	protected void fireEditingStopped() {

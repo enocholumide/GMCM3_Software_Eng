@@ -138,8 +138,8 @@ public class MainFrame extends CustomJFrame {
 	 * Constructs the main frame
 	 */
 	public MainFrame() {
-		
-		connectToDatabase();
+
+		startup();
 		
 	}
 	
@@ -915,6 +915,7 @@ public class MainFrame extends CustomJFrame {
 		System.exit(0);
 	}
 
+
 	/**
 	 * Connection to the database
 	 */
@@ -955,6 +956,14 @@ public class MainFrame extends CustomJFrame {
 					+ "\t NO DATABASE CONNECTED!!!");
 			}
 		}
+	}
+
+	private void startup() {
+
+		settingsFrame = new Settings(true);
+		settingsFrame.setVisible(true);
+
+
 	}
 	
 	/**

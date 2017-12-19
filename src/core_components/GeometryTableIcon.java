@@ -30,19 +30,27 @@ public class GeometryTableIcon extends JPanel {
 	}
 	
 	/**
-	 * Sets the LayerType
+	 * Sets the Layer type
 	 * @param type the type to set
 	 */
 	public void setLayerType(String type) {
 		this.type = type;
 	}
 	
+	/**
+	 * Sets the Layer color
+	 * @param layer the layer to set
+	 */
 	public void setLayerColor(Layer layer) {
 		this.color = layer.getLayerColor();
 		this.type = layer.getLayerType();
 		repaint();
 	};
 	
+	/**
+	 * Sets the Layer
+	 * @param layer the layer to set
+	 */
 	public void setLayer(Layer layer) {
 		this.color = layer.getLayerColor();
 		this.type = layer.getLayerType();
@@ -50,11 +58,19 @@ public class GeometryTableIcon extends JPanel {
 		repaint();
 	}
 	
+	/**
+	 * Sets the color
+	 * @param color the color to set
+	 */
 	public void setColor(Color color) {
 		this.color = color;
 		repaint();
 	};
 	
+	/**
+	 * Paints the Component using an Graphics Object
+	 * @param g the graphics object to set
+	 */
 	@Override
 	protected void paintComponent(Graphics g) {
 		// TODO Auto-generated method stub

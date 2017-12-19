@@ -10,23 +10,32 @@ import core_components.GeometryTableIcon;
 import core_components.TableOfContents;
 
 /**
- * Renders the geometry icon on the table cell
+ * Class to render the geometry icon on the table cell
  * @author OlumideEnoch
  *
  */
 public class GeometryTableIconRenderer extends GeometryTableIcon implements TableCellRenderer{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * Creates the GeometryTableIconRenderer
+	 */
 	public GeometryTableIconRenderer () {
 		super();
 		super.setBackground(Color.WHITE);
 		
 	}
 	
+	/**
+	 * Returns the TableCellRendererComponent
+	 * @param table the table to set
+	 * @param value the value to set
+	 * @param arg2 the arg2 to set 
+	 * @param arg3 the arg3 to set
+	 * @param row the row to set
+	 * return the TableCellRendererComponent
+	 */
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean arg2, boolean arg3, int row,
 			int col) {

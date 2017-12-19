@@ -10,19 +10,25 @@ import core_classes.Feature;
 import java.awt.Polygon;
 
 /**
+ * Class for representing polygons in the system.  Inherits from Feature.
  * @author Isaac
- * Class for representing polygons in our system.  Inherits from Feature.
  */
 public class PolygonItem extends Feature {
 	
 	private Shape shape;
 	
+	/**
+	 * Creates the PolygonItem
+	 * @param id the id to set
+	 * @param shape the shape to set
+	 */
 	public PolygonItem(int id, Path2D shape) {
 		super(id);
 		this.shape = shape;
 	}
 
 	/**
+	 * Returns the shape of the PolygonItem
 	 * @return the shape
 	 */
 	public Shape getShape() {
@@ -30,6 +36,7 @@ public class PolygonItem extends Feature {
 	}
 
 	/**
+	 * Sets the shape pof the PolygonItem
 	 * @param shape the shape to set
 	 */
 	public void setShape(Shape shape) {
@@ -39,9 +46,9 @@ public class PolygonItem extends Feature {
     Polygon geometry;
 
     /**
-     * Constructor for PolygonItem feature.
-     * @param id Id for this feature
-     * @param polygon Geometry for this feature, in the form of a Polygon object.
+     * Creates the PolygonItem
+     * @param id the id to set
+     * @param polygon the Geometry for this feature to set (in the form of a Polygon object)
      */
     public PolygonItem(int id, Polygon polygon) {
 
@@ -54,21 +61,25 @@ public class PolygonItem extends Feature {
     }
 
     /**
-     * Getter method for the PolylineItem's geometry object.
-     * @return Polygon
+     * Returns the PolylineItem's geometry object
+     * @return geometry Returns the Polygon 
      */
     public Polygon getGeometry() {
         return geometry;
     }
 
     /**
-     * Setter method for the PolylineItem's geometry object.
-     * @param polygon Polygon to set as the geometry.
+     * Sets the PolylineItem's geometry object.
+     * @param polygon the Polygon to set as the geometry.
      */
     public void setGeometry(Polygon polygon) {
         this.geometry = polygon;
     }
 
+    /**
+     * Returns the Array of the PolygonItem in the form of a double[][]
+     * @return null Returns null
+     */
 	public double[][] getArray() {
 		// TODO Auto-generated method stub
 		return null;

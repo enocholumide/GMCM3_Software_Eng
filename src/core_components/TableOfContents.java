@@ -37,9 +37,6 @@ import renderers.GeometryTableIconRenderer;
  */
 public class TableOfContents extends JTable {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	/**Unique layer ID in the table of contents*/
@@ -156,8 +153,8 @@ public class TableOfContents extends JTable {
 	}
 	
 	/**
-	 * 
-	 * @param e
+	 * Handles the Layer Visibility from a Click
+	 * @param e the TableModelEvent to set
 	 */
 	protected void handleLayerVisibiltyFromClick(TableModelEvent e) {
 		
@@ -210,7 +207,7 @@ public class TableOfContents extends JTable {
 	}
 	
 	/**
-	 * Initializes the model of the table <br>
+	 * Initializes the model of the table. <br>
 	 * The column names are later turned off.
 	 */
 	private void setTableModel() {
@@ -225,9 +222,8 @@ public class TableOfContents extends JTable {
 	}
 	
 	/**
-	 * Sets the class of the table columns
-	 * 
-	 * @param columnIndex 
+	 * Sets the class of the table columns.
+	 * @param columnIndex the columnIndext to set
 	 */
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
@@ -263,7 +259,7 @@ public class TableOfContents extends JTable {
 	
 	/**
 	 * Add a new layer to table of contents
-	 * @param layer layer to add
+	 * @param layer the layer to set
 	 */
 	public void addRowLayer(Layer layer) {
 		
@@ -281,7 +277,7 @@ public class TableOfContents extends JTable {
 	}
 	
 	/**
-	 * Returns an new layer id
+	 * Returns a new layer ID
 	 * @return new layer id
 	 */
 	public static int getNewLayerID() {
@@ -289,8 +285,8 @@ public class TableOfContents extends JTable {
 	}
 	
 	/**
-	 * Retrieved a layer in the table of content with a particular id
-	 * @param id id of the layer (should be retrieved at the 4th column of the table row)
+	 * Retrieved a layer in the table of content with a particular ID.
+	 * @param id ID of the layer (should be retrieved at the 4th column of the table row)
 	 * @return layer 
 	 */
 	public static Layer findLayerWithID(int id) {
@@ -304,7 +300,7 @@ public class TableOfContents extends JTable {
 	}
 	
 	/**
-	 * Removes a layer from table of contents
+	 * Removes a layer from table of contents.
 	 * @param row specified row on the table
 	 */
 	public static void removeRowLayer(int row) {
@@ -354,8 +350,8 @@ public class TableOfContents extends JTable {
 	
 	/**
 	 * Gets the list of layer names in the table of contents as an array list of string.<p>
-	 * The list is created as needed from the available list of layers
-	 * @return string array of the avaliable layer names
+	 * The list is created as needed from the available list of layers.
+	 * @return string array of the available layer names
 	 */
 	public static String[] getListOfLayersInString() {
 		
