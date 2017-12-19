@@ -919,15 +919,7 @@ public class MainFrame extends CustomJFrame {
 		settingsFrame.setVisible(true);
 
 	}
-	
-	/**
-	 * Creates a new layer.
-	 * It start first by creating a new layer with a unique ID from the table of contents<br>
-	 * Then adds the layer to the table of contents<br>
-	 * 
-	 * @param layerType layer type i.e polygon, polyline or point
-	 * @param layerName layer name to be shown on the table of contents
-	 */
+
 	public static void createNewLayer(String layerType, String layerName) {
 		
 		// 1. Create a new layer
@@ -936,7 +928,7 @@ public class MainFrame extends CustomJFrame {
 		// 2. Add to the table of content
 		tableOfContents.addRowLayer(newLayer);
 		
-		// 3. Log some messages
+		// 3. Log some message
 		String message = "New " + newLayer.getLayerType() + " layer: "+ newLayer.getLayerName() + " was created";
 		log(message);
 		panel.showAnimatedHint(message, Settings.DEFAULT_STATE_COLOR);
@@ -944,11 +936,9 @@ public class MainFrame extends CustomJFrame {
 	}
 	
 	/**
-	 * Creates a new layer from an SQL result set<br>
-	 * Iterates through all the features in the layer and adds to the layer<br>
-	 * First decides if the feature is an ellipse or not.
-	 * @param resultSet Result set from the SQL query
-	 * @param layerName layer name to be shown on the table of contents
+	 * 
+	 * @param resultSet
+	 * @param layerName
 	 */
 	public static void createLayerFromResultSet(ResultSet resultSet, String layerName) {
 	
@@ -1015,12 +1005,7 @@ public class MainFrame extends CustomJFrame {
 			e.printStackTrace();
 		}
 	}
-	
-	/**
-	 * Gets the current feature type selected from the draw button group<br>
-	 * i.e circle, rectangle etc
-	 * @return
-	 */
+
 	public static String getCurrentFeatureType() {
 		
 		if(drawButtonGroup.getSelection() != null) {
@@ -1028,7 +1013,6 @@ public class MainFrame extends CustomJFrame {
 			String selectedFeatureType = drawButtonGroup.getSelection().getActionCommand();
 		
 			return selectedFeatureType;
-			
 		} else
 			
 			return null;

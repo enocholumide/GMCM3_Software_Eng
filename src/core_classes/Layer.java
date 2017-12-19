@@ -18,56 +18,40 @@ import application_frames.Settings;
  */
 public class Layer  {
 	
-	/**The layer's current ID derived from the current session's table of contents*/
-	private int id = 0;
-	
-	/**The data that represents the layer in the table of contents*/
 	private Object[] tableData = {};
 	
-	/**The layer's list of features*/
 	private List<Feature> listOfFeatures = new ArrayList<Feature>();
 	
-	/**The layer's name*/
-	private String layerName;
-	
-	/**The layer's geometry type i.e polygon, polyline or point*/
-	private String layerType;
-	
-	/**The layer's color, set to the default of black*/
+	private String layerName = "";
+	private String layerType = "";
 	private Color layerColor = Settings.DEFAULT_LAYER_COLOR;
-	
-	/**The layer's line weight*/
 	private int lineWeight = Settings.DEFAULT_LAYER_LINE_WEIGHT;
 	
-	/**The visibilty of the layer in the drawing session. Used by the paint component*/
 	private boolean isVisible = true;
-	
-	/**The layer's saved state, turns unsaved when new features are added*/
 	private boolean notSaved = false;
 	
-	
+	private int id = 0;
 	
 	/**
-	 * Class constructor
-	 * @param id Generated layer ID based on the current session from the table of contents
-	 * @param layerName Layer's name as inputed on creation or auto generated
-	 * @param isVisible The visibilty of the layer in the drawing session
-	 * @param layerColor The layer's color
-	 * @param layerType The layer's geometry type
+	 * @param id
+	 * @param layerName
+	 * @param isActive
+	 * @param layerColor
+	 * @param layerType
 	 */
 	public Layer(int id, boolean isVisible, String layerType,  String layerName) {
-		
+		//super(id);
 		this.id = id;
 		this.layerName = layerName;
 		this.isVisible = isVisible;
 		this.layerType = layerType;
 		this.tableData = new Object[] {isVisible, layerType, layerName, "", id};
+		
 	}
 	
 	
 	
 	/**
-	 * Gets the layer's unique ID in the drawing session
 	 * @return the id
 	 */
 	public int getId() {
@@ -75,8 +59,6 @@ public class Layer  {
 	}
 
 	/**
-	 * Changes the layer ID during the drawing session.
-	 * All the features belonging to this layer must be changed as well
 	 * @param id the id to set
 	 */
 	public void setId(int id) {
@@ -89,7 +71,6 @@ public class Layer  {
 	}
 
 	/**
-	 * Gets the table data that represents the layer in the table of contents
 	 * @return the tableData
 	 */
 	public Object[] getTableData() {
@@ -98,7 +79,6 @@ public class Layer  {
 	}
 
 	/**
-	 * 
 	 * @return the layerName
 	 */
 	public String getLayerName() {
@@ -207,11 +187,6 @@ public class Layer  {
 		}
 	}
 	
-	/**
-	 * Gets a feature within the layer with the feature's ID
-	 * @param id feature's ID that needs to be retrived
-	 * @return feature within the layer with the feature's ID
-	 */
 	public Feature getFeatureWithID(int id) {
 		
 		for(Feature feature : listOfFeatures) {
@@ -223,17 +198,10 @@ public class Layer  {
 		return null;	
 	}
 	
-	/**
-	 * 
-	 * @return the size of all the features in the layer
-	 */
 	public int getSize() {
 		return listOfFeatures.size();
 	}
-	
-	/**
-	 * Removes last feature from the layer
-	 */
+
 	public void removeLastItem() {
 		listOfFeatures.remove(getSize()-1);
 	}
@@ -244,4 +212,5 @@ public class Layer  {
 	public void setTableData(Object[] tableData) {
 		this.tableData = tableData;
 	}
+	
 }
