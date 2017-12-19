@@ -31,12 +31,9 @@ import java.sql.SQLException;
 import javax.swing.SwingConstants;
 
 /**
-<<<<<<< HEAD
  * 
  * @author OlumideEnoch
-=======
  * In this class the general settings of the application are defined
->>>>>>> origin/master
  *
  */
 public class Settings extends CustomJFrame {
@@ -415,7 +412,6 @@ public class Settings extends CustomJFrame {
 		});
 	}
 
-<<<<<<< HEAD
 	private static Rectangle getWindow(int i) {
 		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -424,13 +420,10 @@ public class Settings extends CustomJFrame {
 		return gs[i].getDefaultConfiguration().getBounds();
 		
 	}
-=======
 	
 	/**
 	 * Saves all changes of the settings
 	 */
-
->>>>>>> origin/master
 
 	/**
 	 * Computes the width and height of the application.  If there are multiple displays attached, for some reason it

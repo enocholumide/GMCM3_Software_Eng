@@ -1,10 +1,5 @@
 package core_components;
 
-<<<<<<< HEAD
-=======
-import java.awt.Color;
-
->>>>>>> origin/master
 import java.awt.Component;
 import java.util.Random;
 

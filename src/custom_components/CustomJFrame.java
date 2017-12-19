@@ -12,16 +12,8 @@ import toolset.Tools;
  */
 public class CustomJFrame extends JFrame {
 
-<<<<<<< HEAD
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;	
-=======
 	private static final long serialVersionUID = 1L;
 	private int[] windowSize;
-	
->>>>>>> origin/master
 	
 	/**
 	 * Creates a CustomJFrame
