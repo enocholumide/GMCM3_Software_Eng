@@ -7,18 +7,16 @@ import java.awt.LayoutManager;
 import javax.swing.JPanel;
 
 /**
+ * Class for the creation of a CustomJPanel
  * @author OlumideEnoch
  *
  */
 public class CustomJPanel extends JPanel  {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 
+	 * Creates a CustomJPanel
 	 */
 	public CustomJPanel() {
 		// TODO Auto-generated constructor stub
@@ -26,7 +24,8 @@ public class CustomJPanel extends JPanel  {
 	}
 
 	/**
-	 * @param arg0
+	 * Creates a CustomJPanel
+	 * @param arg0 the LayoutManager arg0 to set
 	 */
 	public CustomJPanel(LayoutManager arg0) {
 		super(arg0);
@@ -34,7 +33,8 @@ public class CustomJPanel extends JPanel  {
 	}
 
 	/**
-	 * @param arg0
+	 * Creates a CustomJPanel
+	 * @param arg0 the Boolean arg0 to set
 	 */
 	public CustomJPanel(boolean arg0) {
 		super(arg0);
@@ -42,8 +42,9 @@ public class CustomJPanel extends JPanel  {
 	}
 
 	/**
-	 * @param arg0
-	 * @param arg1
+	 * Creates a CustomJPanel
+	 * @param arg0 the LayoutManager arg0 to set
+	 * @param arg1 the Boolean arg1 to set
 	 */
 	public CustomJPanel(LayoutManager arg0, boolean arg1) {
 		super(arg0, arg1);

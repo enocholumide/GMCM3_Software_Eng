@@ -55,9 +55,7 @@ import application_frames.Settings;
  */
 public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, MouseListener {
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -6318145875906198958L;
 	
 	/**Size of snaps*/
@@ -156,7 +154,12 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		showAnimatedHint("Welcome", Settings.DEFAULT_STATE_COLOR);
 		
 	}
+	
 
+	/**
+	 * Paints the drawn component
+	 * @param g the graphics object to set
+	 */
 	@Override 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -490,6 +493,9 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		}
 	}
 
+	/**
+	 * Toggles the SelectionMode
+	 */
 	public void toggleSelectionMode() {
 
 		abandonEditSession();
@@ -511,7 +517,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	}
 
 	/**
-	 * Disable selection mode
+	 * Disables query mode
 	 */
 	public void disableQueryMode() {
 		
@@ -524,7 +530,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	}
 	
 	/**
-	 * Disable selection mode
+	 * Disables selection mode
 	 */
 	public void disableSelectionMode() {
 		
@@ -550,8 +556,8 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	/**
 	 * Helps the paint component to compute rendering and conflict calculations for mouse guides <br>
 	 * The repaint method should be called wherever this method is used
-	 * @param guideOrTip
-	 * @param color
+	 * @param guideOrTip the guideOrTip to set
+	 * @param color the color to set
 	 */
 	private void setCurrentMouseGuide(TextItem guideOrTip, Color color) {
 		
@@ -584,9 +590,9 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	
 	/**
 	 * Supplies rounded edges rectangle for mouse guides and tips
-	 * @param drawGuide
-	 * @param fm computed font metrics of the string
-	 * @param padding padding
+	 * @param drawGuide the draw guide to set
+	 * @param fm computed font metrics of the string to set
+	 * @param padding the padding to set
 	 * @return rounded edges rectangle for mouse guides and tips
 	 */
 	private RoundRectangle2D getRoundedFrameRectForText(TextItem drawGuide, FontMetrics fm, int padding) {
@@ -606,8 +612,8 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	/**
 	 * Changes the current layer, needed at each new edit session.
 	 * It finds the layer with same ID at the table of contents
-	 * @param layerIndex layer index from the combom box the mainframe
-	 * @param featureType the feature type selected e.g circle, rectangle
+	 * @param layerIndex layer index from the combobox and the mainframe to set
+	 * @param the feature type selected e.g circle, rectangle to set
 	 */
 	private void changeCurrentLayerAndFeatureType(int layerIndex, String featureType) {
 		
@@ -618,7 +624,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	
 	/**
 	 * Handles drawing rectangle
-	 * @param e mouse moved event object
+	 * @param e mouse moved event object to set
 	 */
 	private void handleDrawingRectangle(MouseEvent e) {
 		
@@ -644,11 +650,11 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	}
 	
 	/**
-	 * Computes a rectangle shaoe from two points, it gets neccesary when drawing rectangles
+	 * Computes a rectangle shape from two points, it gets necessary when drawing rectangles
 	 * with mouse dragged, as the last point may not be at the right side of the first point
-	 * @param b base point
-	 * @param m mouse (new) point
-	 * @return rectangle shape
+	 * @param b the base point to set
+	 * @param m the mouse (new) point to set
+	 * @return the rectangle shape to set
 	 */
 	private Shape getRectangleShape(Point2D b, Point2D m) {
 		
@@ -672,8 +678,8 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	}
 	
 	/**
-	 * Handles drawing cirlce
-	 * @param e mouse moved event object
+	 * Handles drawing circle
+	 * @param e the mouse moved event object to set
 	 */
 	private void handleDrawingCircle(MouseEvent e) {
 
@@ -697,7 +703,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	
 	/**
 	 * Handles drawing triangle
-	 * @param e mouse moved event object
+	 * @param e the mouse moved event object to set
 	 */
 	private void handleDrawingTriangle(MouseEvent e) {
 
@@ -724,7 +730,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	/**
 	 * Closing protocol for drawing polygons
 	 * For situation where the snap or grid is turned off and user needs to close a feature
-	 * @param e
+	 * @param e the mouse moved event to set
 	 */
 	private void handleDrawingClosingProtocol(MouseEvent e) {
 		
@@ -809,7 +815,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 
 	/**
 	 * Handles drawing polyline
-	 * @param e mouse moved event object
+	 * @param e the mouse moved event object to set
 	 */
 	private void handleDrawingPolyline(MouseEvent e) {
 	
@@ -827,7 +833,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	
 	/**
 	 * Handles drawing ellipse
-	 * @param e mouse moved event object
+	 * @param e the mouse moved event object so set
 	 */
 	private void handleDrawingEllipse(MouseEvent e) {
 	
@@ -864,8 +870,8 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	}
 	
 	/**
-	 * Handles temporary drawwing on the panel before features are created
-	 * @param e mouse moved event object
+	 * Handles temporary drawing on the panel before features are created
+	 * @param e the mouse moved event object to set
 	 */
 	private void handleMouseMovedDrawing(MouseEvent e) {
 		
@@ -1009,9 +1015,9 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	}
 
 	/**
-	 * Higlights features that are interseced by the query region.
+	 * Highlights features that are intersected by the query region.
 	 * The highlight disappears when it intersects nothing
-	 * @param queryBounds bounds of the rectangle
+	 * @param queryBounds the bounds of the rectangle to set
 	 */
 	private void handleSelectionMode( Rectangle2D queryBounds ) {
 		
@@ -1096,8 +1102,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 
 	/**
 	 * Shows temporary polygon on the panel while drawing
-	 * 
-	 * @param pointList current list of points, should be more than 3!
+	 * @param pointList the current list of points (should be more than 3) to set
 	 */
 	private void showTempPolygon (List<Rectangle2D> pointList) {
 		
@@ -1131,7 +1136,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	 * Can be disabled at the settings. <br>
 	 * This is done at every mouse move event. <br>
 	 * The message can be changed or controlled by merely updating the global currentMouseTip variable
-	 * @param mousePoint Current mouse event point
+	 * @param mousePoint the current mouse event point to set
 	 */
 	private void getMouseToolTip(Point mousePoint) {
 		
@@ -1166,8 +1171,9 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	 * Shows tips such as length, angle from a point to another point <br>
 	 * Detects conflict between the mouse tool tip as well <br>
 	 * Refuses to draw if such conflict exists <br>
-	 * @param point
+	 * @param mousePoint the current mouse point to set
 	 */
+
 	private void getDrawDetailsToNewPoint(Point mousePoint) {
 		
 		// 1. Determine the base point
@@ -1222,8 +1228,8 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	}
 
 	/**
-	 * Renders grid on the drawing panel
-	 * @param gridSizeMM grid size specified in MM
+	 * Renders the grid on the drawing panel
+	 * @param gridSizeMM the grid size specified in MM to set
 	 */
 	private void renderGrid(int gridSizeMM) {
 		
@@ -1315,7 +1321,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	
 	/**
 	 * Sets the drawing cursor based on the current session
-	 * @param e mouse event originating from the mouse moved
+	 * @param e the MouseEvent originating from the mouse moved to set
 	 * 
 	 */
 	private void setDrawingCursor(MouseEvent e) {
@@ -1356,7 +1362,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	
 	/**
 	 * When a feature has been created, log some message, repaint and and clean up the drawing
-	 * @param message
+	 * @param message the message to be logged
 	 */
 	private void onFeatureCreated(String message) {
 	
@@ -1375,7 +1381,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	 * Handles editing mode on the drawing panel.<br>
 	 * Cross hair cursor is set at the mouse moved event.<br>
 	 * Originates from mouse clicked event.
-	 * @param e mouse clicked event object
+	 * @param e the mouse clicked event object to set
 	 */
 	private void handleEditingMode(MouseEvent e) {
 		
@@ -1788,7 +1794,9 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	/**
 	 * Finish drawing of a path, if the current layer is a polygon, the path will be closed and filled<br>
 	 * Creates a new feature in the current layer<br>
-	 * @param pointList pointList current list of points, should be more than 3!
+	 * @param pointList the current list of points (should be more than 3) to set
+	 * @param currentLayer the current Layer to set
+	 * @return returns the path 
 	 */
 	public Path2D finishPath(List<Rectangle2D> pointList, Layer currentLayer) {
 		
@@ -1847,7 +1855,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 
 	/**
 	 * Cleans up the drawing. 
-	 * Panel repainted authomatically.
+	 * Panel repainted automatically.
 	 */
 	public void cleanUpDrawing() {
 		
@@ -1885,8 +1893,8 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 
 	/**
 	 * Shows animated hint on the drawing panel
-	 * @param message Message to display
-	 * @param stateColor State color e.g Settings.LAYER_CREATED_COLOR
+	 * @param message the Message to display
+	 * @param stateColor the state color e.g Settings.LAYER_CREATED_COLOR
 	 */
 	public void showAnimatedHint(String message, Color stateColor) {
 		
@@ -1959,7 +1967,8 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	}
 
 	/**
-	 * 
+	 * The mouseClicked method
+	 * @param e the MouseEvent to set
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -1982,6 +1991,10 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		}
 	}
 
+	/**
+	 * the mouseMoved method
+	 * @param e the MouseEvent to set
+	 */
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		
@@ -2001,12 +2014,20 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 			handleMouseMovedDrawing(e);
 	}
 
+	/**
+	 * the mouseEntered method
+	 * @param arg0 the MouseEvent to set
+	 */
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * the mouseExited method
+	 * @param e the MouseEvent to set
+	 */
 	@Override
 	public void mouseExited(MouseEvent e) {
 		
@@ -2014,6 +2035,10 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		repaint();
 	}
 
+	/**
+	 * the MouseEvent to set
+	 * @param e the MouseEvent to set
+	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
 		
@@ -2034,6 +2059,10 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		}
 	}
 
+	/**
+	 * The mouseReleased method
+	 * @param e the MouseEvent to set
+	 */
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		
@@ -2048,6 +2077,10 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		this.draggedPoints.clear();
 	}
 	
+	/**
+	 * The mouseDragged method
+	 * @param e the MouseEvent to set
+	 */
 	@Override
 	public void mouseDragged(MouseEvent e) {
 

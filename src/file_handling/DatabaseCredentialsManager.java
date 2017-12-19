@@ -25,8 +25,8 @@ public class DatabaseCredentialsManager {
 
     /**
      * Constructor for DatabaseCredentialsManager.  Will initially try to read the current database credentials from
-     * dbconfig.cfg.  If this file doesn't exist, it will ba automatically created.
-     * @throws IOException
+     * dbconfig.cfg.  If this file doesn't exist, it will be automatically created.
+     * @throws IOException Throws an IOException
      */
     public DatabaseCredentialsManager() throws IOException {
 
@@ -57,12 +57,12 @@ public class DatabaseCredentialsManager {
     }
 
     /**
-     * Setter method for the database credentials. Will update the DatabaseCredentialsManager object and dbconfig.cfg.
-     * @param host hostname of the database.
-     * @param port port number of the database.
-     * @param database name of the database.
-     * @param user user role with which to connect to the database.
-     * @throws IOException
+     * Sets the database credentials. Will update the DatabaseCredentialsManager object and dbconfig.cfg.
+     * @param host the host name of the database to set
+     * @param port the port number of the database to set
+     * @param database the name of the database to set
+     * @param user the user role with which to connect to the database to set
+     * @throws IOException Throws an IOException
      */
     public void setDatabaseCredentials(String host, int port, String database, String user) throws IOException {
 

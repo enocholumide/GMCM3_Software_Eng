@@ -1,6 +1,11 @@
 package application_frames;
 
+
+import java.awt.Dimension;
+
+
 import java.awt.*;
+
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
@@ -26,15 +31,16 @@ import java.sql.SQLException;
 import javax.swing.SwingConstants;
 
 /**
+<<<<<<< HEAD
  * 
  * @author OlumideEnoch
+=======
+ * In this class the general settings of the application are defined
+>>>>>>> origin/master
  *
  */
 public class Settings extends CustomJFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	
@@ -55,6 +61,7 @@ public class Settings extends CustomJFrame {
 
 	/**
 	 * Create the frame.
+	 * @param openMainFrame the openMainFrame to be set
 	 */
 	public Settings(boolean openMainFrame) {
 		
@@ -408,6 +415,7 @@ public class Settings extends CustomJFrame {
 		});
 	}
 
+<<<<<<< HEAD
 	private static Rectangle getWindow(int i) {
 		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -416,6 +424,13 @@ public class Settings extends CustomJFrame {
 		return gs[i].getDefaultConfiguration().getBounds();
 		
 	}
+=======
+	
+	/**
+	 * Saves all changes of the settings
+	 */
+
+>>>>>>> origin/master
 
 	/**
 	 * Computes the width and height of the application.  If there are multiple displays attached, for some reason it
@@ -449,6 +464,7 @@ public class Settings extends CustomJFrame {
 		return new int[] {width, height};
 
 	}
+
 
 	protected void saveAllChanges() {
 		
@@ -487,6 +503,10 @@ public class Settings extends CustomJFrame {
 		
 	}
 
+	/**
+	 * Handles the Window Closing Event
+	 * @param e the WindowEvent to set
+	 */
 	protected void handleWindowClosingEvent(WindowEvent e) {
 		dispose();
 	}

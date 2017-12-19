@@ -10,9 +10,17 @@ import javax.swing.ImageIcon;
 
 import application_frames.MainFrame;
 
+/**
+ * Class which contains miscellaneous utilities used throughout the application.
+ */
 public class Tools {
 	
-	
+	/**
+	 * Returns true if the a Point lies on a Line
+	 * @param line the line to set
+	 * @param point the point to set
+	 * @return true if the Point lies on the Line and false if not
+	 */
 	public static boolean isPointOnLine(Line2D line, Point point) {
 		
 		Point2D start = line.getP1();
@@ -28,6 +36,11 @@ public class Tools {
 		return false;
 	}
 
+	/**
+	 * Returns the ImageIcon of a particular path
+	 * @param path the path to set
+	 * @return The ImageIcon is returned
+	 */
 	public static ImageIcon getIconImage(String path) {
 		ImageIcon icon = new ImageIcon(MainFrame.class.getResource(path));
 		Image img = icon.getImage() ;  
@@ -36,6 +49,13 @@ public class Tools {
 		return icon;
 	}
 	
+	/**
+	 * Returns the ImageIcon of a particular path and scales it
+	 * @param path the path to set
+	 * @param x the x for scaling to set
+	 * @param y the y for scaling to set
+	 * @return The ImageIcon is returned
+	 */
 	public static ImageIcon getIconImage(String path, int x, int y) {
 		ImageIcon icon = new ImageIcon(MainFrame.class.getResource(path));
 		Image img = icon.getImage() ;  
@@ -44,6 +64,12 @@ public class Tools {
 		return icon;
 	}
 	
+	/**
+	 * Interpolates a new Point of a Line2D using a distance
+	 * @param l the line to calculate the new point from to set
+	 * @param d the distance to set
+	 * @return the new interpolated Point2D
+	 */
 	public static Point2D.Double interpolationByDistance(Line2D l, int d) {
 		
 		Point2D.Double start = new Point2D.Double(l.getX1(), l.getY1());
@@ -60,6 +86,12 @@ public class Tools {
 
 	}
 	
+	/**
+	 * Returns the calculated angle between two Point2D objects
+	 * @param from the first (from) point to set
+	 * @param target the second (target) point to set
+	 * @return the angle between the two specified points
+	 */
 	public static float getAngle(Point2D from, Point2D target) {
 		
 	    float angle = (float) Math.toDegrees(Math.atan2(target.getY() - from.getY(), target.getX() - from.getX()));
@@ -81,6 +113,12 @@ public class Tools {
 	    return angle ;
 	}
 
+	/**
+	 * Returns information whether two Rectangles are spatially overlapping
+	 * @param rectTooltip the tooltip rectangle to set
+	 * @param rectGuide the guide rectangle to set
+	 * @return true if the two rectangles are overlapping
+	 */
 	public static boolean isOverlap(Rectangle2D rectTooltip, Rectangle2D rectGuide) {
 	
 		Point2D topRight = new Point2D.Double(rectGuide.getMaxX(), rectGuide.getMaxX());
@@ -110,6 +148,11 @@ public class Tools {
 		return true;
 	}
 
+	/**
+	 * Returns a doubleArray copied from an integerArray
+	 * @param source the integerArray to set
+	 * @return the doubleArray
+	 */
 	public static double[] copyFromIntArray(int[] source) {
 		double[] doubleArray = new double[source.length];
 		for(int i = 0; i < source.length; i++) {
@@ -118,6 +161,11 @@ public class Tools {
 		return doubleArray;
 	}
 	
+	/**
+	 * Removes duplicates in an integerArray
+	 * @param s the integerArray to set
+	 * @return the resulting Array
+	 */
 	public static int[] removeDuplicates(int []s){
         int result[] = new int[s.length], j=0;
         for (int i : s) {
@@ -127,6 +175,12 @@ public class Tools {
         return result;
     }
 	
+	/**
+	 * Checks whether a specific value exists in an integerArray
+	 * @param array the integerArray to set
+	 * @param value the value to set
+	 * @return true, if the specified value exists in the integerArray, false if not
+	 */
     private static boolean isExists(int[] array, int value){
         for (int i : array) {
             if(i==value)

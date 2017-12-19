@@ -73,15 +73,22 @@ import javax.swing.border.LineBorder;
  *
  */
 public class MainFrame extends CustomJFrame {
+<<<<<<< HEAD
 
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7752427807628614402L;
+=======
+	
+	
+	private static final long serialVersionUID = 1L;
+>>>>>>> origin/master
 
 	/**
-	 * Launch the application.
+	 * Launch the application
+	 * @param args the Arguments of the Application to set
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -152,6 +159,7 @@ public class MainFrame extends CustomJFrame {
 	
 	/**
 	 * Constructs the main frame
+	 * @param dbConnection the dbConnection to set
 	 */
 	public MainFrame(DatabaseConnection dbConnection) {
 		
@@ -652,8 +660,98 @@ public class MainFrame extends CustomJFrame {
 			}
 		});
 		
+<<<<<<< HEAD
 		btnGrid.addActionListener(new ActionListener() {
 
+=======
+		JPanel drawRibbon = new JPanel();
+		drawRibbon.setBounds(1437, 11, 236, 108);
+		drawRibbon.setLayout(null);
+		drawRibbon.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Draw", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		drawRibbon.setBackground(Color.WHITE);
+		getContentPane().add(drawRibbon);
+		
+		DrawIconButton geomRec = new DrawIconButton("Rectangle", Settings.POLYGON_GEOMETRY ,"/images/rectangle.png", 25, 25);
+		geomRec.setToolTipText("Rectangle");
+		geomRec.setBounds(10, 21, 35, 35);
+		drawRibbon.add(geomRec);
+		
+		drawButtonGroup.add(geomRec);
+		
+		DrawIconButton geomTriangle = new DrawIconButton("Triangle", Settings.POLYGON_GEOMETRY, "/images/triangle.png", 25, 25);
+		geomTriangle.setToolTipText("Triangle");
+		geomTriangle.setBounds(55, 21, 35, 35);
+		drawRibbon.add(geomTriangle);
+		
+		drawButtonGroup.add(geomTriangle);
+		
+		DrawIconButton geomCircle = new DrawIconButton("Circle", Settings.POLYGON_GEOMETRY, "/images/circle.png", 25, 25);
+		geomCircle.setToolTipText("Circle");
+		geomCircle.setBounds(100, 21, 35, 35);
+		drawRibbon.add(geomCircle);
+		
+		drawButtonGroup.add(geomCircle);
+		
+		DrawIconButton geomFreeformPolygon = new DrawIconButton("Freeform Polygon", Settings.POLYGON_GEOMETRY, "/images/polygon.png", 30, 30);
+		geomFreeformPolygon.setToolTipText("Freeform Polygon");
+		geomFreeformPolygon.setBounds(145, 21, 35, 35);
+		drawRibbon.add(geomFreeformPolygon);
+		
+		drawButtonGroup.add(geomFreeformPolygon);
+		
+		DrawIconButton geomPoint = new DrawIconButton("Point", Settings.POINT_GEOMETRY, "/images/point.png", 25, 25);
+		geomPoint.setToolTipText("Point");
+		geomPoint.setBounds(100, 62, 35, 35);
+		drawRibbon.add(geomPoint);
+		
+		drawButtonGroup.add(geomPoint);
+		
+		DrawIconButton geomSingleLine = new DrawIconButton("Line", Settings.POLYLINE_GEOMETRY, "/images/line.png", 25, 25);
+		geomSingleLine.setToolTipText("Single line");
+		geomSingleLine.setBounds(10, 62, 35, 35);
+		drawRibbon.add(geomSingleLine);
+		
+		drawButtonGroup.add(geomSingleLine);
+		
+		DrawIconButton geomMultiLine = new DrawIconButton("Multiline", Settings.POLYLINE_GEOMETRY ,"/images/polyline.png", 25, 25);
+		geomMultiLine.setToolTipText("Multi line");
+		geomMultiLine.setBounds(55, 62, 35, 35);
+		drawRibbon.add(geomMultiLine);
+		
+		drawButtonGroup.add(geomMultiLine);
+		
+		DrawIconButton geomEllipse = new DrawIconButton("Ellipse", "Polygon", "/images/ellipse.png", 30, 30);
+		geomEllipse.setToolTipText("Ellipse");
+		geomEllipse.setBounds(190, 21, 35, 35);
+		drawRibbon.add(geomEllipse);
+		
+		drawButtonGroup.add(geomEllipse);
+		
+		logButton = new JButton("Messages");
+		logButton.setForeground(Color.WHITE);
+		logButton.setBackground(Color.BLACK);
+		logButton.setBounds(264, 959, 99, 41);
+		getContentPane().add(logButton);
+		
+		logText = new JTextArea();
+		logText.setEditable(false);
+		logText.setForeground(Color.WHITE);
+		logText.setBackground(Color.DARK_GRAY);
+		//logText
+		DefaultCaret caret = (DefaultCaret) logText.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);		
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setViewportView(logText);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setBounds(365, 959, 1539, 41);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		scrollPane.setBackground(Color.DARK_GRAY);
+		getContentPane().add(scrollPane);
+	
+		filesBtn.addActionListener(new ActionListener() {
+			
+>>>>>>> origin/master
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				panel.toggleGrid();
@@ -781,6 +879,9 @@ public class MainFrame extends CustomJFrame {
 			
 	}
 
+	/**
+	 * Disables all drawing buttons
+	 */
 	public static void disableAllDrawButtons() {
 		
 		for (Enumeration<AbstractButton> buttons = drawButtonGroup.getElements(); buttons.hasMoreElements();) {
@@ -790,7 +891,7 @@ public class MainFrame extends CustomJFrame {
 	}
 
 	/**
-	 * 
+	 * Handles a new Layer intent
 	 */
 	protected void handleAddNewLayerIntent() {
 		
@@ -939,9 +1040,9 @@ public class MainFrame extends CustomJFrame {
 	}
 	
 	/**
-	 * 
-	 * @param layer
-	 * @return
+	 * Saves a Layer to a database
+	 * @param layer The Layer which has to be saved to the database
+	 * @return returns true, if a Layer was successfully saved to the database
 	 */
 	public static boolean saveLayerToDB(Layer layer) {
 
@@ -1010,12 +1111,62 @@ public class MainFrame extends CustomJFrame {
 		System.exit(0);
 	}
 
+
+	/**
+	 * Connection to the database
+	 */
+	private void connectToDatabase() {
+		
+		String host = "localhost";
+		int port = 5432;
+		String database = "softeng_db";
+		String user = "postgres";
+		String password = "12345";
+		
+		try {
+			
+			dbConnection = new DatabaseConnection(host, port, database, user, password);
+			
+			initialize();
+			log("Application started. GMCM3 Software Engineering HSKA Karlsruhe "
+					+ "https://github.com/enocholumide/GMCM3_Software_Eng.git "
+					+ "\t Database connected");
+			
+		} catch (ClassNotFoundException | SQLException e) {
+			
+			
+			Toolkit.getDefaultToolkit().beep();
+			int response = JOptionPane.showConfirmDialog( null, "Database connection cannot be established \n\n"
+					+ e.getMessage() + "\n\n Setup database now ? ", "Database connection error", JOptionPane.YES_NO_OPTION);
+			
+			if(response == JOptionPane.YES_OPTION) {
+				settingsFrame = new Settings(true);
+				settingsFrame.setVisible(true);
+			}
+			
+			else {
+			
+			initialize();
+			log("Application started. GMCM3 Software Engineering HSKA Karlsruhe "
+					+ "https://github.com/enocholumide/GMCM3_Software_Eng.git "
+					+ "\t NO DATABASE CONNECTED!!!");
+			}
+		}
+	}
+
 	private void startup() {
 
 		settingsFrame = new Settings(true);
 		settingsFrame.setVisible(true);
 
+
 	}
+	
+	/**
+	 * Creates a new Layer
+	 * @param layerType the layerType to set
+	 * @param layerName the layerName to set
+	 */
 
 	public static void createNewLayer(String layerType, String layerName) {
 		
@@ -1033,9 +1184,9 @@ public class MainFrame extends CustomJFrame {
 	}
 	
 	/**
-	 * 
-	 * @param resultSet
-	 * @param layerName
+	 * Creates a new Layer from a result set
+	 * @param resultSet the resultSet to be set
+	 * @param layerName the layerName to be set
 	 */
 	public static void createLayerFromResultSet(ResultSet resultSet, String layerName) {
 	
@@ -1103,6 +1254,10 @@ public class MainFrame extends CustomJFrame {
 		}
 	}
 
+	/**
+	 * Returns the current Feature type
+	 * @return selectedFeatureType
+	 */
 	public static String getCurrentFeatureType() {
 		
 		if(drawButtonGroup.getSelection() != null) {
@@ -1154,7 +1309,7 @@ public class MainFrame extends CustomJFrame {
 	 * Updates the list of layer names on the combo box list. <br>
 	 * 
 	 * The index of an item on the list is equivalent to the index on the table of contents
-	 * @param listOfLayersInString
+	 * @param listOfLayersInString the listOfLayersInString to set
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void updateLayerComboBoxModel(String[] listOfLayersInString) {
@@ -1164,8 +1319,8 @@ public class MainFrame extends CustomJFrame {
 	}
 	
 	/**
-	 * 
-	 * @param name
+	 * Releases all other tool button than the currently selected
+	 * @param name the currently selected tool button
 	 */
 	public static void releaseAllOtherToolsButton(String name) {
 		

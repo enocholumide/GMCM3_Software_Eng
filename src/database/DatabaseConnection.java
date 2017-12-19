@@ -21,9 +21,21 @@ public class DatabaseConnection {
 
 
     private Connection conn;
+    /**
+     * String representing the host address where the database is hosted.
+     */
     public static String dbHost;
+    /**
+     * Integer representing the port number on which the database listens.
+     */
     public static int dbPort;
+    /**
+     * String representing the name of the database to which to connect.
+     */
     public static String dbName;
+    /**
+     * String representing the username with which to connect to the database.
+     */
     public static String dbUser;
 
 
@@ -34,7 +46,8 @@ public class DatabaseConnection {
      * @param database String representing the name of the database to which to connect.
      * @param user String representing the username with which to connect to the database.
      * @param password String representing the password with which to connect to the database.
-     * @throws SQLException, ClassNotFoundException
+     * @throws SQLException Throws an SQLException
+     * @throws ClassNotFoundException Throws a ClassNotFoundException
      */
     public DatabaseConnection(String host, int port, String database, String user, String password) throws SQLException, ClassNotFoundException {
 
@@ -58,7 +71,7 @@ public class DatabaseConnection {
     /**
      * Retrieves the names of all tables stored in the database.
      * @return A string ArrayList containing all the unique table names.
-     * @throws SQLException
+     * @throws SQLException Throws an SQLEXception
      */
     public ArrayList<String[]>getTables() throws SQLException {
 
@@ -80,7 +93,7 @@ public class DatabaseConnection {
      * Retrieves the features in a specified table.
      * @param tableName A string representing the name of the table from which to retrieve the features.
      * @return A string array ArrayList containing all the features in the specified table.
-     * @throws SQLException
+     * @throws SQLException Throws a SQLEXception
      */
     public ResultSet readTable(String tableName) throws SQLException {
 
@@ -96,7 +109,7 @@ public class DatabaseConnection {
      * Creates a new table with specified features.  Overwrites the table if it already exists.
      * @param tableName String representing the name of the table to which to save the features.
      * @param layer Layer object to be added to the database as a table.
-     * @throws SQLException
+     * @throws SQLException Throws a SQLEXception
      */
     public void writeTable(String tableName, Layer layer) throws SQLException {
 
@@ -112,7 +125,7 @@ public class DatabaseConnection {
      * Adds new features to an existing table.
      * @param tableName String representing the name of the table to which to save the features.
      * @param layer Layer object to be appended to the existing table in the database
-     * @throws SQLException
+     * @throws SQLException Throws a SQLEXception
      */
     public void appendToTable(String tableName, Layer layer) throws SQLException {
 
@@ -178,7 +191,7 @@ public class DatabaseConnection {
 
     /** Drops a table from the database
      * @param tableName String representing the name of the table to be deleted.
-     * @throws SQLException
+     * @throws SQLException Throws a SQLEXception
      */
     public void dropTable(String tableName) throws SQLException {
 

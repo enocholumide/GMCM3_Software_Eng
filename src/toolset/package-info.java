@@ -1,8 +1,4 @@
 /**
- * 
- */
-/**
- * Contains the tools for the application
- *
+ * Contains miscellaneous utilities used throughout the application.
  */
 package toolset;
