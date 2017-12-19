@@ -23,6 +23,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 /**
  * Shows attribute table of all Features in a Layer
@@ -75,7 +78,7 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 		JPanel contentPane;
 		
 		setAlwaysOnTop(true);
-		setBounds(100, 100, 450, 783);
+		setBounds(Settings.window.getBounds().x + MainFrame.panel.getBounds().x, 100, 300, 783);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -83,16 +86,27 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 		contentPane.setBackground(SystemColor.inactiveCaption);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBackground(Color.WHITE);
-		scrollPane.setBounds(0, 0, 434, 678);
-		contentPane.add(scrollPane);
 		
 		JButton btnButton = new JButton("Close");
-		btnButton.setBounds(312, 689, 112, 23);
-		contentPane.add(btnButton);
+		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btnButton, GroupLayout.PREFERRED_SIZE, 112, GroupLayout.PREFERRED_SIZE))
+				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btnButton))
+		);
+		contentPane.setLayout(gl_contentPane);
 		
 
 		JMenu selectionMenu = new JMenu("Selection");

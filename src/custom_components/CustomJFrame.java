@@ -5,6 +5,7 @@ import java.awt.*;
 import javax.swing.JFrame;
 
 import application_frames.Settings;
+import toolset.Tools;
 
 /**
  * Class for the creation of a CustomJFrame
@@ -14,22 +15,13 @@ public class CustomJFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private int[] windowSize;
 	
-	
 	/**
 	 * Creates a CustomJFrame
 	 * @throws HeadlessException Throws an HeadlessException
 	 */
 	public CustomJFrame() throws HeadlessException {
 		
-		// Find task bar height
-		Insets scnMax = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
-		int taskBarSize = scnMax.bottom;
-		
-		// Set frame size and remove the task bar size from it
-		windowSize = Settings.getDefaultWindowSize();
-
-		setBounds(0, 0, windowSize[0], windowSize[1] - taskBarSize);
-		setResizable(false);
+		setIconImage(Tools.getIconImage("/images/logo.png").getImage());
 	}
 
 	/**

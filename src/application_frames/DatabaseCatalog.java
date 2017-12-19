@@ -57,7 +57,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 		JPanel contentPane;
 		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(1600, 175, 300, 750);
+		setBounds(Settings.window.getBounds().x + Settings.window.getBounds().width - 300, MainFrame.panel.getBounds().y, 300, 750);
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);

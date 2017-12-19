@@ -29,9 +29,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.swing.SwingConstants;
-import javax.xml.crypto.Data;
 
 /**
+ * 
+ * @author OlumideEnoch
  * In this class the general settings of the application are defined
  *
  */
@@ -39,7 +40,6 @@ public class Settings extends CustomJFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private Dimension appSize = new Dimension(1250,750);
 	
 	public static JTextField dbHost;
 	public static JTextField dbPort;
@@ -54,21 +54,30 @@ public class Settings extends CustomJFrame {
 	public static JLabel settingsMessage;
 
 	public int[] windowSize = getDefaultWindowSize();
+	public static Rectangle window = getWindow(0);
 
 	/**
 	 * Create the frame.
 	 * @param openMainFrame the openMainFrame to be set
 	 */
 	public Settings(boolean openMainFrame) {
+		
 		super("Settings");
+		
 		addWindowListener(new WindowAdapter() {
 			@Override 
 			public void windowClosing(WindowEvent e) { 
 				handleWindowClosingEvent(e);
 			} 
 		});
-
-		setBounds((windowSize[0] - appSize.width) / 2, (windowSize[1] - appSize.height) / 2, 1222, 750);
+		
+		//1222, 750
+		
+		setBounds(Settings.window.x  + (Settings.window.width - 1222) / 2, 
+				Settings.window.y + (Settings.window.height - 750) / 2,
+				1222, 
+				750);
+		
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -92,7 +101,6 @@ public class Settings extends CustomJFrame {
 		label_1.setIcon(Tools.getIconImage("/images/help.png", 40, 40));
 		label_1.setBounds(20, 658, 40, 40);
 		panel.add(label_1);
-		
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(79, 0, 1127, 143);
@@ -385,10 +393,6 @@ public class Settings extends CustomJFrame {
 		contentPane.add(btnSave);
 
 		// Get DB params from credential manager
-		String host = "";
-		int port = 0;
-		String database = "";
-		String user = "";
 		try {
 			DatabaseCredentialsManager databaseCredentialsManager = new DatabaseCredentialsManager();
 			dbHost.setText(databaseCredentialsManager.host);
@@ -408,11 +412,18 @@ public class Settings extends CustomJFrame {
 		});
 	}
 
+	private static Rectangle getWindow(int i) {
+		
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		
+		return gs[i].getDefaultConfiguration().getBounds();
+		
+	}
 	
 	/**
 	 * Saves all changes of the settings
 	 */
-
 
 	/**
 	 * Computes the width and height of the application.  If there are multiple displays attached, for some reason it
@@ -498,23 +509,7 @@ public class Settings extends CustomJFrame {
 
 	public static final int DEFAULT_DPI = java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
 
-	private static GraphicsEnvironment ge;
 	public static GraphicsDevice[] gs;
-	private static DisplayMode bounds;
-	//public static final Dimension windowSize;
-
-	public void setDefaultWindowSize(GraphicsEnvironment ge, GraphicsDevice[] gs, DisplayMode bounds, Dimension windowSize) {
-
-		ge = ge;
-		gs = gs;
-		bounds = bounds;
-		windowSize = windowSize;
-
-	}
-
-	// System configurations 
-	//public static final int DEFAULT_DPI = java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
-	//public static final Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
 	
 	// Drawing settings
 	public static int gridSizeMM = 5;
@@ -561,4 +556,5 @@ public class Settings extends CustomJFrame {
 	public static final Color FEATURE_CREATED_COLOR = new Color (16, 91, 26);
 	public static final Color FEATURE_HIGHLIGHTED_STATE_COLOR = Color.CYAN;
 	public static final int MONITOR_SCREEN = 1;
+	public static final Dimension MAINFRAME_SIZE = new Dimension(1366, 768);
 }
