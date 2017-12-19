@@ -11,7 +11,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
@@ -142,18 +141,14 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	/** Text of the mouse tip*/
 	private String currentMouseTipText = Settings.DEFAULT_MOUSE_TIP;
 	
-	
-	
-
 	/**
 	 * Constructs a new drawing panel
 	 * @param rectangle Bounds of the panel
 	 */
-	public DrawingJPanel(Rectangle rectangle ) {
+	public DrawingJPanel() {
 		
 		super();
 		
-		setBounds(rectangle);
 		addMouseMotionListener(this);
 		addMouseListener(this);
 		

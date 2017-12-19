@@ -1,6 +1,5 @@
 package core_components;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.util.Random;
 

@@ -1,52 +1,22 @@
 package application_frames;
 
-import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
+import javax.swing.JPanel;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.border.LineBorder;
+
+import java.awt.Color;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultCaret;
-
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import core_classes.Feature;
 import core_classes.Layer;
@@ -58,22 +28,57 @@ import custom_components.CustomJFrame;
 import database.DatabaseConnection;
 import toolset.Tools;
 
+import javax.swing.border.EmptyBorder;
+import java.awt.GridLayout;
+import java.awt.Shape;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.JButton;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import java.awt.Font;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.border.LineBorder;
 
 /**
- * Main application frame.<br>
- * 
- * Contains a drawing panel, table of contents and general drawing tools.<br>
- * Needs connection to the database for storing and retrieving drawn shapes.<br>
  * 
  * @author OlumideEnoch
- * 
+ *
  */
 public class MainFrame extends CustomJFrame {
-	
+
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7752427807628614402L;
 
 	/**
 	 * Launch the application.
@@ -134,13 +139,14 @@ public class MainFrame extends CustomJFrame {
 	private Settings settingsFrame;
 	
 	public static List<ToolIconButton> buttonsList = new ArrayList<ToolIconButton>();
-	
+
 	/**
 	 * Constructs the main frame
 	 */
 	public MainFrame() {
 
 		startup();
+		//initialize();
 		
 	}
 	
@@ -157,13 +163,16 @@ public class MainFrame extends CustomJFrame {
 				+ "\t Database connected");
 		
 	}
-	
+
 	/**
-	 * Arranges and initializes the application frame and sets up listeners and necessary directives.
+	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
 
-		setVisible(true);
+		setBounds(Settings.window.x  + (Settings.window.width - Settings.MAINFRAME_SIZE.width) / 2, 
+				Settings.window.y + (Settings.window.height - Settings.MAINFRAME_SIZE.height) / 2,
+				Settings.MAINFRAME_SIZE.width, 
+				Settings.MAINFRAME_SIZE.height);
 		
 		addWindowListener(new WindowAdapter() {
 			@Override 
@@ -172,76 +181,358 @@ public class MainFrame extends CustomJFrame {
 			} 
 		});
 		
-		getContentPane().setBackground(Color.WHITE);
-		getContentPane().setLayout(null);
+		JPanel sidePanel = new JPanel();
+		sidePanel.setBackground(Color.WHITE);
+		JPanel rightPanel = new JPanel();
+		rightPanel.setBackground(Color.WHITE);
 		
-		// Panel for project description
-		// Project name ....
-		JPanel projectPanel = new JPanel();
-		projectPanel.setBounds(10, 11, 244, 221);
-		getContentPane().add(projectPanel);
-		projectPanel.setLayout(null);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				sidePanel, rightPanel);
+		
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setBackground(Color.LIGHT_GRAY);
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setIcon(Tools.getIconImage("/images/Images-icon.png", 60, 60));
+		
+		JLabel label = new JLabel("");
 		
 		projectName = new JTextField();
-		projectName.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		projectName.setHorizontalAlignment(SwingConstants.CENTER);
 		projectName.setText("Untitled");
-		projectName.setBounds(0, 152, 244, 69);
-		projectPanel.add(projectName);
+		projectName.setFont(new Font("Tahoma", Font.BOLD, 18));
 		projectName.setColumns(10);
 		
-		JLabel applicationLogo = new JLabel("");
-		applicationLogo.setIcon(Tools.getIconImage("/images/Images-icon.png", 100,100));
-		applicationLogo.setHorizontalAlignment(SwingConstants.CENTER);
-		applicationLogo.setBounds(0, 0, 244, 139);
-		projectPanel.add(applicationLogo);
+		JLabel lblTableOfContents = new JLabel("Table of contents");
+		lblTableOfContents.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTableOfContents.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		
 		tableOfContents = new TableOfContents();
-		JScrollPane tableOfContentsScrollPane = new JScrollPane(tableOfContents);
-		tableOfContentsScrollPane.setBounds(10, 279, 244, 721);
-		getContentPane().add(tableOfContentsScrollPane);
+		JScrollPane scrollPane2 = new JScrollPane(tableOfContents);
+		GroupLayout gl_sidePanel = new GroupLayout(sidePanel);
+		gl_sidePanel.setHorizontalGroup(
+			gl_sidePanel.createParallelGroup(Alignment.LEADING)
+				.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+				.addGroup(gl_sidePanel.createSequentialGroup()
+					.addComponent(label)
+					.addContainerGap())
+				.addComponent(projectName, GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+				.addComponent(lblTableOfContents, GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+				.addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+		);
+		gl_sidePanel.setVerticalGroup(
+			gl_sidePanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_sidePanel.createSequentialGroup()
+					.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 145, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(label)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(projectName, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblTableOfContents, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE))
+		);
+		sidePanel.setLayout(gl_sidePanel);
 		
+		JPanel panel47 = new JPanel();
+		panel47.setBackground(Color.WHITE);
 		
-		panel = new DrawingJPanel(new Rectangle(264, 99, 1640, 901));
-		panel.setBounds(264, 130, 1640, 818);
-		panel.setBorder(new LineBorder(new Color(0,171,220)));
+		panel = new DrawingJPanel();
+		panel.setBorder(new LineBorder(Color.WHITE));
 		panel.setBackground(Color.WHITE);
-		getContentPane().add(panel);
-		panel.setLayout(null);
-		
-		JButton btnOrtho = new JButton("Ortho");
-		btnOrtho.setBounds(825, 804, 75, 65);
-		//panel.add(btnOrtho);
-		
-		JButton btnGrid = new JButton("Grid");
-		btnGrid.setBounds(910, 804, 75, 65);
-		
-		btnGrid.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				panel.toggleGrid();
-			}
-			
-		});
 		
 		
-		JLabel tOCLabel = new JLabel("Table of contents");
-		tOCLabel.setBounds(10, 243, 244, 33);
-		tOCLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
-		getContentPane().add(tOCLabel);
+		JPanel panel_9 = new JPanel();
+		panel_9.setBackground(Color.BLACK);
+		GroupLayout gl_rightPanel = new GroupLayout(rightPanel);
+		gl_rightPanel.setHorizontalGroup(
+			gl_rightPanel.createParallelGroup(Alignment.LEADING)
+				.addComponent(panel_9, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(panel47, GroupLayout.DEFAULT_SIZE, 1154, Short.MAX_VALUE)
+				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 1154, Short.MAX_VALUE)
+		);
+		gl_rightPanel.setVerticalGroup(
+			gl_rightPanel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_rightPanel.createSequentialGroup()
+					.addComponent(panel47, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panel, GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panel_9, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE))
+		);
+		
+		logButton = new JButton("LOG");
+		logButton.setBorderPainted(false);
+		logButton.setFocusPainted(false);
+		logButton.setForeground(Color.WHITE);
+		logButton.setBackground(Color.BLACK);
+		
+		logText = new JTextArea();
+		logText.setEditable(false);
+		logText.setForeground(Color.WHITE);
+		logText.setBackground(Color.DARK_GRAY);
+		//logText
+		DefaultCaret caret = (DefaultCaret) logText.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		
+		JScrollPane scrollPane = new JScrollPane(logText);
+		scrollPane.setViewportView(logText);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		scrollPane.setBackground(Color.DARK_GRAY);
+		
+		GroupLayout gl_panel_9 = new GroupLayout(panel_9);
+		gl_panel_9.setHorizontalGroup(
+			gl_panel_9.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_9.createSequentialGroup()
+					.addComponent(logButton, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 1045, Short.MAX_VALUE))
+		);
+		gl_panel_9.setVerticalGroup(
+			gl_panel_9.createParallelGroup(Alignment.LEADING)
+				.addComponent(logButton, GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
+		);
+		panel_9.setLayout(gl_panel_9);
 		
 		JPanel fileRibbon = new JPanel();
-		fileRibbon.setBounds(264, 11, 309, 108);
 		fileRibbon.setBackground(Color.WHITE);
-		fileRibbon.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "File operations", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		getContentPane().add(fileRibbon);
-		fileRibbon.setLayout(null);
+		fileRibbon.setBorder(new CompoundBorder(new TitledBorder(null, "File", TitledBorder.LEFT, TitledBorder.TOP), new EmptyBorder(5,5,5,5)));
+		fileRibbon.setLayout(new GridLayout(1, 2, 5, 5));
 		
 		ToolIconButton filesBtn = new ToolIconButton("Files", "/images/file.png", 60, 60);
 		filesBtn.setToolTipText("Open previous projects");
-		filesBtn.setBounds(10, 22, 90, 75);
 		fileRibbon.add(filesBtn);
+		
+		ToolIconButton importBtn = new ToolIconButton("Import", "/images/import.png", 60, 60);
+		importBtn.setToolTipText("Import projects from csv");
+		fileRibbon.add(importBtn);
+		
+		ToolIconButton exportBtn = new ToolIconButton("Export", "/images/export.png", 60, 60);
+		fileRibbon.add(exportBtn);
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setBackground(Color.WHITE);
+		panel_2.setBorder(new CompoundBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Selector", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
+		panel_2.setLayout(new GridLayout(1, 2, 5, 5));
+		
+		selectionButton = new ToolIconButton("Select", "/images/select.png", 60, 60);
+		panel_2.add(selectionButton);
+		
+		queryButton = new ToolIconButton("Query", "/images/query.png", 60,60);
+		queryButton.setToolTipText("Select items with rectangle");
+		panel_2.add(queryButton);
+		
+		JPanel editorRibbon = new JPanel();
+		editorRibbon.setBackground(Color.WHITE);
+		editorRibbon.setBorder(new CompoundBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Editor", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
+		
+		JPanel panel_5 = new JPanel();
+		panel_5.setBorder(new EmptyBorder(0, 0, 5, 0));
+		panel_5.setBackground(Color.WHITE);
+		
+		JPanel panel_6 = new JPanel();
+		panel_6.setBorder(new EmptyBorder(0, 0, 5, 0));
+		panel_6.setBackground(Color.WHITE);
+		panel_6.setLayout(new GridLayout(1, 2, 5, 5));
+		
+		ToolIconButton btnSaveEdit = new ToolIconButton("Save edit", "/images/save.png", 60,60);
+		btnSaveEdit.setToolTipText("Save edited layers");
+		panel_6.add(btnSaveEdit);
+		
+		ToolIconButton btnAddLayer = new ToolIconButton("Save edit", "/images/add_layer.png", 80,80);
+		btnAddLayer.setToolTipText("Add more layers");
+		panel_6.add(btnAddLayer);
+		
+		layerListComboBox = new JComboBox<String[]>();
+		layerListComboBox.setBackground(Settings.DEFAULT_STATE_COLOR);
+		layerListComboBox.setForeground(Color.WHITE);
+		
+		ToolIconButton btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
+		btnSnap.setToolTipText("Turn of snap");
+		ToolIconButton btnGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
+		btnGrid.setToolTipText("Turn on grid");
+		
+		GroupLayout gl_editorRibbon = new GroupLayout(editorRibbon);
+		gl_editorRibbon.setHorizontalGroup(
+			gl_editorRibbon.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_editorRibbon.createSequentialGroup()
+					.addComponent(panel_5, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_editorRibbon.createParallelGroup(Alignment.LEADING)
+						.addComponent(layerListComboBox, 0, 104, Short.MAX_VALUE)
+						.addGroup(gl_editorRibbon.createSequentialGroup()
+							.addComponent(btnSnap, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnGrid, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panel_6, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE))
+		);
+		gl_editorRibbon.setVerticalGroup(
+			gl_editorRibbon.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_editorRibbon.createSequentialGroup()
+					.addGroup(gl_editorRibbon.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_editorRibbon.createSequentialGroup()
+							.addComponent(layerListComboBox, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_editorRibbon.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(btnSnap, 0, 0, Short.MAX_VALUE)
+								.addComponent(btnGrid, GroupLayout.PREFERRED_SIZE, 30, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED, 5, Short.MAX_VALUE))
+						.addComponent(panel_5, GroupLayout.PREFERRED_SIZE, 72, Short.MAX_VALUE)
+						.addComponent(panel_6, GroupLayout.PREFERRED_SIZE, 72, Short.MAX_VALUE))
+					.addContainerGap())
+		);
+		panel_5.setLayout(new GridLayout(1, 2, 5, 5));
+		
+		ToolIconButton btnDelete = new ToolIconButton("Delete", "/images/delete.png", 60,60);
+		btnDelete.setToolTipText("Delete selected items");
+		panel_5.add(btnDelete);
+		
+		btnDrawEdit = new ToolIconButton("Editing", "/images/edit.png", 60,60);
+		panel_5.add(btnDrawEdit);
+		btnDrawEdit.setToolTipText("Start edit session");
+		editorRibbon.setLayout(gl_editorRibbon);
+		
+		JPanel panel_4 = new JPanel();
+		panel_4.setBackground(Color.WHITE);
+		panel_4.setBorder(new CompoundBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Draw", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
+		panel_4.setLayout(new GridLayout(2, 8, 5, 5));
+		
+		DrawIconButton geomRec = new DrawIconButton("Rectangle", Settings.POLYGON_GEOMETRY ,"/images/rectangle.png", 25, 25);
+		geomRec.setToolTipText("Rectangle");
+		panel_4.add(geomRec);
+		
+		DrawIconButton geomTriangle = new DrawIconButton("Triangle", Settings.POLYGON_GEOMETRY, "/images/triangle.png", 25, 25);
+		geomTriangle.setToolTipText("Triangle");
+		panel_4.add(geomTriangle);
+		
+		DrawIconButton geomCircle = new DrawIconButton("Circle", Settings.POLYGON_GEOMETRY, "/images/circle.png", 25, 25);
+		geomCircle.setToolTipText("Circle");
+		panel_4.add(geomCircle);
+		
+		DrawIconButton geomFreeformPolygon = new DrawIconButton("Freeform Polygon", Settings.POLYGON_GEOMETRY, "/images/polygon.png", 30, 30);
+		geomFreeformPolygon.setToolTipText("Freeform Polygon");
+		panel_4.add(geomFreeformPolygon);
+		
+		DrawIconButton geomPoint = new DrawIconButton("Point", Settings.POINT_GEOMETRY, "/images/point.png", 25, 25);
+		geomPoint.setToolTipText("Point");
+		panel_4.add(geomPoint);
+		
+		DrawIconButton geomSingleLine = new DrawIconButton("Line", Settings.POLYLINE_GEOMETRY, "/images/line.png", 25, 25);
+		geomSingleLine.setToolTipText("Single line");
+		panel_4.add(geomSingleLine);
+		
+		DrawIconButton geomMultiLine = new DrawIconButton("Multiline", Settings.POLYLINE_GEOMETRY ,"/images/polyline.png", 25, 25);
+		geomMultiLine.setToolTipText("Multi line");
+		panel_4.add(geomMultiLine);
+		
+		DrawIconButton geomEllipse = new DrawIconButton("Ellipse", "Polygon", "/images/ellipse.png", 30, 30);
+		geomEllipse.setToolTipText("Ellipse");
+		panel_4.add(geomEllipse);
+		
+		JPanel configureRibbon = new JPanel();
+		configureRibbon.setBackground(Color.WHITE);
+		configureRibbon.setBorder(new CompoundBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Configure", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
+		configureRibbon.setLayout(new GridLayout(1, 2, 5, 5));
+		
+		ToolIconButton databaseButton = new ToolIconButton("Database", "/images/database.png", 60, 60);
+		configureRibbon.add(databaseButton);
+		
+		ToolIconButton settingsButton = new ToolIconButton("Settings", "/images/settings.png", 60, 60);
+		configureRibbon.add(settingsButton);
+		GroupLayout gl_panel = new GroupLayout(panel47);
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addComponent(fileRibbon, GroupLayout.PREFERRED_SIZE, 229, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 157, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(editorRibbon, GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(configureRibbon, GroupLayout.PREFERRED_SIZE, 161, GroupLayout.PREFERRED_SIZE))
+		);
+		gl_panel.setVerticalGroup(
+			gl_panel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(configureRibbon, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
+						.addComponent(panel_4, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 104, Short.MAX_VALUE)
+						.addGroup(Alignment.LEADING, gl_panel.createParallelGroup(Alignment.TRAILING, false)
+							.addComponent(editorRibbon, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+							.addComponent(panel_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(fileRibbon, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+					.addContainerGap())
+		);
+		panel47.setLayout(gl_panel);
+		rightPanel.setLayout(gl_rightPanel);
+		splitPane.setDividerLocation((int)(getBounds().width / 8));
+		GroupLayout groupLayout = new GroupLayout(getContentPane());
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(splitPane, GroupLayout.DEFAULT_SIZE, 1330, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(splitPane, GroupLayout.DEFAULT_SIZE, 707, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		getContentPane().setLayout(groupLayout);
+		
+		addComponentListener(new ComponentListener() {
+		    public void componentResized(ComponentEvent e) {
+		        System.out.println(getBounds()); 
+		        
+		        
+		        if(getBounds().width > 1366) {
+		        	splitPane.setDividerLocation((int)(getBounds().width / 4));
+			        revalidate();
+			        repaint();
+		        }
+		    }
+
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		
+		buttonsList.add(filesBtn);
+		buttonsList.add(importBtn);
+		buttonsList.add(exportBtn);
+		
+		drawButtonGroup.add(geomRec);
+		drawButtonGroup.add(geomTriangle);
+		drawButtonGroup.add(geomCircle);
+		drawButtonGroup.add(geomFreeformPolygon);
+		drawButtonGroup.add(geomPoint);
+		drawButtonGroup.add(geomSingleLine);
+		drawButtonGroup.add(geomMultiLine);
+		drawButtonGroup.add(geomEllipse);
+		
 		
 		filesBtn.addActionListener(new ActionListener() {
 			
@@ -257,39 +548,6 @@ public class MainFrame extends CustomJFrame {
 				
 			}
 		});
-		
-		buttonsList.add(filesBtn);
-		
-		ToolIconButton importBtn = new ToolIconButton("Import", "/images/import.png", 60, 60);
-		importBtn.setToolTipText("Import projects from csv");
-		importBtn.setText("");
-		importBtn.setBounds(109, 22, 90, 75);
-		fileRibbon.add(importBtn);
-		
-		//toolsButtonGroup.add(importBtn);
-		buttonsList.add(importBtn);
-		
-		ToolIconButton exportBtn = new ToolIconButton("Export", "/images/export.png", 60, 60);
-		exportBtn.setToolTipText("Export current project to csv");
-		exportBtn.setText("");
-		exportBtn.setBounds(209, 22, 90, 75);
-		fileRibbon.add(exportBtn);
-		
-		//toolsButtonGroup.add(exportBtn);
-		buttonsList.add(exportBtn);
-		
-		JPanel selectionRibbon = new JPanel();
-		selectionRibbon.setBounds(583, 11, 213, 108);
-		selectionRibbon.setLayout(null);
-		selectionRibbon.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Selector", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		selectionRibbon.setBackground(Color.WHITE);
-		getContentPane().add(selectionRibbon);
-		
-		selectionButton = new ToolIconButton("Select", "/images/select.png", 60, 60);
-		selectionButton.setBounds(10, 22, 90, 75);
-		selectionRibbon.add(selectionButton);
-		selectionButton.setToolTipText("Select items on the drawing");
-		
 		
 		selectionButton.addActionListener(new ActionListener() {
 			
@@ -317,11 +575,6 @@ public class MainFrame extends CustomJFrame {
 			}
 		});
 		
-		queryButton = new ToolIconButton("Query", "/images/query.png", 60,60);
-		queryButton.setBounds(110, 22, 90, 75);
-		selectionRibbon.add(queryButton);
-		queryButton.setToolTipText("Select items with rectangle");
-		
 		queryButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -347,50 +600,6 @@ public class MainFrame extends CustomJFrame {
 			}	
 		});
 		
-		JPanel editorRibbon = new JPanel();
-		editorRibbon.setBounds(806, 11, 621, 113);
-		editorRibbon.setLayout(null);
-		editorRibbon.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Editor", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		editorRibbon.setBackground(Color.WHITE);
-		getContentPane().add(editorRibbon);
-		
-		ToolIconButton btnDelete = new ToolIconButton("Delete", "/images/delete.png", 60,60);
-		btnDelete.setBounds(10, 22, 90, 75);
-		editorRibbon.add(btnDelete);
-		btnDelete.setToolTipText("Delete selected items");
-		
-		btnDrawEdit = new ToolIconButton("Editing", "/images/edit.png", 60,60);
-		btnDrawEdit.setBounds(110, 22, 90, 75);
-		editorRibbon.add(btnDrawEdit);
-		btnDrawEdit.setToolTipText("Start edit session");
-		
-		
-		layerListComboBox = new JComboBox<String[]>();
-		layerListComboBox.setBounds(210, 22, 199, 33);
-		editorRibbon.add(layerListComboBox);
-		layerListComboBox.setBackground(Settings.DEFAULT_STATE_COLOR);
-		layerListComboBox.setForeground(Color.WHITE);
-		
-		ToolIconButton btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
-		btnSnap.setBounds(210, 62, 35, 35);
-		editorRibbon.add(btnSnap);
-		btnSnap.setToolTipText("Turn of snap");
-		
-		ToolIconButton btnOrthoMode = new ToolIconButton("Ortho", "/images/ortho.png", 35, 35);
-		btnOrthoMode.setBounds(255, 62, 35, 35);
-		editorRibbon.add(btnOrthoMode);
-		btnOrthoMode.setToolTipText("Turn of ortho mode");
-		
-		ToolIconButton btnShowGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
-		btnShowGrid.setBounds(300, 62, 35, 35);
-		editorRibbon.add(btnShowGrid);
-		btnShowGrid.setToolTipText("Turn on grid");
-		
-		ToolIconButton btnSaveEdit = new ToolIconButton("Save edit", "/images/save.png", 60,60);
-		btnSaveEdit.setBounds(419, 22, 90, 75);
-		editorRibbon.add(btnSaveEdit);
-		btnSaveEdit.setToolTipText("Save edited layers");
-		
 		btnSaveEdit.addActionListener(new ActionListener() {
 			
 			@Override
@@ -413,23 +622,7 @@ public class MainFrame extends CustomJFrame {
 			}
 		});
 		
-		ToolIconButton btnAddLayer = new ToolIconButton("Save edit", "/images/add_layer.png", 80,80);
-		btnAddLayer.setBounds(519, 22, 90, 75);
-		editorRibbon.add(btnAddLayer);
-		btnAddLayer.setToolTipText("Add more layers");
-		
-		JPanel configureRibbon = new JPanel();
-		configureRibbon.setBounds(1683, 11, 221, 108);
-		configureRibbon.setLayout(null);
-		configureRibbon.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Configure", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		configureRibbon.setBackground(Color.WHITE);
-		getContentPane().add(configureRibbon);
-		
-		ToolIconButton databseButton = new ToolIconButton("Database", "/images/database.png", 60, 60);
-		databseButton.setBounds(13, 22, 90, 75);
-		configureRibbon.add(databseButton);
-		
-		databseButton.addActionListener(new ActionListener() {
+		databaseButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -445,10 +638,6 @@ public class MainFrame extends CustomJFrame {
 			}
 		});
 		
-		ToolIconButton settingsButton = new ToolIconButton("Settings", "/images/settings.png", 60, 60);
-		settingsButton.setBounds(113, 22, 90, 75);
-		configureRibbon.add(settingsButton);
-		
 		settingsButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -463,99 +652,13 @@ public class MainFrame extends CustomJFrame {
 			}
 		});
 		
-		JPanel drawRibbon = new JPanel();
-		drawRibbon.setBounds(1437, 11, 236, 108);
-		drawRibbon.setLayout(null);
-		drawRibbon.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Draw", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		drawRibbon.setBackground(Color.WHITE);
-		getContentPane().add(drawRibbon);
-		
-		DrawIconButton geomRec = new DrawIconButton("Rectangle", Settings.POLYGON_GEOMETRY ,"/images/rectangle.png", 25, 25);
-		geomRec.setToolTipText("Rectangle");
-		geomRec.setBounds(10, 21, 35, 35);
-		drawRibbon.add(geomRec);
-		
-		drawButtonGroup.add(geomRec);
-		
-		DrawIconButton geomTriangle = new DrawIconButton("Triangle", Settings.POLYGON_GEOMETRY, "/images/triangle.png", 25, 25);
-		geomTriangle.setToolTipText("Triangle");
-		geomTriangle.setBounds(55, 21, 35, 35);
-		drawRibbon.add(geomTriangle);
-		
-		drawButtonGroup.add(geomTriangle);
-		
-		DrawIconButton geomCircle = new DrawIconButton("Circle", Settings.POLYGON_GEOMETRY, "/images/circle.png", 25, 25);
-		geomCircle.setToolTipText("Circle");
-		geomCircle.setBounds(100, 21, 35, 35);
-		drawRibbon.add(geomCircle);
-		
-		drawButtonGroup.add(geomCircle);
-		
-		DrawIconButton geomFreeformPolygon = new DrawIconButton("Freeform Polygon", Settings.POLYGON_GEOMETRY, "/images/polygon.png", 30, 30);
-		geomFreeformPolygon.setToolTipText("Freeform Polygon");
-		geomFreeformPolygon.setBounds(145, 21, 35, 35);
-		drawRibbon.add(geomFreeformPolygon);
-		
-		drawButtonGroup.add(geomFreeformPolygon);
-		
-		DrawIconButton geomPoint = new DrawIconButton("Point", Settings.POINT_GEOMETRY, "/images/point.png", 25, 25);
-		geomPoint.setToolTipText("Point");
-		geomPoint.setBounds(100, 62, 35, 35);
-		drawRibbon.add(geomPoint);
-		
-		drawButtonGroup.add(geomPoint);
-		
-		DrawIconButton geomSingleLine = new DrawIconButton("Line", Settings.POLYLINE_GEOMETRY, "/images/line.png", 25, 25);
-		geomSingleLine.setToolTipText("Single line");
-		geomSingleLine.setBounds(10, 62, 35, 35);
-		drawRibbon.add(geomSingleLine);
-		
-		drawButtonGroup.add(geomSingleLine);
-		
-		DrawIconButton geomMultiLine = new DrawIconButton("Multiline", Settings.POLYLINE_GEOMETRY ,"/images/polyline.png", 25, 25);
-		geomMultiLine.setToolTipText("Multi line");
-		geomMultiLine.setBounds(55, 62, 35, 35);
-		drawRibbon.add(geomMultiLine);
-		
-		drawButtonGroup.add(geomMultiLine);
-		
-		DrawIconButton geomEllipse = new DrawIconButton("Ellipse", "Polygon", "/images/ellipse.png", 30, 30);
-		geomEllipse.setToolTipText("Ellipse");
-		geomEllipse.setBounds(190, 21, 35, 35);
-		drawRibbon.add(geomEllipse);
-		
-		drawButtonGroup.add(geomEllipse);
-		
-		logButton = new JButton("Messages");
-		logButton.setForeground(Color.WHITE);
-		logButton.setBackground(Color.BLACK);
-		logButton.setBounds(264, 959, 99, 41);
-		getContentPane().add(logButton);
-		
-		logText = new JTextArea();
-		logText.setEditable(false);
-		logText.setForeground(Color.WHITE);
-		logText.setBackground(Color.DARK_GRAY);
-		//logText
-		DefaultCaret caret = (DefaultCaret) logText.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-		
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportView(logText);
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setBounds(365, 959, 1539, 41);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-		scrollPane.setBackground(Color.DARK_GRAY);
-		getContentPane().add(scrollPane);
-	
-		filesBtn.addActionListener(new ActionListener() {
-			
+		btnGrid.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//importBtn.setButtonReleased(true);
-				importBtn.setBackground(Settings.DEFAULT_STATE_COLOR);
+				panel.toggleGrid();
 			}
+			
 		});
 		
 		btnAddLayer.addActionListener(new ActionListener() {
@@ -565,15 +668,6 @@ public class MainFrame extends CustomJFrame {
 				handleAddNewLayerIntent();
 				updateDrawButtonGroup();
 			}	
-		});
-		
-		btnShowGrid.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				panel.toggleGrid();
-			}
 		});
 		
 		btnSnap.addActionListener(new ActionListener() {
@@ -603,6 +697,9 @@ public class MainFrame extends CustomJFrame {
 			}
 			
 		});
+		
+		
+		
 		
 		
 	}
@@ -964,7 +1061,7 @@ public class MainFrame extends CustomJFrame {
 					double ry = resultSet.getDouble(7);
 						
 					// Ellipse
-					Feature feature = new Feature(newLayer.getListOfFeatures().size());
+					Feature feature = new Feature(newLayer.getNextFeatureID());
 					Shape circleShape = new Ellipse2D.Double(x - rx, y - ry , rx * 2, ry * 2);
 					
 					String featureType = "Ellipse";
@@ -1026,7 +1123,7 @@ public class MainFrame extends CustomJFrame {
 		
 		LocalDateTime now = LocalDateTime.now();
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-		logText.append("\n" + string + "        @ " + dtf.format(now));
+		logText.append("\n@" + dtf.format(now)+ " " + string );
 		
 		final long time = System.nanoTime() / 1000000000;
 
