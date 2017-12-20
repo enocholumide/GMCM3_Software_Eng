@@ -580,12 +580,19 @@ public class MainFrame extends CustomJFrame {
 						int openSessionReturnVal = openSessionFileChooser.showOpenDialog(filesBtn);
 						if (openSessionReturnVal == JFileChooser.APPROVE_OPTION) {
 							File openSession = openSessionFileChooser.getSelectedFile();
-							ArrayList<String> layersToOpen = sessionManager.openSession(openSession.getPath());
+							ArrayList<String[]> layersToOpen = sessionManager.openSession(openSession.getPath());
 							for (int i=0; i<layersToOpen.size(); i++) {
-								String layerName = layersToOpen.get(i);
+								// Try to open a layer from the database with the first string in the array and set its color.
+								String layerName = layersToOpen.get(i)[0];
+								Color layerColor = new Color(
+										Integer.parseInt(layersToOpen.get(i)[1]),
+										Integer.parseInt(layersToOpen.get(i)[2]),
+										Integer.parseInt(layersToOpen.get(i)[3]));
 								try {
 									ResultSet layerContents = dbConnection.readTable(layerName);
 									createLayerFromResultSet(layerContents, layerName);
+									Layer currentLayer = tableOfContents.getLayerByName(layerName);
+									currentLayer.setLayerColor(layerColor);
 								} catch (Exception ex) {
 									log("Table '" + layerName + "' does not exist in database.");
 								}
