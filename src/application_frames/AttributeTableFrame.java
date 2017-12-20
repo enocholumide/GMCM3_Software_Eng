@@ -74,7 +74,6 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 			
 		}
 		
-
 		JPanel contentPane;
 		
 		setAlwaysOnTop(true);

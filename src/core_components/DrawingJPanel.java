@@ -1420,7 +1420,9 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 				point.setShape(new Ellipse2D.Double(clickedPoint.getX() - Settings.POINT_SIZE/2,
 						clickedPoint.getY() - Settings.POINT_SIZE/2,
 						Settings.POINT_SIZE, Settings.POINT_SIZE));
+				point.getVertices().add(vertex);
 				currentLayer.getListOfFeatures().add(point);
+				currentLayer.setNotSaved(true);
 				repaint();
 			}
 			
@@ -1484,9 +1486,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 							ellipse.setEllipse(true, new Point2D.Double(centerX, centerY), diamX / 2, diamY / 2);
 							ellipse.setShape(shape);
 							ellipse.setFeatureType("Ellipse");
-							List<Rectangle2D> tempL = new ArrayList<Rectangle2D>();
-							tempL.add(new Rectangle2D.Double(centerX - (snapSize/2), centerY - (snapSize/2), snapSize, snapSize));
-							ellipse.setVertices(tempL);
+							ellipse.getVertices().add(vertex);
 							
 							// Add to the current layer's feature list
 							currentLayer.getListOfFeatures().add(ellipse);
@@ -1642,10 +1642,8 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 							// 3.3 Create a new feature
 							Feature circle = new Feature(currentLayer.getNextFeatureID());
 							circle.setLayerID(currentLayer.getId());
-							List<Rectangle2D> tempL = new ArrayList<Rectangle2D>();
-							tempL.add(new Rectangle2D.Double(centerPoint.getX() - (snapSize/2), centerPoint.getY() - (snapSize/2), snapSize, snapSize));
-							circle.setVertices(tempL);
 							circle.setFeatureType("Circle");
+							circle.getVertices().add(vertex);
 							circle.setEllipse(true, centerPoint, radius, radius);
 							circle.setShape(circleShape);
 							
@@ -2122,5 +2120,4 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 			}
 		}
 	}
-	
 }
