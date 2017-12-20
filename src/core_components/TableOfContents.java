@@ -1,6 +1,6 @@
 package core_components;
 
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -364,4 +364,38 @@ public class TableOfContents extends JTable {
 		
 		return layerNames;
 	}
+
+	/**
+	 * Gets the list of layer colors in the table of contents as an array list of Color.
+	 * @return Color array of the available layers.
+	 */
+	public static Color[] getListofLayerColors() {
+
+		Color[] layerColors = new Color[layerList.size()];
+		int index = 0;
+		for(Layer layer : layerList) {
+			layerColors[index] = layer.getLayerColor();
+			index++;
+		}
+
+		return layerColors;
+
+	}
+
+	/**
+	 * Gets the actual Layer object from the table of contents with an input name.
+	 * @param layerName
+	 * @return Layer with the matching name.
+	 */
+	public static Layer getLayerByName(String layerName) {
+
+		for (int i=0; i<layerList.size(); i++) {
+			if (layerList.get(i).getLayerName() == layerName) {
+				return layerList.get(i);
+			}
+		}
+		return null;
+
+	};
+
 }
