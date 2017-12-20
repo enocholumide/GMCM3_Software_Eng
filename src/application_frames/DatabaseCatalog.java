@@ -29,11 +29,34 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * Displays the connected databases, tables and the layers
+ * Displays the connected databases, tables and the layers.<br>
+ * Layers can also be added to the drawing panel directly 
+ * and can be deleted from the database as well.<br>
+ * <br>
+ * Realised using the JTree, it composed of three major nodes (steps).<br>
+ * The top node is the connected database name, the next node is the table name<br>
+ * where all the drawn items grouped in layers are found, the last node is for the
+ * list of all the layer names stored in the database table.<br>
+ * <br>
+ * <<database name>> 			// -- node level 1
+ * 		<<table name>>			// -- node level 2
+ * 			<<layer 1>>			// -- node level 3
+ * 			<<layer 2>>
+ * 			<<layer n>>			
  * 
- * TODO: Implement drag and drop
+ * At each launch, it uses the database connection at the mainframe and retrives all the
+ * data needed to display the required information as described earlier.<br>
+ * <br>
+ * It implements tree selection listener which turns  the "add" and "delete" button off 
+ * and on based on the positon of the currently selected node.<br>
+ * <br>
+ * Because the database and the geotaable cannot be deleted during the session, the add and 
+ * delete buttons are only available when a layer (lowest node) is selected.<br>
  * 
- * @author OlumideEnoch
+ * <br>
+ * It does not support drag and drop.
+ * 
+ * @author Olumide Igbiloba
  *
  */
 public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListener {
@@ -64,33 +87,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
-		DefaultMutableTreeNode db = null;
-		DefaultMutableTreeNode geoTable = null;
-		
-		if(MainFrame.dbConnection != null) {
-
-			try {
-				
-				db = new DefaultMutableTreeNode(DatabaseConnection.dbName);
-				geoTable = new DefaultMutableTreeNode("geo_data");
-				
-				for(String[] table : MainFrame.dbConnection.getTables()){
-					
-					DefaultMutableTreeNode layers = new DefaultMutableTreeNode(table[0]);
-					layers.setUserObject(table[0]);
-					geoTable.add(layers);		
-				};
-
-				db.add(geoTable);
-				dbTree = new JTree(db);
-				dbTree.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-			
-			} catch (SQLException e) {
-				
-				e.printStackTrace();
-			}
-		}
+		addDatabaseContents();
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(SystemColor.inactiveCaption);
@@ -138,24 +135,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				TreePath[] treePaths = (TreePath[]) dbTree.getSelectionPaths();
-				try {
-					for(TreePath tree : treePaths) {
-						
-						if(tree.getPath().length > 2) {
-	
-							Object[] layerPath = tree.getPath();
-							
-							String tableName = String.valueOf(layerPath[2]);
-							
-							MainFrame.createLayerFromResultSet(MainFrame.dbConnection.readTable(tableName), tableName);
-							
-						}
-					}
-				
-				} catch(SQLException e1) {
-					e1.printStackTrace();
-				}
+				addSelectedLayerToDrawingPanel();
 			}
 		});
 		
@@ -288,6 +268,65 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 				}	
 			}
 		});
+	}
+	
+	/**
+	 * Uses the database conection at the main frame to show the 
+	 * currently connected database, table and list of available layers
+	 */
+	private void addDatabaseContents() {
+	
+		DefaultMutableTreeNode db = null;
+		DefaultMutableTreeNode geoTable = null;
+		
+		if(MainFrame.dbConnection != null) {
+	
+			try {
+				
+				db = new DefaultMutableTreeNode(DatabaseConnection.dbName);
+				geoTable = new DefaultMutableTreeNode("geo_data");
+				
+				for(String[] table : MainFrame.dbConnection.getTables()){
+					
+					DefaultMutableTreeNode layers = new DefaultMutableTreeNode(table[0]);
+					layers.setUserObject(table[0]);
+					geoTable.add(layers);		
+				};
+	
+				db.add(geoTable);
+				dbTree = new JTree(db);
+				dbTree.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+			
+			} catch (SQLException e) {
+				
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Adds the currently selected node to the drawing panel.<br>
+	 * Suports multiple layer selection as well
+	 */
+	private void addSelectedLayerToDrawingPanel() {
+		TreePath[] treePaths = (TreePath[]) dbTree.getSelectionPaths();
+		try {
+			for(TreePath tree : treePaths) {
+				
+				if(tree.getPath().length > 2) {
+
+					Object[] layerPath = tree.getPath();
+					
+					String tableName = String.valueOf(layerPath[2]);
+					
+					MainFrame.createLayerFromResultSet(MainFrame.dbConnection.readTable(tableName), tableName);
+					
+				}
+			}
+		
+		} catch(SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	/**

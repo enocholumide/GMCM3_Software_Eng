@@ -31,8 +31,8 @@ import java.sql.SQLException;
 import javax.swing.SwingConstants;
 
 /**
- * 
- * @author OlumideEnoch
+ * Class contains the general settings for the application
+ * @author Olumide Igbiloba
  * In this class the general settings of the application are defined
  *
  */
