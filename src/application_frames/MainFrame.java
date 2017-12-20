@@ -629,7 +629,14 @@ public class MainFrame extends CustomJFrame {
 						int openSessionReturnVal = openSessionFileChooser.showOpenDialog(filesBtn);
 						if (openSessionReturnVal == JFileChooser.APPROVE_OPTION) {
 							File openSession = openSessionFileChooser.getSelectedFile();
-							ArrayList<String[]> layersToOpen = sessionManager.openSession(openSession.getPath());
+							List<String[]> layersToOpen = sessionManager.openSession(openSession.getPath());
+
+							// Clear the table of contents and reset the current layer ID to 0.
+							for (int i=1; i<tableOfContents.layerList.size()+1; i++) {
+								tableOfContents.removeRowLayer(i);
+							}
+							tableOfContents.resetLayerId();
+
 							for (int i=0; i<layersToOpen.size(); i++) {
 								// Try to open a layer from the database with the first string in the array and set its color.
 								String layerName = layersToOpen.get(i)[0];
@@ -640,9 +647,10 @@ public class MainFrame extends CustomJFrame {
 								try {
 									ResultSet layerContents = dbConnection.readTable(layerName);
 									createLayerFromResultSet(layerContents, layerName);
-									Layer currentLayer = tableOfContents.getLayerByName(layerName);
+									Layer currentLayer = tableOfContents.findLayerWithID(i);
+									System.out.println(currentLayer.getId());
 									currentLayer.setLayerColor(layerColor);
-								} catch (Exception ex) {
+								} catch (SQLException ex) {
 									log("Table '" + layerName + "' does not exist in database.");
 								}
 							}

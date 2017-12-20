@@ -1,13 +1,14 @@
 package file_handling;
 
+import core_classes.Layer;
 import core_components.TableOfContents;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Created by isaac on 19/12/17.
@@ -19,12 +20,7 @@ public class SessionManager {
     /**
      * String array representing the names of currently active layers in the table of contents.
      */
-    String[] currentActiveLayers;
-
-    /**
-     * Color array representing the colors of currently active layers in the same order as currentActiveLayers.
-     */
-    Color[] currentActiveLayerColors;
+    List<Layer> currentActiveLayers;
 
     /**
      * Constructor for SessionManager. Builds the currentActiveLayers array and the currentActiveLayerColors arrays.
@@ -32,8 +28,7 @@ public class SessionManager {
      */
     public SessionManager(TableOfContents tableOfContents) {
 
-        currentActiveLayers = tableOfContents.getListOfLayersInString();
-        currentActiveLayerColors = tableOfContents.getListofLayerColors();
+        currentActiveLayers = tableOfContents.layerList;
 
     }
 
@@ -47,11 +42,11 @@ public class SessionManager {
 
             // Initialize a BufferedWriter and write each layer name to a new line therein, then save & close.
             BufferedWriter sessionWriter = new BufferedWriter(new FileWriter(sessionPath));
-            for (int i=0; i<currentActiveLayers.length; i++) {
-                sessionWriter.write(currentActiveLayers[i] + ";");
-                sessionWriter.write(currentActiveLayerColors[i].getRed() + ";");
-                sessionWriter.write(currentActiveLayerColors[i].getGreen() + ";");
-                sessionWriter.write(currentActiveLayerColors[i].getBlue() + "\n");
+            for (int i=0; i<currentActiveLayers.size(); i++) {
+                sessionWriter.write(currentActiveLayers.get(i).getLayerName() + ";");
+                sessionWriter.write(currentActiveLayers.get(i).getLayerColor().getRed() + ";");
+                sessionWriter.write(currentActiveLayers.get(i).getLayerColor().getGreen() + ";");
+                sessionWriter.write(currentActiveLayers.get(i).getLayerColor().getBlue() + "\n");
             }
             sessionWriter.close();
 
@@ -66,20 +61,16 @@ public class SessionManager {
      * @param sessionPath String representing path to file where the session is stored.
      * @return ArrayList of layer name Strings as well as their Color components in string form.
      */
-    public ArrayList<String[]> openSession(String sessionPath) {
+    public List<String[]> openSession(String sessionPath) {
 
         // Initialize our list of layer names.
-        ArrayList<String[]> layerList = new ArrayList<>(0);
+        List<String[]> layerList = new ArrayList<>(0);
 
         try {
             // Read all the names from the file and add them to the returned layer list.
             BufferedReader sessionReader = new BufferedReader(new FileReader(sessionPath));
             String line;
-            String layerListItem[];
-            String layerName;
-            String layerRed;
-            String layerGreen;
-            String LayerBlue;
+
             while ((line = sessionReader.readLine()) != null) {
                 layerList.add(line.split(";"));
             }

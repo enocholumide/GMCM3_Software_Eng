@@ -274,6 +274,11 @@ public class TableOfContents extends JTable {
 		
 		// Update the combo box model
 		MainFrame.updateLayerComboBoxModel( getListOfLayersInString() );
+
+		for (int i=0; i<layerList.size(); i++) {
+			System.out.println(layerList.get(i).getLayerName());
+		}
+		System.out.println(layerList.size());
 	}
 	
 	/**
@@ -366,36 +371,11 @@ public class TableOfContents extends JTable {
 	}
 
 	/**
-	 * Gets the list of layer colors in the table of contents as an array list of Color.
-	 * @return Color array of the available layers.
+	 * Resets the current layer id value to 0.  This is necessary when loading sessions, because we need the layer index
+	 * counter to be 0 again.
 	 */
-	public static Color[] getListofLayerColors() {
-
-		Color[] layerColors = new Color[layerList.size()];
-		int index = 0;
-		for(Layer layer : layerList) {
-			layerColors[index] = layer.getLayerColor();
-			index++;
-		}
-
-		return layerColors;
-
+	public void resetLayerId() {
+		layerID = 0;
 	}
-
-	/**
-	 * Gets the actual Layer object from the table of contents with an input name.
-	 * @param layerName
-	 * @return Layer with the matching name.
-	 */
-	public static Layer getLayerByName(String layerName) {
-
-		for (int i=0; i<layerList.size(); i++) {
-			if (layerList.get(i).getLayerName() == layerName) {
-				return layerList.get(i);
-			}
-		}
-		return null;
-
-	};
 
 }
