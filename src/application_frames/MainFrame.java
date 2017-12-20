@@ -20,6 +20,7 @@ import core_components.ToolIconButton;
 import custom_components.CustomJFrame;
 import database.DatabaseConnection;
 import features.PointItem;
+import file_handling.FileHandler;
 import file_handling.SessionManager;
 import toolset.Tools;
 
@@ -334,6 +335,14 @@ public class MainFrame extends CustomJFrame {
 		
 		ToolIconButton exportBtn = new ToolIconButton("Export", "/images/export.png", 60, 60);
 		fileRibbon.add(exportBtn);
+		
+		exportBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				FileHandler.writeToCSV(TableOfContents.layerList);
+			}
+		});
 		
 		JPanel selectorRibbon = new JPanel();
 		selectorRibbon.setBackground(Color.WHITE);
