@@ -8,6 +8,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
+import application_frames.MainFrame;
+import core_classes.Layer;
+
 /**
  * Created by isaac on 19/12/17.
  * An object used to save & load sessions. Sessions are groups of active layers. A session file should end in ".gmcm"
@@ -38,12 +41,19 @@ public class SessionManager {
 
         try {
 
-            // Initialize a BufferedWriter and write each layer name to a new line therein, then save & close.
+            /*// Initialize a BufferedWriter and write each layer name to a new line therein, then save & close.
             BufferedWriter sessionWriter = new BufferedWriter(new FileWriter(sessionPath));
             for (int i=0; i<currentActiveLayers.length; i++) {
                 sessionWriter.write(currentActiveLayers[i] + "\n");
             }
-            sessionWriter.close();
+            sessionWriter.close();*/
+        	BufferedWriter sessionWriter = new BufferedWriter(new FileWriter(sessionPath));
+        	sessionWriter.write("#" + TableOfContents.layerList.size()+"\n");
+        	for(Layer layer : TableOfContents.layerList) {
+        		MainFrame.saveLayerToDB(layer);
+        		sessionWriter.write(layer.getLayerName() + " "  + layer.getListOfFeatures().size() + " " + layer.getLayerColor().getRGB() + " " +  layer.isVisible() +  "\n");
+        	}
+        	sessionWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();

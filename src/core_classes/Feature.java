@@ -13,24 +13,56 @@ import application_frames.Settings;
 import toolset.Tools;
 
 /**
- * Class for the creation of a Feature
- * @author OlumideEnoch
- *
+ * Defines the structure of a feature in the system.<br>
+ * A feature will be a subset of a layer and will be of particular geometry type
+ * the same with all the features in the layer<br>
+ * <p>
+ * A feature is unique with its ID, this ID is stored in the database. 
+ * The layer class manages this ID and assigns ID to the feature, based on the time of creation.<br>
+ * <p>
+ * A feature is representated by its shape on the drawing panel.<br>
+ * This shape contains vertices (for non ellipse shapes), the vertices are rectangle and 
+ * its size is determined based on the current size of the snap @see Settings class.<br>
+ * So, to save these vertices in the database, the center of the vertices is used.<br>
+ * However, for features that are ellipse (or circle), only the center of the ellipse is stored as a vertix
+ * and the radius of the X and Y is stored in the database as well<br>
+ * <p>
+ * The drawing panel displays a feature based on its visibility status.<br>
+ * A feature can be directly selected on the drawing panel, when a feature is selected, the highlited status 
+ * is set to true automatically<br>
+ * 
+ * @author Olumide Igbiloba
+ * @created Dec 7, 2017
+ * @modifications
+ * a. Dec 8, 2017 - Added a parameter to return the coordinates array in double for the database <br>
+ * b. Dec 12, 2017 - Added the parameter to store the center of the feature if it is an ellipse <br>
  */
 public class Feature {
-
+	
+	/** The uniqure id a feature. This ID is stored in the database */
     private int id;
-    private Shape shape;
-    private List<Rectangle2D> vertices = new ArrayList<Rectangle2D> ();
-    private String featureType;
-    private Point2D center;
-    private boolean isEllipse = false;
-    private double radiusX, radiusY;
-	private double[][] coordinatesArrayXY;
+    /** The layer id where the feature belongs to */
 	private int layerID;
+    /** Shape contianed by the feature eg. Rectangle, Path  */
+    private Shape shape;
+    /** Feature type such as rectangle, circle */
+    private String featureType;
+	/** Highlight status of the layer, this changes the color at the drawing panel*/
 	private boolean isHighlighted = false;
+	/** The Visibility of a feature, when feature is not visible, it will be not painted, nor selectable */
 	private boolean isVisibile = true;
-
+    /** The vertices of the shape, this is used for rendering purposes by the drawing panel */
+    private List<Rectangle2D> vertices = new ArrayList<Rectangle2D> ();
+    /** Coordinates array (XY) of the feature vertices in double, this is needed for the database,
+     * this coords comes from the center of all the vertices */
+	private double[][] coordinatesArrayXY;
+    /** Variable to know if a feature is an ellipse or not */
+    private boolean isEllipse = false;
+    /** The center point of a feature, this is particular for an ellipse or a circle */
+    private Point2D center;
+    /** The radius X and Y of the feature if it is an ellipse */
+    private double radiusX, radiusY;
+    
     /**
      * Creates an Object of the class Layer
      * @param id the ID of a Feature
@@ -74,7 +106,7 @@ public class Feature {
 		double[] x = Tools.copyFromIntArray(xp);
 		double[] y = Tools.copyFromIntArray(xp);
 		
-		int snapSize = Settings.snappingTolerance;
+		int snapSize = Settings.SNAP_SIZE;
 		
 		for(int i = 0; i < x.length; i++) {
 			this.vertices.add(new Rectangle2D.Double(x[i] - (snapSize/2), y[i] - (snapSize/2), snapSize, snapSize));
@@ -88,7 +120,7 @@ public class Feature {
 	 */
 	public void setVerticesFromDoubleArray(double[] x, double[] y) {
 		
-		int snapSize = Settings.snappingTolerance;
+		int snapSize = Settings.SNAP_SIZE;
 		
 		for(int i = 0; i < x.length; i++) {
 			this.vertices.add(new Rectangle2D.Double(x[i] - (snapSize/2), y[i] - (snapSize/2), snapSize, snapSize));
