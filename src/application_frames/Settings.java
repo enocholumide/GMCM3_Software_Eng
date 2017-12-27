@@ -1,26 +1,14 @@
 package application_frames;
 
 
+import java.awt.Color;
 import java.awt.Dimension;
-
-
-import java.awt.*;
-
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.border.EmptyBorder;
-
-import custom_components.CustomJFrame;
-import database.DatabaseConnection;
-import file_handling.DatabaseCredentialsManager;
-import toolset.Tools;
-
-import javax.swing.JSeparator;
-import javax.swing.JLabel;
-
-import javax.swing.JTextField;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -28,7 +16,24 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JSeparator;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import custom_components.CustomColorPicker;
+import custom_components.CustomJFrame;
+import custom_components.CustomJToggle;
+import database.DatabaseConnection;
+import file_handling.DatabaseCredentialsManager;
+import toolset.Tools;
 
 /**
  * Class contains the general settings for the application
@@ -39,30 +44,48 @@ import javax.swing.SwingConstants;
 public class Settings extends CustomJFrame {
 
 	private static final long serialVersionUID = 1L;
+	
 	private JPanel contentPane;
 	
+	// Database params
 	public static JTextField dbHost;
 	public static JTextField dbPort;
 	public static JTextField dbName;
 	public static JPasswordField dbPassword;
 	public static JTextField dbUsername;
+	
+	// General settings
 	public static JTextField userDefaultDirectory;
 	public static JTextField userProfile;
 	public static JTextField userSoftwareUse;
 	public static JTextField userOccupation;
 	
 	public static JLabel settingsMessage;
-
+	public static final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	public static final GraphicsDevice[] gs = ge.getScreenDevices();
+	public static JSpinner monitorSpinner = new JSpinner(new SpinnerNumberModel(1, 1, gs.length, 1));
+	public static JSpinner gridSizeSpinner, snapSizeSpinner;
 	public int[] windowSize = getDefaultWindowSize();
-	public static Rectangle window = getWindow(0);
+	
+	public static Rectangle window = getWindow();
+	
+	private static boolean initialized = false;
+	private static String PASSWORD = "";
+	public static CustomJToggle snapToggle, gridToggle;
+	
+	private MainFrame mainFrame;
+	
 
 	/**
 	 * Create the frame.
 	 * @param openMainFrame the openMainFrame to be set
+	 * @param mainFrame 
 	 */
-	public Settings(boolean openMainFrame) {
+	public Settings(boolean openMainFrame, MainFrame mainFrame) {
 		
 		super("Settings");
+		
+		this.mainFrame = mainFrame;
 		
 		addWindowListener(new WindowAdapter() {
 			@Override 
@@ -122,26 +145,30 @@ public class Settings extends CustomJFrame {
 		separator.setBounds(79, 176, 1127, 2);
 		contentPane.add(separator);
 		
-		settingsMessage = new JLabel("CLick to the green button to test connection to your database");
+		settingsMessage = new JLabel("Click to the green button to test connection to your database");
 		settingsMessage.setFont(new Font("Tahoma", Font.BOLD, 12));
 		settingsMessage.setBounds(90, 151, 1106, 14);
 		contentPane.add(settingsMessage);
 		
-		JPanel panel_2 = new JPanel();
-		panel_2.setBackground(SystemColor.inactiveCaption);
-		panel_2.setBounds(90, 189, 536, 215);
-		contentPane.add(panel_2);
-		panel_2.setLayout(null);
+		if(gs.length > 1) {
+			settingsMessage.setText(settingsMessage.getText() + ".\t  Multiple screens detected, please choose desired screen ");
+		}
 		
-		JPanel panel_3 = new JPanel();
-		panel_3.setBackground(Color.WHITE);
-		panel_3.setBounds(10, 50, 516, 154);
-		panel_2.add(panel_3);
-		panel_3.setLayout(null);
+		JPanel databaseConnectionPanel = new JPanel();
+		databaseConnectionPanel.setBackground(SystemColor.inactiveCaption);
+		databaseConnectionPanel.setBounds(90, 189, 536, 215);
+		contentPane.add(databaseConnectionPanel);
+		databaseConnectionPanel.setLayout(null);
+		
+		JPanel databaseConnectionSubPanel = new JPanel();
+		databaseConnectionSubPanel.setBackground(Color.WHITE);
+		databaseConnectionSubPanel.setBounds(10, 50, 516, 154);
+		databaseConnectionPanel.add(databaseConnectionSubPanel);
+		databaseConnectionSubPanel.setLayout(null);
 		
 		dbHost = new JTextField();
 		dbHost.setBounds(95, 11, 411, 38);
-		panel_3.add(dbHost);
+		databaseConnectionSubPanel.add(dbHost);
 		dbHost.setColumns(10);
 		
 		JButton btnNewButton = new JButton("Host");
@@ -150,12 +177,12 @@ public class Settings extends CustomJFrame {
 		btnNewButton.setHorizontalAlignment(SwingConstants.LEFT);
 		btnNewButton.setBackground(SystemColor.controlHighlight);
 		btnNewButton.setBounds(10, 11, 86, 38);
-		panel_3.add(btnNewButton);
+		databaseConnectionSubPanel.add(btnNewButton);
 		
-		dbPort = new JTextField();
+		dbPort = new JTextField("");
 		dbPort.setColumns(10);
 		dbPort.setBounds(95, 60, 159, 38);
-		panel_3.add(dbPort);
+		databaseConnectionSubPanel.add(dbPort);
 		
 		JButton btnPort = new JButton("Port");
 		btnPort.setMargin(new Insets(1,5,1,1));
@@ -163,7 +190,7 @@ public class Settings extends CustomJFrame {
 		btnPort.setEnabled(false);
 		btnPort.setBackground(SystemColor.controlHighlight);
 		btnPort.setBounds(10, 60, 86, 38);
-		panel_3.add(btnPort);
+		databaseConnectionSubPanel.add(btnPort);
 		
 		JButton btnDatabas = new JButton("Database");
 		btnDatabas.setMargin(new Insets(1,5,1,1));
@@ -171,12 +198,12 @@ public class Settings extends CustomJFrame {
 		btnDatabas.setEnabled(false);
 		btnDatabas.setBackground(SystemColor.controlHighlight);
 		btnDatabas.setBounds(264, 60, 86, 38);
-		panel_3.add(btnDatabas);
+		databaseConnectionSubPanel.add(btnDatabas);
 		
 		dbName = new JTextField();
 		dbName.setColumns(10);
 		dbName.setBounds(347, 60, 159, 38);
-		panel_3.add(dbName);
+		databaseConnectionSubPanel.add(dbName);
 		
 		JButton btnPassword = new JButton("Password");
 		btnPassword.setMargin(new Insets(1,5,1,1));
@@ -184,17 +211,17 @@ public class Settings extends CustomJFrame {
 		btnPassword.setEnabled(false);
 		btnPassword.setBackground(SystemColor.controlHighlight);
 		btnPassword.setBounds(264, 109, 86, 38);
-		panel_3.add(btnPassword);
+		databaseConnectionSubPanel.add(btnPassword);
 		
-		dbPassword = new JPasswordField();
+		dbPassword = new JPasswordField(PASSWORD);
 		dbPassword.setColumns(10);
 		dbPassword.setBounds(347, 109, 159, 38);
-		panel_3.add(dbPassword);
+		databaseConnectionSubPanel.add(dbPassword);
 		
 		dbUsername = new JTextField(DatabaseConnection.dbUser);
 		dbUsername.setColumns(10);
 		dbUsername.setBounds(95, 109, 159, 38);
-		panel_3.add(dbUsername);
+		databaseConnectionSubPanel.add(dbUsername);
 		
 		JButton btnUsername = new JButton("Username");
 		btnUsername.setMargin(new Insets(1,5,1,1));
@@ -202,18 +229,18 @@ public class Settings extends CustomJFrame {
 		btnUsername.setEnabled(false);
 		btnUsername.setBackground(SystemColor.controlHighlight);
 		btnUsername.setBounds(10, 109, 86, 38);
-		panel_3.add(btnUsername);
+		databaseConnectionSubPanel.add(btnUsername);
 		
-		JLabel lblDatabaseConnection = new JLabel("Database connection");
-		lblDatabaseConnection.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblDatabaseConnection.setBounds(10, 11, 280, 28);
-		panel_2.add(lblDatabaseConnection);
+		JLabel lblDbConn = new JLabel("Database connection");
+		lblDbConn.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDbConn.setBounds(10, 11, 280, 28);
+		databaseConnectionPanel.add(lblDbConn);
 		
 		JButton btnTestConnection = new JButton("");
 		btnTestConnection.setBackground(SystemColor.inactiveCaption);
 		btnTestConnection.setToolTipText("Test database connection");
 		btnTestConnection.setBounds(503, 11, 23, 23);
-		panel_2.add(btnTestConnection);
+		databaseConnectionPanel.add(btnTestConnection);
 		btnTestConnection.setBorderPainted(false);
 		btnTestConnection.setFocusPainted(false);
 		btnTestConnection.setIcon(Tools.getIconImage("/images/testdb.png", 20, 20));
@@ -231,8 +258,7 @@ public class Settings extends CustomJFrame {
 					String user = Settings.dbUsername.getText();
 					String password = String.valueOf(Settings.dbPassword.getPassword());
 					
-					
-				
+					PASSWORD = password;
 					
 					new DatabaseConnection(host, port, database, user, password);
 					
@@ -247,19 +273,19 @@ public class Settings extends CustomJFrame {
 			}
 		});
 		
-		JPanel panel_4 = new JPanel();
-		panel_4.setLayout(null);
-		panel_4.setBackground(SystemColor.inactiveCaption);
-		panel_4.setBounds(660, 189, 536, 215);
-		contentPane.add(panel_4);
+		JPanel generalSettingsPanel = new JPanel();
+		generalSettingsPanel.setLayout(null);
+		generalSettingsPanel.setBackground(SystemColor.inactiveCaption);
+		generalSettingsPanel.setBounds(660, 189, 536, 215);
+		contentPane.add(generalSettingsPanel);
 		
 		JPanel panel_5 = new JPanel();
 		panel_5.setLayout(null);
 		panel_5.setBackground(Color.WHITE);
 		panel_5.setBounds(10, 50, 516, 154);
-		panel_4.add(panel_5);
+		generalSettingsPanel.add(panel_5);
 		
-		userProfile = new JTextField("John Doe");
+		userProfile = new JTextField(System.getProperty("user.name"));
 		userProfile.setColumns(10);
 		userProfile.setBounds(95, 11, 159, 38);
 		panel_5.add(userProfile);
@@ -314,26 +340,165 @@ public class Settings extends CustomJFrame {
 		JLabel lblFile = new JLabel("General");
 		lblFile.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblFile.setBounds(10, 11, 280, 28);
-		panel_4.add(lblFile);
+		generalSettingsPanel.add(lblFile);
 		
-		JPanel panel_6 = new JPanel();
-		panel_6.setLayout(null);
-		panel_6.setBackground(SystemColor.inactiveCaption);
-		panel_6.setBounds(90, 415, 1106, 223);
-		contentPane.add(panel_6);
+		JPanel drawingSettingsPanel = new JPanel();
+		drawingSettingsPanel.setLayout(null);
+		drawingSettingsPanel.setBackground(SystemColor.inactiveCaption);
+		drawingSettingsPanel.setBounds(90, 415, 1106, 223);
+		contentPane.add(drawingSettingsPanel);
 		
-		JPanel panel_7 = new JPanel();
-		panel_7.setLayout(null);
-		panel_7.setBackground(Color.WHITE);
-		panel_7.setBounds(10, 50, 1086, 162);
-		panel_6.add(panel_7);
+		JPanel drawingSettingsSubPanel = new JPanel();
+		drawingSettingsSubPanel.setLayout(null);
+		drawingSettingsSubPanel.setBackground(Color.WHITE);
+		drawingSettingsSubPanel.setBounds(10, 50, 1086, 162);
+		drawingSettingsPanel.add(drawingSettingsSubPanel);
+		
+		JLabel lblDraftSettings = new JLabel("Drafting and colors");
+		lblDraftSettings.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDraftSettings.setBounds(10, 11, 272, 28);
+		drawingSettingsSubPanel.add(lblDraftSettings);
+		
+		JLabel lblGridSize = new JLabel("Grid size (mm)");
+		lblGridSize.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblGridSize.setBounds(10, 50, 85, 28);
+		drawingSettingsSubPanel.add(lblGridSize);
+		
+		JLabel lblDraftingBackgrouns = new JLabel("Drafting background");
+		lblDraftingBackgrouns.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDraftingBackgrouns.setBounds(202, 50, 131, 28);
+		drawingSettingsSubPanel.add(lblDraftingBackgrouns);
+		
+		JLabel lblVerticesColor = new JLabel("Highlight color");
+		lblVerticesColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblVerticesColor.setBounds(202, 89, 131, 28);
+		drawingSettingsSubPanel.add(lblVerticesColor);
+		
+		DRAFTING_BACKGROUND = new CustomColorPicker();
+		DRAFTING_BACKGROUND.setBounds(332, 50, 36, 28);
+		DRAFTING_BACKGROUND.setBackground(Color.WHITE);
+		drawingSettingsSubPanel.add(DRAFTING_BACKGROUND);
+		
+		FEATURE_HIGHLIGHTED_STATE_COLOR = new CustomColorPicker();
+		FEATURE_HIGHLIGHTED_STATE_COLOR.setBackground(Color.CYAN);
+		FEATURE_HIGHLIGHTED_STATE_COLOR.setBounds(332, 89, 36, 28);
+		drawingSettingsSubPanel.add(FEATURE_HIGHLIGHTED_STATE_COLOR);
+		
+		JLabel lblGridColor = new JLabel("Grid color");
+		lblGridColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblGridColor.setBounds(10, 123, 131, 28);
+		drawingSettingsSubPanel.add(lblGridColor);
+		
+		GRID_COLOR = new CustomColorPicker();
+		GRID_COLOR.setBackground(Color.LIGHT_GRAY);
+		GRID_COLOR.setBounds(140, 123, 36, 28);
+		drawingSettingsSubPanel.add(GRID_COLOR);
+		
+		JLabel lblHighlightState = new JLabel("Selection color");
+		lblHighlightState.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblHighlightState.setBounds(202, 123, 131, 28);
+		drawingSettingsSubPanel.add(lblHighlightState);
+		
+		SELECTION_COLOR = new CustomColorPicker();
+		SELECTION_COLOR.setBackground(new Color (135, 234, 105));
+		SELECTION_COLOR.setBounds(332, 128, 36, 28);
+		drawingSettingsSubPanel.add(SELECTION_COLOR);
+		
+		JLabel lblTextAndDefault = new JLabel("Text and default names");
+		lblTextAndDefault.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblTextAndDefault.setBounds(598, 10, 272, 28);
+		drawingSettingsSubPanel.add(lblTextAndDefault);
+		
+		JLabel newLayerName = new JLabel("New layer name");
+		newLayerName.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		newLayerName.setBounds(598, 49, 131, 28);
+		drawingSettingsSubPanel.add(newLayerName);
+		
+		txtNewlayer = new JTextField();
+		txtNewlayer.setText("New_layer");
+		txtNewlayer.setColumns(10);
+		txtNewlayer.setBounds(732, 50, 106, 28);
+		drawingSettingsSubPanel.add(txtNewlayer);
+		
+		JLabel newDocName = new JLabel("New document name");
+		newDocName.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		newDocName.setBounds(598, 88, 131, 28);
+		drawingSettingsSubPanel.add(newDocName);
+		
+		txtNewDoc = new JTextField();
+		txtNewDoc.setText("Untitled");
+		txtNewDoc.setColumns(10);
+		txtNewDoc.setBounds(732, 89, 106, 28);
+		drawingSettingsSubPanel.add(txtNewDoc);
+		
+		JLabel lblDisplay = new JLabel("Others");
+		lblDisplay.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDisplay.setBounds(880, 11, 183, 28);
+		drawingSettingsSubPanel.add(lblDisplay);
+		
+		JLabel lblMonitor = new JLabel("Monitor");
+		lblMonitor.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblMonitor.setBounds(880, 50, 131, 28);
+		drawingSettingsSubPanel.add(lblMonitor);
+		
+		JLabel lblShowHint = new JLabel("Autosave on close");
+		lblShowHint.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblShowHint.setBounds(881, 128, 131, 28);
+		drawingSettingsSubPanel.add(lblShowHint);
+		
+		JLabel label_2 = new JLabel("Show hint");
+		label_2.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		label_2.setBounds(881, 89, 131, 28);
+		drawingSettingsSubPanel.add(label_2);
+		
+		JLabel lblSnap = new JLabel("Snap");
+		lblSnap.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblSnap.setBounds(391, 50, 107, 28);
+		drawingSettingsSubPanel.add(lblSnap);
+		
+		snapToggle = new CustomJToggle(false);
+		snapToggle.setBounds(497, 51, 60, 28);
+		drawingSettingsSubPanel.add(snapToggle);
+		
+		JLabel lblGrid = new JLabel("Grid");
+		lblGrid.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblGrid.setBounds(391, 88, 107, 28);
+		drawingSettingsSubPanel.add(lblGrid);
+		
+		gridToggle = new CustomJToggle(false);
+		gridToggle.setBounds(497, 89, 60, 28);
+		drawingSettingsSubPanel.add(gridToggle);
+		
+		HINT = new CustomJToggle(false);
+		HINT.setBounds(1016, 89, 60, 28);
+		drawingSettingsSubPanel.add(HINT);
+		
+		CustomJToggle autosaveToggle = new CustomJToggle(true);
+		autosaveToggle.setBounds(1016, 128, 60, 28);
+		drawingSettingsSubPanel.add(autosaveToggle);
+	
+		monitorSpinner.setBounds(1021, 50, 55, 28);
+		drawingSettingsSubPanel.add(monitorSpinner);
+		
+		gridSizeSpinner = new JSpinner(new SpinnerNumberModel(5, 5, 15, 1));
+		gridSizeSpinner.setBounds(140, 50, 36, 28);
+		drawingSettingsSubPanel.add(gridSizeSpinner);
+		
+		JLabel lblGI = new JLabel("Snap size (mm)");
+		lblGI.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblGI.setBounds(10, 89, 131, 28);
+		drawingSettingsSubPanel.add(lblGI);
+		
+		snapSizeSpinner = new JSpinner(new SpinnerNumberModel(15, 10, 20, 1));
+		snapSizeSpinner.setBounds(140, 89, 36, 28);
+		drawingSettingsSubPanel.add(snapSizeSpinner);
 		
 		JLabel lblDrawingSettings = new JLabel("Drawing settings");
 		lblDrawingSettings.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblDrawingSettings.setBounds(10, 11, 280, 28);
-		panel_6.add(lblDrawingSettings);
+		drawingSettingsPanel.add(lblDrawingSettings);
 		
-		JButton btnFinish = new JButton("Close");
+		JButton btnFinish = new JButton("Finish");
 		btnFinish.setBorderPainted(false);
 		btnFinish.setFocusPainted(false);
 		btnFinish.setForeground(SystemColor.text);
@@ -345,6 +510,7 @@ public class Settings extends CustomJFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				if(openMainFrame) {
 					
 					try {
@@ -355,9 +521,11 @@ public class Settings extends CustomJFrame {
 						String user = Settings.dbUsername.getText();
 						String password = String.valueOf(Settings.dbPassword.getPassword());
 						
+						if(!initialized){
+							mainFrame.start(new DatabaseConnection(host, port, database, user, password));
+							initialized = true;
+						}
 						
-						new MainFrame(new DatabaseConnection(host, port, database, user, password)).setVisible(true);
-						;
 					} catch (ClassNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -369,7 +537,8 @@ public class Settings extends CustomJFrame {
 					
 					
 				}
-				dispose();
+				//dispose();
+				setVisible(false);
 			}
 			
 		});
@@ -379,7 +548,7 @@ public class Settings extends CustomJFrame {
 		separator_1.setBounds(79, 649, 1127, 2);
 		contentPane.add(separator_1);
 		
-		JLabel lblcLicense = new JLabel("(c) 2017 License : -----");
+		JLabel lblcLicense = new JLabel("Licensed under the Apache License, Version 2.0");
 		lblcLicense.setFont(new Font("Tahoma", Font.ITALIC, 13));
 		lblcLicense.setBounds(90, 674, 310, 20);
 		contentPane.add(lblcLicense);
@@ -412,12 +581,14 @@ public class Settings extends CustomJFrame {
 		});
 	}
 
-	private static Rectangle getWindow(int i) {
+	private static Rectangle getWindow() {
 		
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] gs = ge.getScreenDevices();
+		int screen = 0;
+		if(monitorSpinner.getValue().toString() != null) {
+			screen = Integer.parseInt(monitorSpinner.getValue().toString()) - 1;
+		}
 		
-		return gs[i].getDefaultConfiguration().getBounds();
+		return gs[screen].getDefaultConfiguration().getBounds();
 		
 	}
 	
@@ -432,8 +603,7 @@ public class Settings extends CustomJFrame {
 	 * @return int[] in which the first element is the width and the second is the height.
 	 */
 	public static int[] getDefaultWindowSize() {
-
-		// Get devices
+		
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
 
@@ -473,7 +643,9 @@ public class Settings extends CustomJFrame {
 			
 			MainFrame.dbConnection = new DatabaseConnection(DatabaseConnection.dbHost, DatabaseConnection.dbPort,
 					DatabaseConnection.dbName, DatabaseConnection.dbUser, String.valueOf(dbPassword.getPassword()) );
-
+			
+			PASSWORD = String.valueOf(dbPassword.getPassword());
+			
 			// Save DB Params
 
 			DatabaseCredentialsManager databaseCredentialsManager = new DatabaseCredentialsManager();
@@ -481,7 +653,14 @@ public class Settings extends CustomJFrame {
 					dbName.getText(), dbUsername.getText());
 
 			// Drawing settings
-			// TODO: Drawing settings
+			
+			Settings.GRID_MM = (int) Settings.gridSizeSpinner.getValue();
+			Settings.SNAP_SIZE = (int) Settings.snapSizeSpinner.getValue();
+			
+			if(MainFrame.panel != null) {
+				MainFrame.panel.renderGrid(Settings.GRID_MM);
+			}
+			
 			
 			// Log some messages
 			
@@ -492,6 +671,8 @@ public class Settings extends CustomJFrame {
 			
 			settingsMessage.setText("Something went wrong:  " + e.getMessage());
 			settingsMessage.setForeground(Settings.DEFAULT_ERROR_COLOR);
+			
+			e.printStackTrace();
 		}
 		
 	}
@@ -501,20 +682,18 @@ public class Settings extends CustomJFrame {
 	 * @param e the WindowEvent to set
 	 */
 	protected void handleWindowClosingEvent(WindowEvent e) {
-		dispose();
+		setVisible(false);
 	}
 
 	// Software information
 	public static final String TITLE = "GMCM3_Software_Eng";
 
 	public static final int DEFAULT_DPI = java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
-
-	public static GraphicsDevice[] gs;
 	
 	// Drawing settings
-	public static int gridSizeMM = 5;
-	public static int snappingTolerance = 20;
-	public static int gridMajorInterval = 5;
+	public static int GRID_MM = 5;
+	public static int SNAP_SIZE = 20;
+	public static int GRID_MAJOR_INTERVAL = GRID_MM;
 	public static int cursorSize = 25;
 
 	public static double mouseOffset = 20;
@@ -547,14 +726,20 @@ public class Settings extends CustomJFrame {
 	public static Color defaultColor = Color.BLACK;
 	public static Color DEFAULT_ERROR_COLOR = Color.RED;
 	
-	public static final Color DEFAULT_SELECTION_COLOR = new Color (135, 234, 105);
+	public static CustomColorPicker DRAFTING_BACKGROUND;
+	public static CustomColorPicker GRID_COLOR;
+	public static CustomColorPicker FEATURE_HIGHLIGHTED_STATE_COLOR;
+	public static CustomColorPicker SELECTION_COLOR;
+	public static CustomJToggle HINT;
+	
+	public static final Color ICON_COLOR = new Color(31, 105, 224);
 	public static final Color DEFAULT_LAYER_COLOR = Color.BLACK;
-	public static final Color DEFAULT_VERTIX_COLOR = new Color(31, 105, 224);
 	public static final Color MUTE_STATE_COLOR = Color.LIGHT_GRAY;
 	public static final Color DEFAULT_STATE_COLOR = new Color(31, 105, 224);
 	public static final Color HIGHLIGHTED_STATE_COLOR = new Color(239, 66, 14);
 	public static final Color FEATURE_CREATED_COLOR = new Color (16, 91, 26);
-	public static final Color FEATURE_HIGHLIGHTED_STATE_COLOR = Color.CYAN;
 	public static final int MONITOR_SCREEN = 1;
 	public static final Dimension MAINFRAME_SIZE = new Dimension(1366, 768);
+	public static JTextField txtNewlayer;
+	public static JTextField txtNewDoc;
 }

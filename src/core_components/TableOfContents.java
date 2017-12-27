@@ -31,8 +31,7 @@ import renderers.GeometryTableIconRenderer;
  * Remove layer and <br>
  * Change the color of a layer.
  * 
- * TODO Conclude the listener at the first column (visibility)
- * @author OlumideEnoch
+ * @author Olumide Igbiloba
  *
  */
 public class TableOfContents extends JTable {
@@ -285,7 +284,7 @@ public class TableOfContents extends JTable {
 	}
 	
 	/**
-	 * Retrieved a layer in the table of content with a particular ID.
+	 * Retrieves a layer in the table of content with a particular ID.
 	 * @param id ID of the layer (should be retrieved at the 4th column of the table row)
 	 * @return layer 
 	 */
@@ -305,45 +304,46 @@ public class TableOfContents extends JTable {
 	 */
 	public static void removeRowLayer(int row) {
 		
+		// 0. Message to display at the end of the operation
 		String message = "";
 		
-		// Get the ID of the layer with the layer id column index
+		// 1. Get the ID of the layer with the layer id column index
 		int id = (int) tableModel.getValueAt(row, LAYER_ID_COL_INDEX);
 		
-		// Find the layer with the ID
+		// 2. Find the layer with the ID
 		Layer layer = findLayerWithID(id);
 		
-		// If a layer was found (it should be found!, unless the ID index is wrong!)
+		// 3. If a layer was found (it should be found!, unless the ID index is wrong!)
 		if(layer != null) {
 			
-			// Remove layer from the list
+			// 3.1 Remove layer from the list
 			layerList.remove(layer);
 			
-			// Refresh the table row by removing the layer
+			// 3.2 Refresh the table row by removing the layer
 			tableModel.removeRow(row);
 			
-			// Update the combo box model
+			// 3.3 Update the combo box model
 			MainFrame.updateLayerComboBoxModel( getListOfLayersInString() );
 			
-			// Change the operation message to success
+			// 3.4 Change the operation message to success
 			message = layer.getLayerName() + " removed";
 			
-			// Disable edit mode
+			// 3.5 Disable edit mode if there is no more items on the table of contents
 			if(tableModel.getRowCount() == 0) {
 				
 				MainFrame.panel.abandonEditSession();
 				MainFrame.updateDrawButtonGroup();
 			}
-			
+		
+		// 4. If not found
 		} else {
 			
-			// If not found
-			// Change the operation message to fail
+			// 4.1 Change the operation message to fail
 			
 			message = "System error, cannot find layer on list";
 		}
 		
-		// Log the message at the mainframe
+		// 5. Log the message at the mainframe
 		MainFrame.log(message);
 	}
 	

@@ -78,6 +78,15 @@ public class ToolIconButton extends JButton {
 					setBackground(Settings.DEFAULT_STATE_COLOR);
 				}
 			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				if(!buttonReleased) {
+					setBackground(Settings.DEFAULT_STATE_COLOR);
+				} else
+					setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+			}
 		});
 		
 	}

@@ -28,8 +28,8 @@ import application_frames.Settings;
  * @author Olumide Igbiloba
  * @created Dec 7, 2017
  * @modifications
- * a. Added the tabledata variable to the layer Dec 9, 2017
- * b. Change the layer ID of all the features of a layer when the layer ID is changed Dec 12, 2017
+ * a. Dec 9, 2017 - Added the tabledata variable to the layer 
+ * b. Dec 12, 2017 - Change the layer ID of all the features of a layer when the layer ID is changed 
  *
  */
 public class Layer  {
@@ -104,7 +104,7 @@ public class Layer  {
 	}
 
 	/**
-	 * Returns the name of the layer
+	 * Returns the name of tayer
 	 * @return the layerName
 	 */
 	public String getLayerName() {

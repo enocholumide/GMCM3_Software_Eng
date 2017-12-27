@@ -1,7 +1,7 @@
 package core_components;
 
+import java.awt.Color;
 import java.awt.Component;
-import java.util.Random;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -21,7 +21,6 @@ public class GeometryPanel extends DefaultCellEditor {
 	protected GeometryTableIcon panel;
 	private Layer layer;
 	
-	final Random r= new Random();
 	
 	/**
 	 * Creates the GeometryPanel
@@ -48,8 +47,11 @@ public class GeometryPanel extends DefaultCellEditor {
 
 		int id = (int) table.getModel().getValueAt(row, 4);
 		layer = TableOfContents.findLayerWithID(id);
-
-		layer.setLayerColor(JColorChooser.showDialog(null, "Set Layer Color",layer.getLayerColor()));
+		
+		Color color = JColorChooser.showDialog(null, "Set Layer Color",layer.getLayerColor());
+		if(color != null) {
+			layer.setLayerColor(color);
+		}
 		panel.setLayer(layer);
 		
 		return panel;

@@ -34,8 +34,8 @@ import toolset.Tools;
  * @author Olumide Igbiloba
  * @created Dec 7, 2017
  * @modifications
- * a. Added a parameter to return the coordinates array in double for the database Dec 8, 2017<br>
- * b. Added the parameter to store the center of the feature if it is an ellipse<br>
+ * a. Dec 8, 2017 - Added a parameter to return the coordinates array in double for the database <br>
+ * b. Dec 12, 2017 - Added the parameter to store the center of the feature if it is an ellipse <br>
  */
 public class Feature {
 	
@@ -106,7 +106,7 @@ public class Feature {
 		double[] x = Tools.copyFromIntArray(xp);
 		double[] y = Tools.copyFromIntArray(xp);
 		
-		int snapSize = Settings.snappingTolerance;
+		int snapSize = Settings.SNAP_SIZE;
 		
 		for(int i = 0; i < x.length; i++) {
 			this.vertices.add(new Rectangle2D.Double(x[i] - (snapSize/2), y[i] - (snapSize/2), snapSize, snapSize));
@@ -120,7 +120,7 @@ public class Feature {
 	 */
 	public void setVerticesFromDoubleArray(double[] x, double[] y) {
 		
-		int snapSize = Settings.snappingTolerance;
+		int snapSize = Settings.SNAP_SIZE;
 		
 		for(int i = 0; i < x.length; i++) {
 			this.vertices.add(new Rectangle2D.Double(x[i] - (snapSize/2), y[i] - (snapSize/2), snapSize, snapSize));

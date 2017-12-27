@@ -28,12 +28,12 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import core_classes.Feature;
 import core_classes.Layer;
-import custom_components.CustomJPanel;
 import effects.GridLine;
 import effects.TextItem;
 import features.PointItem;
@@ -53,19 +53,19 @@ import application_frames.Settings;
  * @author OlumideEnoch
  *
  */
-public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, MouseListener {
+public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseListener {
 
 
 	private static final long serialVersionUID = -6318145875906198958L;
 	
 	/**Size of snaps*/
-	private int snapSize = Settings.snappingTolerance;
+	private int snapSize = Settings.SNAP_SIZE;
 	
 	/**Snapping mode*/
-	private boolean snappingModeIsOn = false;
+	public boolean snappingModeIsOn = false;
 	
 	/**Grid state*/
-	private boolean gridIsOn = false;
+	public boolean gridIsOn = false;
 	
 	/**Editing mode*/
 	public boolean editModeIsOn = false;
@@ -149,13 +149,13 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		
 		addMouseMotionListener(this);
 		addMouseListener(this);
+		setBackground(Settings.DRAFTING_BACKGROUND.getBackground());
 		
-		renderGrid(Settings.gridSizeMM);
+		renderGrid(Settings.GRID_MM);
 		showAnimatedHint("Welcome", Settings.DEFAULT_STATE_COLOR);
 		
 	}
 	
-
 	/**
 	 * Paints the drawn component
 	 * @param g the graphics object to set
@@ -163,6 +163,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	@Override 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		setBackground(Settings.DRAFTING_BACKGROUND.getBackground());
 		
 		// Clone the graphics object
 		g2d = (Graphics2D) g.create();
@@ -171,7 +172,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		
 		try {
 			
-			// 0. Set drawing pen settings to default
+			// 0. Set drawing pen to default
 			// --------------------------------------
 			g2d.setStroke(new BasicStroke(1));
 			g2d.setColor(Settings.DEFAULT_LAYER_COLOR);
@@ -183,7 +184,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 			for(GridLine item : this.gridLines) {
 				Line2D line = item.getLine();
 				g2d.setStroke(new BasicStroke(item.getWeight()));
-				g2d.setColor(Color.LIGHT_GRAY);
+				g2d.setColor(Settings.GRID_COLOR.getBackground());
 				g2d.draw(line);
 			}
 			
@@ -200,7 +201,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 						if(feature.isVisibile()) {
 						
 							if(feature.isHighlighted()) {
-								c = Settings.FEATURE_HIGHLIGHTED_STATE_COLOR;
+								c = Settings.FEATURE_HIGHLIGHTED_STATE_COLOR.getBackground();
 							} 
 							
 							else if (!feature.isHighlighted()) {
@@ -275,7 +276,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 			// 4. Render selection bounds
 			if(this.queryBounds != null ) {
 				
-				Color c = Settings.DEFAULT_SELECTION_COLOR;
+				Color c = Settings.SELECTION_COLOR.getBackground();
 				
 				g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), Settings.TRANSPARENCY_LEVEL_2));
 				g2d.fill(queryBounds);
@@ -290,11 +291,11 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 			// ------------------------------------------
 			int count = 0;
 			for(Rectangle2D item : this.vertexList) {
+				
 				g2d.setColor(currentLayer.getLayerColor());
 				
-				
 				if(count == 0) {
-					g2d.setColor(Settings.DEFAULT_STATE_COLOR);
+					g2d.setColor(Settings.HIGHLIGHTED_STATE_COLOR);
 				}
 				// For poly lines - change color of the first and last vertex
 				if(currentLayer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)) {
@@ -312,6 +313,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 			// 5. Render the snap 
 			// ------------------------------------------
 			if(!(snapPoint == null)) {
+				g2d.setStroke(new BasicStroke(1));
 				g2d.setColor(Color.PINK);
 				g2d.draw(snapPoint);
 			}
@@ -402,10 +404,12 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		} else if (this.gridLines.isEmpty()) {
 			
 			this.gridIsOn = true;
-			renderGrid(Settings.gridSizeMM);
+			renderGrid(Settings.GRID_MM);
 			
 		}
-		
+		if(Settings.gridToggle.getState() != gridIsOn) {
+			Settings.gridToggle.doClick();
+		}
 		repaint();
 	}
 	
@@ -423,6 +427,10 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 		else {
 			
 			snappingModeIsOn = true;
+		}
+		
+		if(Settings.snapToggle.getState() != snappingModeIsOn) {
+			Settings.snapToggle.doClick();
 		}
 		
 		repaint();
@@ -561,30 +569,34 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	 */
 	private void setCurrentMouseGuide(TextItem guideOrTip, Color color) {
 		
-		if(guideOrTip != null) {
-			
-			g2d.setFont(new Font("Tw Cen MT", Font.ITALIC, 15)); 
-			FontMetrics fm = g2d.getFontMetrics();
-			Rectangle2D rect = fm.getStringBounds(guideOrTip.getText(), g2d); 
-			
-			if(guideOrTip.getBasePosition().getX() < 0) {
-				guideOrTip.setBasePosition(new Point2D.Double(getMousePosition().getX() + Settings.mouseOffset, getMousePosition().getY()));
+		try {
+			if(guideOrTip != null) {
+				
+				g2d.setFont(new Font("Tw Cen MT", Font.ITALIC, 15)); 
+				FontMetrics fm = g2d.getFontMetrics();
+				Rectangle2D rect = fm.getStringBounds(guideOrTip.getText(), g2d); 
+				
+				if(guideOrTip.getBasePosition().getX() < 0) {
+					guideOrTip.setBasePosition(new Point2D.Double(getMousePosition().getX() + Settings.mouseOffset, getMousePosition().getY()));
+				}
+				
+				if(guideOrTip.getBasePosition().getX() + rect.getWidth() > getWidth()) {
+					guideOrTip.setBasePosition(new Point2D.Double(getMousePosition().getX() - Settings.mouseOffset - rect.getWidth(), getMousePosition().getY()));
+				}
+				
+				int padding = Settings.TOOL_TIP_PADDING;
+				g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Settings.TRANSPARENCY_LEVEL_1));
+				
+				RoundRectangle2D roundedRect = getRoundedFrameRectForText(guideOrTip, fm, padding);
+				guideOrTip.setBorderRectangleInPanel(roundedRect);
+				
+				g2d.fill(roundedRect);
+				
+				g2d.setColor(Color.WHITE);							
+				g2d.drawString(guideOrTip.getText(), (int) (int)guideOrTip.getBasePosition().getX() + padding/2, (int)guideOrTip.getBasePosition().getY()- padding/2);
 			}
+		}catch (NullPointerException e) {
 			
-			if(guideOrTip.getBasePosition().getX() + rect.getWidth() > getWidth()) {
-				guideOrTip.setBasePosition(new Point2D.Double(getMousePosition().getX() - Settings.mouseOffset - rect.getWidth(), getMousePosition().getY()));
-			}
-			
-			int padding = Settings.TOOL_TIP_PADDING;
-			g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Settings.TRANSPARENCY_LEVEL_1));
-			
-			RoundRectangle2D roundedRect = getRoundedFrameRectForText(guideOrTip, fm, padding);
-			guideOrTip.setBorderRectangleInPanel(roundedRect);
-			
-			g2d.fill(roundedRect);
-			
-			g2d.setColor(Color.WHITE);							
-			g2d.drawString(guideOrTip.getText(), (int) (int)guideOrTip.getBasePosition().getX() + padding/2, (int)guideOrTip.getBasePosition().getY()- padding/2);
 		}
 	}
 	
@@ -1231,7 +1243,9 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	 * Renders the grid on the drawing panel
 	 * @param gridSizeMM the grid size specified in MM to set
 	 */
-	private void renderGrid(int gridSizeMM) {
+	public void renderGrid(int gridSizeMM) {
+		
+		this.gridLines.clear();
 		
 		if(gridIsOn) {
 			
@@ -1255,7 +1269,7 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 				
 				GridLine gridline = new GridLine(line);
 				if(count != 0) {
-					if(count % Settings.gridMajorInterval == 0) {
+					if(count % Settings.GRID_MAJOR_INTERVAL == 0) {
 						gridline.setWeight(2);
 					}
 				}
@@ -1890,78 +1904,82 @@ public class DrawingJPanel extends CustomJPanel implements MouseMotionListener, 
 	}
 
 	/**
-	 * Shows animated hint on the drawing panel
+	 * Shows animated hint on the drawing panel.<br>
+	 * This can be turned on/off at the settings frame.
 	 * @param message the Message to display
 	 * @param stateColor the state color e.g Settings.LAYER_CREATED_COLOR
 	 */
 	public void showAnimatedHint(String message, Color stateColor) {
 		
-		animatorTime = 0;
-		movingHint = null;
-		repaint();
-		
-		int x = getWidth();
-	
-		movingHint = new TextItem(new Point2D.Double(x, 0), message);
-		Color c = stateColor;
-		movingHint.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 200));
-		
-		timer = new Timer(5, new ActionListener() {
+		if(Settings.HINT.getState() == true) {
 			
-			@Override
-			public void actionPerformed(ActionEvent e) {
+			animatorTime = 0;
+			movingHint = null;
+			repaint();
+			
+			int x = getWidth();
+		
+			movingHint = new TextItem(new Point2D.Double(x, 0), message);
+			Color c = stateColor;
+			movingHint.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 200));
+			
+			timer = new Timer(5, new ActionListener() {
 				
-				animatorTime++;
-				if(movingHint != null ) {
-					if(animatorTime != 75) {
-						double ya = movingHint.getBasePosition().getY();
-						movingHint.setBasePosition(new Point2D.Double(0, ya + 0.7));
-						repaint();
-					}
+				@Override
+				public void actionPerformed(ActionEvent e) {
 					
-					else  {
+					animatorTime++;
+					if(movingHint != null ) {
+						if(animatorTime != 75) {
+							double ya = movingHint.getBasePosition().getY();
+							movingHint.setBasePosition(new Point2D.Double(0, ya + 0.7));
+							repaint();
+						}
 						
-						timer.stop();
-						animatorTime = 0;
-						
-						// Stay for some time and go off
-						
-						fadetimer = new Timer(10, new ActionListener() {
+						else  {
 							
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								// TODO Auto-generated method stub
-								animatorTime++;
+							timer.stop();
+							animatorTime = 0;
+							
+							// Stay for some time and go off
+							
+							fadetimer = new Timer(10, new ActionListener() {
 								
-								if(movingHint != null) {
-									if(animatorTime > 150) {
-										if(!(movingHint.getColor().getAlpha() < 10)) {
-											Color c = movingHint.getColor();
-											movingHint.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()-2));
-											repaint();
-										} else {
-											movingHint = null;
-											repaint();
-											fadetimer.stop();
-											timer.stop();
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									// TODO Auto-generated method stub
+									animatorTime++;
+									
+									if(movingHint != null) {
+										if(animatorTime > 150) {
+											if(!(movingHint.getColor().getAlpha() < 10)) {
+												Color c = movingHint.getColor();
+												movingHint.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()-2));
+												repaint();
+											} else {
+												movingHint = null;
+												repaint();
+												fadetimer.stop();
+												timer.stop();
+											}
 										}
 									}
+									if(animatorTime == 300) {
+										
+										movingHint = null;
+										repaint();
+										fadetimer.stop();
+										timer.stop();
+									}
 								}
-								if(animatorTime == 300) {
-									
-									movingHint = null;
-									repaint();
-									fadetimer.stop();
-									timer.stop();
-								}
-							}
-						});
-						fadetimer.start();
+							});
+							fadetimer.start();
+						}
 					}
 				}
-			}
-		});
-		timer.start();
+			});
+			timer.start();
+		}
 	}
 
 	/**

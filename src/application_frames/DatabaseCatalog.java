@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.awt.Color;
@@ -25,8 +24,6 @@ import java.awt.Font;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * Displays the connected databases, tables and the layers.<br>
@@ -41,8 +38,8 @@ import java.awt.event.MouseEvent;
  * <<database name>> 			// -- node level 1
  * 		<<table name>>			// -- node level 2
  * 			<<layer 1>>			// -- node level 3
- * 			<<layer 2>>
- * 			<<layer n>>			
+ * 			<<layer 2>>			// -- node level 3
+ * 			<<layer n>>			// -- node level 3
  * 
  * At each launch, it uses the database connection at the mainframe and retrives all the
  * data needed to display the required information as described earlier.<br>
@@ -52,11 +49,15 @@ import java.awt.event.MouseEvent;
  * <br>
  * Because the database and the geotaable cannot be deleted during the session, the add and 
  * delete buttons are only available when a layer (lowest node) is selected.<br>
- * 
  * <br>
  * It does not support drag and drop.
  * 
  * @author Olumide Igbiloba
+ * 
+ * @created Dec 14, 2017
+ * @modifications
+ * a. Dec 17, 2017 - Commented the functionality to create a new empty layer from the catalog due to 
+ * inability if the database to store empty layer without features. 
  *
  */
 public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListener {
@@ -66,9 +67,12 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 	 */
 	private static final long serialVersionUID = 2250678265542531251L;
 
-
+	/**JTree representing rhe database, table and the layers contained*/
 	private JTree dbTree = null;
-	private ToolIconButton delete, addToPanel; //addLayer;
+	/**Button for deleting layer on the JTree*/
+	private ToolIconButton delete; //addLayer;
+	/**Button adding selected layers to the drawing panel*/
+	private ToolIconButton addToPanel;
 
 	/**
 	 * Creates the Frame for the Database Catalog
@@ -97,17 +101,6 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 		
 		dbTree.addTreeSelectionListener(this);
 		
-		dbTree.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				super.mousePressed(e);
-				
-				if(SwingUtilities.isRightMouseButton(e)) {
-					System.out.println("nouse pressed");
-				}
-			}
-		});
 		JScrollPane scrollPane = new JScrollPane(dbTree);
 		scrollPane.setBounds(0, 42, 274, 657);
 		panel.add(scrollPane);
@@ -238,38 +231,44 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 		});
 		*/
 		delete.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-				TreePath[] treePaths = (TreePath[]) dbTree.getSelectionPaths();
-				DefaultTreeModel model = (DefaultTreeModel) (dbTree.getModel());
-
-				for(TreePath tree : treePaths) {
-					
-					if(tree.getPath().length > 2) {
-
-						Object[] layerPath = tree.getPath();
-						
-						String tableName = String.valueOf(layerPath[2]);
-						
-						// On delete delete from database
-						try {
-							
-							MainFrame.dbConnection.dropTable(tableName);
-							model.removeNodeFromParent((DefaultMutableTreeNode) (tree.getLastPathComponent()));
-							
-						} catch (SQLException e1) {
-							e1.printStackTrace();
-							JOptionPane.showMessageDialog(null, "Error", "Cannot delete table from Database", JOptionPane.OK_OPTION);
-						}
-						
-					} 
-				}	
+				deleteSelectedLayers();	
 			}
 		});
 	}
 	
+	/**
+	 * Deletes selected layers on the tree
+	 */
+	private void deleteSelectedLayers() {
+		
+		TreePath[] treePaths = (TreePath[]) dbTree.getSelectionPaths();
+		DefaultTreeModel model = (DefaultTreeModel) (dbTree.getModel());
+
+		for(TreePath tree : treePaths) {
+			
+			if(tree.getPath().length > 2) {
+
+				Object[] layerPath = tree.getPath();
+				
+				String tableName = String.valueOf(layerPath[2]);
+				
+				// On delete delete from database
+				try {
+					
+					MainFrame.dbConnection.dropTable(tableName);
+					model.removeNodeFromParent((DefaultMutableTreeNode) (tree.getLastPathComponent()));
+					
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error", "Cannot delete table from Database", JOptionPane.OK_OPTION);
+				}
+				
+			} 
+		}
+	}
+
 	/**
 	 * Uses the database conection at the main frame to show the 
 	 * currently connected database, table and list of available layers

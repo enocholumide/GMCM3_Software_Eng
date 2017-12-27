@@ -50,10 +50,10 @@ import javax.swing.border.LineBorder;
 /**
  * 
  * Main frame of the application.<br>
- * The Class is overloaded with two constructors, one with a database connection and other without 
- * a database connection <br>
+ * At the initial start of the application, the settings frame is first displayed to set the
+ * database connection and general drawing settings.<br>
  * <br>
- * It the Group layout primarily to arrange the components contained.<br>
+ * It uses the Group layout primarily to arrange the components contained.<br>
  * The frame is splited into two, using the JSplit pane.<br>
  * <br>
  * The initial bounds of the mainframe is 15inch (resolution 1366 x 768), which can be resized.<br>
@@ -64,11 +64,17 @@ import javax.swing.border.LineBorder;
  * the tool bar (top) and the message/ log area at the bottom.<br>
  * This other part is managed by using the Group layout and stretches to the left when window is resized.<br>
  * <br>
- * Most of the activity. actions happens at the DrawingJPanel class, the MainFrame handles common tasks such
+ * Most of the activity (actions) happens at the DrawingJPanel class, the MainFrame handles common tasks such
  * as adding new layer to the table of contents, importing and exporting files and chosing the a shape to be drawn and 
  * general interface to other application frames in the program e.g. DatabaseCatalog, Settings Frame etc.
  * 
  * @author Olumide Igbiloba
+ * @created Dec 7, 2017
+ * @modifications
+ * a. Dec 22, 2017 - Integrate database connection parameters from the settings frame<br>
+ * b. Dec 26, 2017 - Removed the overloaded constructor with a database connection and <br>
+ * changed it to a private method within the class<br>
+ * c. Dec 27, 2017 - Integrate drawing settings from the settings frame<br>
  *
  */
 public class MainFrame extends CustomJFrame {
@@ -133,10 +139,13 @@ public class MainFrame extends CustomJFrame {
 	/**Database connection object*/
 	public static DatabaseConnection dbConnection;
 	
+	/**Database catalog frame*/
 	private DatabaseCatalog dbCatalog;
 	
-	private Settings settingsFrame;
+	/**Settings frame*/
+	private Settings settingsFrame = new Settings(true, this);
 	
+	/**List of tools icon buttons*/
 	public static List<ToolIconButton> buttonsList = new ArrayList<ToolIconButton>();
 	
 	JPopupMenu sessionMenu;
@@ -145,18 +154,16 @@ public class MainFrame extends CustomJFrame {
 	 * Starts the application
 	 */
 	public MainFrame() {
-
 		setUp();
 		//initialize();
-		
 	}
 	
 	/**
-	 * Constructs the mainframe with a database connnection.
+	 * Starts the mainframe with a database connnection.
 	 * 
 	 * @param dbConnection database connection for storing/ retrieving drawn shapes
 	 */
-	public MainFrame(DatabaseConnection dbConnection) {
+	public void start(DatabaseConnection dbConnection) {
 		
 		MainFrame.dbConnection = dbConnection;
 		initialize();
@@ -173,7 +180,6 @@ public class MainFrame extends CustomJFrame {
 	 */
 	private void setUp() {
 	
-		settingsFrame = new Settings(true);
 		settingsFrame.setVisible(true);
 	
 	}
@@ -183,10 +189,13 @@ public class MainFrame extends CustomJFrame {
 	 */
 	private void initialize() {
 		
+		// Make visible
+		setVisible(true);
+		
 		// Position at the middle of the screen
 		setBounds(Settings.window.x  + (Settings.window.width - Settings.MAINFRAME_SIZE.width) / 2, 
 				Settings.window.y + (Settings.window.height - Settings.MAINFRAME_SIZE.height) / 2,
-				Settings.MAINFRAME_SIZE.width, 
+				Settings.MAINFRAME_SIZE.width,
 				Settings.MAINFRAME_SIZE.height);
 		
 		// Adding window listener
@@ -220,7 +229,7 @@ public class MainFrame extends CustomJFrame {
 		// Project name textfield
 		projectName = new JTextField();
 		projectName.setHorizontalAlignment(SwingConstants.CENTER);
-		projectName.setText("Untitled");
+		projectName.setText(Settings.txtNewDoc.getText().toString());
 		projectName.setFont(new Font("Tahoma", Font.BOLD, 18));
 		projectName.setColumns(10);
 		
@@ -261,8 +270,7 @@ public class MainFrame extends CustomJFrame {
 		toolBar.setBackground(Color.WHITE);
 		
 		panel = new DrawingJPanel();
-		panel.setBorder(new LineBorder(Color.WHITE));
-		panel.setBackground(Color.WHITE);
+		panel.setBorder(new LineBorder(Color.LIGHT_GRAY));
 		
 		
 		JPanel panel_9 = new JPanel();
@@ -374,6 +382,7 @@ public class MainFrame extends CustomJFrame {
 		
 		ToolIconButton btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
 		btnSnap.setToolTipText("Turn of snap");
+		
 		ToolIconButton btnGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
 		btnGrid.setToolTipText("Turn on grid");
 		
@@ -526,8 +535,8 @@ public class MainFrame extends CustomJFrame {
 		addComponentListener(new ComponentListener() {
 			
 		    public void componentResized(ComponentEvent e) {
-		        System.out.println(getBounds()); 
-		        
+		       
+		        panel.renderGrid(Settings.GRID_MM);
 		        
 		        if(getBounds().width > 1366) {
 		        	splitPane.setDividerLocation((int)(getBounds().width / 4));
@@ -578,8 +587,8 @@ public class MainFrame extends CustomJFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-
-				// Initialize a SessionManager with all the active layers & a file extension filter for later
+				log("Work in progress -> ");
+				/*// Initialize a SessionManager with all the active layers & a file extension filter for later
 				SessionManager sessionManager = new SessionManager(tableOfContents);
 				FileNameExtensionFilter sessionFileFilter = new FileNameExtensionFilter("GMCM Application Session Files", "gmcm");
 
@@ -655,7 +664,7 @@ public class MainFrame extends CustomJFrame {
 					}
 
 				});
-
+*/
 			}
 
 		});
@@ -755,11 +764,12 @@ public class MainFrame extends CustomJFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				if(settingsFrame != null) {
-					settingsFrame.dispose();
-				} 
-
-				settingsFrame = new Settings(false);
-				settingsFrame.setVisible(true);				
+					if(settingsFrame.isVisible()) {
+						settingsFrame.setVisible(false);
+					} else if(!settingsFrame.isVisible()) {
+						settingsFrame.setVisible(true);
+					}
+				} 	
 			}
 		});
 		
@@ -771,6 +781,14 @@ public class MainFrame extends CustomJFrame {
 			}
 			
 		});
+		
+		if(Settings.gridToggle.getState() != panel.gridIsOn) {
+			btnGrid.doClick();
+			btnGrid.setButtonReleased(panel.gridIsOn);
+			if(panel.gridIsOn) {
+				btnGrid.setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+			}
+		}
 		
 		btnAddLayer.addActionListener(new ActionListener() {
 
@@ -789,6 +807,14 @@ public class MainFrame extends CustomJFrame {
 				
 			}
 		});
+		
+		if(Settings.snapToggle.getState() != panel.snappingModeIsOn) {
+			btnSnap.doClick();
+			btnSnap.setButtonReleased(panel.snappingModeIsOn);
+			if(panel.snappingModeIsOn) {
+				btnSnap.setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+			}
+		}
 		
 		layerListComboBox.addItemListener(new ItemListener() {
 			
@@ -822,8 +848,8 @@ public class MainFrame extends CustomJFrame {
 		// 0. Disable query mode
 		panel.disableQueryMode();
 		
-		// 1. Create list of possible geometry
-		// -----------------------------------
+		// 1. Create list of possible geometries
+		// -------------------------------------
 		String[] geom = {Settings.POLYGON_GEOMETRY, Settings.POLYLINE_GEOMETRY, Settings.POINT_GEOMETRY};
 		
 		// 2. Put list inside a combo box
@@ -836,7 +862,7 @@ public class MainFrame extends CustomJFrame {
 	    layerPanel.setLayout(new GridLayout(4,1));
 	  
 	    // b. Create the text fields
-	    String autoGeneratedLayerName = "New_Layer" + TableOfContents.getNewLayerID();
+	    String autoGeneratedLayerName = Settings.txtNewlayer.getText().toString() + TableOfContents.getNewLayerID();
 	    JTextField layerNameTextField = new JTextField(autoGeneratedLayerName);
 	   
 	    // c. Add componets to panel
@@ -859,11 +885,12 @@ public class MainFrame extends CustomJFrame {
 			    geomList.getSelectedItem().toString().equals(Settings.POINT_GEOMETRY )
 					) {
 
-				// 4.2 Create a new layer
-				
+				// 4.2 Gets the layer name from the text field
 				String layerName = layerNameTextField.getText().toString();
+				// 4.3 If no name was inputed, use the autogenerated layer name
 				if(layerName.length() < 1) { layerName = autoGeneratedLayerName; }
 				
+				// 4.3 Create a new layer
 				createNewLayer(geomList.getSelectedItem().toString(), layerName);
 				
 			}
@@ -881,7 +908,6 @@ public class MainFrame extends CustomJFrame {
 	private void handleEditingSession(String signal) {
 		
 		if(layerListComboBox.getModel().getSize() > 0) {
-			
 	
 			String selectedFeatureType = getCurrentFeatureType();
 			panel.toggleEditSession(layerListComboBox.getSelectedIndex(), selectedFeatureType,  signal);
@@ -905,6 +931,7 @@ public class MainFrame extends CustomJFrame {
 	 * @param e item event coming from the combo box model
 	 */
 	private void handleLayerSaving(ItemEvent e) {
+		
 		
 		if (e.getStateChange() == ItemEvent.DESELECTED) {
 	         
@@ -931,8 +958,6 @@ public class MainFrame extends CustomJFrame {
         		   // Save the items to the database!
         		   saveLayerToDB(layer);
    
-        		   
-
         	   } else if(response == JOptionPane.NO_OPTION) {
         		   
         		   // Reload previous saved item from DB
@@ -1093,11 +1118,10 @@ public class MainFrame extends CustomJFrame {
 				} 
 				
 				else if (layerType.equals(Settings.POINT_GEOMETRY)) {
+					
 					for(int i = 0; i < Math.min(aX.length, aY.length); i++) {
 						
 						Point2D pointCoord = new Point2D.Double(aX[0], aY[0]);
-						
-						System.out.println(aX[0] + " " +aY[0]);
 						
 						Feature point  = new PointItem(newLayer.getNextFeatureID(), pointCoord);
 						point.setFeatureType(Settings.POINT_GEOMETRY);
@@ -1119,8 +1143,8 @@ public class MainFrame extends CustomJFrame {
 					List<Rectangle2D> vertices = new ArrayList<Rectangle2D>();
 
 					for(int i = 0; i < Math.min(aX.length, aY.length); i++) {
-						vertices.add(new Rectangle2D.Double(aX[i] - (Settings.snappingTolerance / 2), aY[i] - (Settings.snappingTolerance / 2),
-								Settings.snappingTolerance, Settings.snappingTolerance));
+						vertices.add(new Rectangle2D.Double(aX[i] - (Settings.SNAP_SIZE / 2), aY[i] - (Settings.SNAP_SIZE / 2),
+								Settings.SNAP_SIZE, Settings.SNAP_SIZE));
 					}
 
 					newLayer.setLayerType(layerType); // ! important
