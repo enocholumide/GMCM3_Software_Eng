@@ -57,7 +57,8 @@ import java.awt.event.ActionListener;
  * @created Dec 14, 2017
  * @modifications
  * a. Dec 17, 2017 - Commented the functionality to create a new empty layer from the catalog due to 
- * inability if the database to store empty layer without features. 
+ * inability if the database to store empty layer without features.
+ * b. Dec 28, 2017 - Auto-refresh node tree when new layer have been added to the database
  *
  */
 public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListener {
@@ -69,6 +70,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 
 	/**JTree representing rhe database, table and the layers contained*/
 	private JTree dbTree = null;
+	private DefaultMutableTreeNode geoTable;
 	/**Button for deleting layer on the JTree*/
 	private ToolIconButton delete; //addLayer;
 	/**Button adding selected layers to the drawing panel*/
@@ -138,10 +140,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 		panel.add(infoLabel);
 		
 		// Expand the rows
-		for(int i=0;i<dbTree.getRowCount();i++)
-		{
-			dbTree.expandRow(i);
-		}
+		expandAllRows();
 		
 		
 		
@@ -238,6 +237,28 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 		});
 	}
 	
+	private void expandAllRows() {
+		
+		for(int i=0;i<dbTree.getRowCount();i++)
+		{
+			dbTree.expandRow(i);
+		}
+	}
+
+	/**
+	 * @return the dbTree
+	 */
+	public JTree getDbTree() {
+		return dbTree;
+	}
+
+	/**
+	 * @param dbTree the dbTree to set
+	 */
+	public void setDbTree(JTree dbTree) {
+		this.dbTree = dbTree;
+	}
+
 	/**
 	 * Deletes selected layers on the tree
 	 */
@@ -276,7 +297,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 	private void addDatabaseContents() {
 	
 		DefaultMutableTreeNode db = null;
-		DefaultMutableTreeNode geoTable = null;
+		geoTable = null;
 		
 		if(MainFrame.dbConnection != null) {
 	
@@ -301,6 +322,23 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * Add new layer to the geo table node
+	 * @param layerName new layer name
+	 */
+	public void addNewLayerToNode(String layerName) {
+		
+		DefaultMutableTreeNode layers = new DefaultMutableTreeNode(layerName);
+		layers.setUserObject(layerName);
+		geoTable.add(layers);
+		
+		DefaultTreeModel model = (DefaultTreeModel)dbTree.getModel();
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode)dbTree.getModel().getRoot();
+		model.reload(root);
+		dbTree.revalidate();
+		expandAllRows();
 	}
 
 	/**
