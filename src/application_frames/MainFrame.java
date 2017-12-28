@@ -332,16 +332,6 @@ public class MainFrame extends CustomJFrame {
 		ToolIconButton importBtn = new ToolIconButton("Import", "/images/import.png", 60, 60);
 		importBtn.setToolTipText("Import projects from csv");
 		fileRibbon.add(importBtn);
-		importBtn.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				FileHandler.readFromGeoJson();
-				
-			}
-			
-		});
 		
 		ToolIconButton exportBtn = new ToolIconButton("Export", "/images/export.png", 60, 60);
 		fileRibbon.add(exportBtn);
