@@ -44,8 +44,8 @@ public class FilesFrame extends CustomJFrame {
 		super.setTitle("Files");
 	    Container contentPane = getContentPane();
 	    JPanel panel = new JPanel();
-	    saveFileButton = new ToolIconButton("SaveQ", "/images/save.png", 50, 50);
-	    openFileButton = new ToolIconButton("OpenQ", "/images/file.png", 50, 50);
+	    saveFileButton = new ToolIconButton("SaveQ", "/images/save_file.png", 50, 50);
+	    openFileButton = new ToolIconButton("OpenQ", "/images/open_file.png", 50, 50);
 	    saveFileButton.setText("Save current project");
 	    openFileButton.setText("Open existing project");
 	    panel.setLayout(new GridLayout(2, 1, 10, 10));
