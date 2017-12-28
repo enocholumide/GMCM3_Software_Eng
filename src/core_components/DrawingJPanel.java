@@ -2133,6 +2133,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				Feature feature = DrawingJPanel.currentLayer.getListOfFeatures().get(i);
 				if(feature.isHighlighted()) {
 					DrawingJPanel.currentLayer.getListOfFeatures().remove(feature);
+					DrawingJPanel.currentLayer.setNotSaved(true);
 					repaint();
 				}
 			}

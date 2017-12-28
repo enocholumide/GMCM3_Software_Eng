@@ -7,23 +7,34 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableModel;
 
 import application_frames.AttributeTableFrame;
 import application_frames.MainFrame;
 import core_classes.Layer;
-import renderers.LayerRemoveButtonRenderer;
-import renderers.GeometryTableIconRenderer;
+import renderers_and_editors.GeometryPanelEditor;
+import renderers_and_editors.GeometryTableIconRenderer;
+import renderers_and_editors.LayerNameEditor;
+import renderers_and_editors.LayerRemoveButtonEditor;
+import renderers_and_editors.LayerRemoveButtonRenderer;
 
 /**
  * Arranges the list of current layers <br>
@@ -35,7 +46,8 @@ import renderers.GeometryTableIconRenderer;
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
  * @modifications
- * a. Dec 28, 2017 Validate adding layer with same name on the table of contents
+ * a. Dec 28, 2017 Added functionality for changing layer name
+ * b. Dec 28, 2017 Validate adding layer with same name on the table of contents
  *
  */
 public class TableOfContents extends JTable {
@@ -98,7 +110,9 @@ public class TableOfContents extends JTable {
 			}
 		});
 		
+		
 		setComponentPopupMenu(menu);
+		
 	}
 	
 	protected void handleTableChangedListener(TableModelEvent e) {
@@ -182,11 +196,13 @@ public class TableOfContents extends JTable {
         
     	// Change the renderer of the second column to display shape type
 		getColumnModel().getColumn(1).setCellRenderer(new GeometryTableIconRenderer());
-        getColumnModel().getColumn(1).setCellEditor(new GeometryPanel(new JTextField()));
+        getColumnModel().getColumn(1).setCellEditor(new GeometryPanelEditor(new JTextField()));
+        
+        getColumnModel().getColumn(2).setCellEditor(new LayerNameEditor(new JTextField()));
         
         // Attach a remove button to the 4th column
         getColumnModel().getColumn(3).setCellRenderer(new LayerRemoveButtonRenderer());
-        getColumnModel().getColumn(3).setCellEditor(new LayerRemoveButton(new JTextField()));
+        getColumnModel().getColumn(3).setCellEditor(new LayerRemoveButtonEditor(new JTextField()));
         
         // Make the 5th column invisible
         // This contains the layer id of the layer initial row
@@ -240,16 +256,14 @@ public class TableOfContents extends JTable {
 	            
 	        // Showing geometry of the layer
 	        case 1: 
-	        	classType = GeometryPanel.class;
+	        	classType = GeometryPanelEditor.class;
 	        	break;
 	        	
-	        // Layer name
-	        case 2:
-	        	classType = String.class;
+	       // Skip cell 2!, use default class
 	        
 	        // Remove button
 	        case 3:
-	        	classType = LayerRemoveButton.class;
+	        	classType = LayerRemoveButtonEditor.class;
 	        	break;
 	        	
 	       // Layer ID (hidden) : width set to 0
@@ -301,8 +315,6 @@ public class TableOfContents extends JTable {
 
 		for(String existingLayerNames : getListOfLayersInString()) {
 			if(existingLayerNames.equals(layer.getLayerName())) {
-				System.out.println(existingLayerNames);
-				System.out.println(layer.getLayerName());
 				return false;
 			}
 		}

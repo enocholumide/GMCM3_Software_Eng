@@ -69,12 +69,13 @@ import javax.swing.border.LineBorder;
  * @author Olumide Igbiloba
  * @created Dec 7, 2017
  * @modifications
- * a. Dec 20, 2017 - Integrate database connection parameters from the settings frame<br>
+ * a. Dec 20, 2017 - Integrate database connection parameters from the settings frame.<br>
  * b. Dec 26, 2017 - Removed the overloaded constructor with a database connection and <br>
- * changed it to a private method within the class<br>
- * c. Dec 27, 2017 - Integrate drawing settings from the settings frame<br>
- * d. Dec 28, 2017 - Created separate (popup) frame for saving and opening drawing sessions<br>
- *
+ * changed it to a private method within the class.<br>
+ * c. Dec 27, 2017 - Integrate drawing settings from the settings frame.<br>
+ * d. Dec 28, 2017 - Created separate (popup) frame for saving and opening drawing sessions.<br>
+ * e. Dec 28, 2017 - Created separate (popup) frame for importing and exporting csv/ files.<br>
+ * f. Dec 28, 2017 - Validate adding layer with same name on the table of contents<br>
  */
 public class MainFrame extends CustomJFrame {
 
@@ -109,7 +110,7 @@ public class MainFrame extends CustomJFrame {
 	public static JComboBox<String[]> layerListComboBox;
 	
 	/**Model of the layer list combo box*/
-	private static DefaultComboBoxModel<String[]> model;
+	public static DefaultComboBoxModel<String[]> model;
 	
 	/**Table of contents arranging the list of layers*/
 	public static TableOfContents tableOfContents;
@@ -139,13 +140,13 @@ public class MainFrame extends CustomJFrame {
 	public static DatabaseConnection dbConnection;
 	
 	/**Database catalog frame*/
-	private DatabaseCatalog dbCatalog;
+	public static DatabaseCatalog dbCatalog;
 	
 	/**Settings frame*/
 	private SettingsFrame settingsFrame = new SettingsFrame(true, this);
 	
-	/**Files frame*/
-	private FilesFrame filesFrame = new FilesFrame();
+	ImportExportFrame importExportFrame;
+	FilesFrame filesFrame;
 	
 	/**List of tools icon buttons*/
 	public static List<ToolIconButton> buttonsList = new ArrayList<ToolIconButton>();
@@ -585,12 +586,73 @@ public class MainFrame extends CustomJFrame {
 		// ACTION LISTENERS 
 		// ---------------------------------------------------------------------------
 		
+		importBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(importExportFrame != null) {
+					importExportFrame.dispose();
+				}
+				importExportFrame = new ImportExportFrame("Import from");
+				importExportFrame.setVisible(true);
+				
+				importExportFrame.getCsvLoader().addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						log("Musa, handle import from CSV");
+					}
+				});
+				
+				importExportFrame.getGeoJsonLoader().addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						log("Musa, handle import from geoJson");
+					}
+				});
+			}
+		});
+		
+		exportBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if(importExportFrame != null) {
+					importExportFrame.dispose();
+				}
+				
+				importExportFrame = new ImportExportFrame("Export to");
+				importExportFrame.setVisible(true);
+				
+				importExportFrame.getCsvLoader().addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						log("Musa, handle export to CSV");
+					}
+				});
+				
+				importExportFrame.getGeoJsonLoader().addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						log("Musa, hhandle export to geoJson");
+					}
+				});
+			}
+		});
+		
 		filesBtn.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				
+				if(filesFrame != null) {
+					filesFrame.dispose();
+				}
+				filesFrame = new FilesFrame();
 				filesFrame.setVisible(true);
 				
 				filesFrame.getSaveButton().addActionListener(new ActionListener() {
@@ -668,20 +730,22 @@ public class MainFrame extends CustomJFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if(layerListComboBox.getItemCount() > 0) {
+				if(panel.editModeIsOn) {
 					
-					int index = layerListComboBox.getSelectedIndex();
-			        int layerid = (int) tableOfContents.getModel().getValueAt(index, TableOfContents.LAYER_ID_COL_INDEX);
-			        Layer layer = TableOfContents.findLayerWithID(layerid);
-			        
-			        if(layer.isNotSaved()) {
-			        	
-			        	saveLayerToDB(layer);
-			        	
-			        } else { log("Nothing to save"); }
-			        
-				} else
-					log("No layer selected");
+					if(layerListComboBox.getItemCount() > 0) {
+						
+						Layer layer = DrawingJPanel.currentLayer;
+	
+				        if((layer.isNotSaved())) {
+				        	
+				        	saveLayerToDB(layer);
+				        	
+				        } else { log("Nothing to save"); }
+				        
+					} else
+						log("No layer selected");
+				}
+				
 			}
 		});
 		
@@ -962,6 +1026,11 @@ public class MainFrame extends CustomJFrame {
 				log("Layer saved to DB");
 				
 				layer.setNotSaved(false);
+				layer.setInDatabase(true);
+				
+				if(dbCatalog != null) {
+					dbCatalog.addNewLayerToNode(layer.getLayerName());
+				}
 
 				return true;
 				
@@ -1000,17 +1069,20 @@ public class MainFrame extends CustomJFrame {
 
 	public static void createNewLayer(String layerType, String layerName) {
 		
+		
 		// 1. Create a new layer
 		Layer newLayer = new Layer(TableOfContents.getNewLayerID(), true, layerType, layerName );
 		
 		// 2. Add to the table of content
-		tableOfContents.addRowLayer(newLayer);
+		boolean added = tableOfContents.addRowLayer(newLayer);
 		
-		// 3. Log some message
-		String message = "New " + newLayer.getLayerType() + " layer: "+ newLayer.getLayerName() + " was created";
-		log(message);
-		panel.showAnimatedHint(message, SettingsFrame.DEFAULT_STATE_COLOR);
-	
+		if(added) {
+			// 3. Log some message
+			String message = "New " + newLayer.getLayerType() + " layer: "+ newLayer.getLayerName() + " was created";
+			log(message);
+			panel.showAnimatedHint(message, SettingsFrame.DEFAULT_STATE_COLOR);
+		}	
+
 	}
 	
 	/**
@@ -1292,5 +1364,36 @@ public class MainFrame extends CustomJFrame {
 	protected void handleWindowClosingEvent(WindowEvent e) {
 		dispose();
 		System.exit(0);
+	}
+	
+	/**
+	 * Renames a layer in the database by dropping the old layer's table and writing a new one.<br>
+	 * The layer combo list is also updated.
+	 * @param oldName old layer name
+	 * @param layer layer to be written
+	 */
+	public static void renameLayerInDatabase(String oldName, Layer layer) {
+		
+		try {
+			
+			// Drop the old table
+			MainFrame.dbConnection.dropTable(oldName);
+			
+			// Write a new one
+			MainFrame.dbConnection.writeTable(layer.getLayerName(), layer);
+			
+			// Update the combo box
+			updateLayerComboBoxModel(TableOfContents.getListOfLayersInString());
+			
+			log(oldName + " renamed to " + layer.getLayerName());
+			panel.showAnimatedHint("Success", SettingsFrame.FEATURE_CREATED_COLOR);
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+			log("Can not rename layer, an error occured : " + e.getMessage());
+			panel.showAnimatedHint("Error", SettingsFrame.DEFAULT_ERROR_COLOR);
+		}
 	}
 }

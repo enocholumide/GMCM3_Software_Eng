@@ -1,4 +1,4 @@
-package core_components;
+package renderers_and_editors;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -10,11 +10,13 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import core_classes.Layer;
+import core_components.GeometryTableIcon;
+import core_components.TableOfContents;
 
 /**
  * Class for creating the GeometryPanel
  */
-public class GeometryPanel extends DefaultCellEditor {
+public class GeometryPanelEditor extends DefaultCellEditor {
 
 	private static final long serialVersionUID = 1L;
 	protected JButton btn;
@@ -26,7 +28,7 @@ public class GeometryPanel extends DefaultCellEditor {
 	 * Creates the GeometryPanel
 	 * @param text the text to set
 	 */
-	public GeometryPanel(JTextField text) {
+	public GeometryPanelEditor(JTextField text) {
 		super(text);
 		panel = new GeometryTableIcon();
 	}

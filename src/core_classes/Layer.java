@@ -54,6 +54,7 @@ public class Layer  {
 	/** Saved status of a layer, when new features are drawn on the layer, the saved status becomes false and 
 	 * the user will be prompted to save when the layer is switched to another layer for editing */
 	private boolean notSaved = false;
+	private boolean inDatabase = false;
 	
 	
 	/**
@@ -181,6 +182,20 @@ public class Layer  {
 	 */
 	public void setNotSaved(boolean notSaved) {
 		this.notSaved = notSaved;
+	}
+
+	/**
+	 * @return the inDatabase
+	 */
+	public boolean isInDatabase() {
+		return inDatabase;
+	}
+
+	/**
+	 * @param inDatabase the inDatabase to set
+	 */
+	public void setInDatabase(boolean inDatabase) {
+		this.inDatabase = inDatabase;
 	}
 
 	/**
