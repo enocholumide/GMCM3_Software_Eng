@@ -2,6 +2,7 @@ package file_handling;
 
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,11 +14,40 @@ import java.util.List;
 
 import javax.swing.JFileChooser;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import application_frames.MainFrame;
 import core_classes.Feature;
 import core_classes.Layer;
 
+
+
 public class FileHandler {
+	
+	// First  Datum WGS84 ellipsoid parameter
+		public static final double  sllipsoidalHeight = 160; // Common average ellipsoidal hight 
+		public static final double  semiMajorAxisWGS84 = 6378137.0; 
+		public static final double  semiMinorAxisWGS84 = 6356752.314245179;
+		
+		//second datum Gausskruger ellipsoid parameter
+		public static final double  semiMajorAxisGauskruger = 6377397.155; 
+		public static final double  semiMinorAxisGausKruger = 6356078.962818189;
+		
+		//third datum  Lambert ellipsoid parameter
+		public static final double  semiMajorAxisLambert = 6378137.0;
+		public static final double  semiMinorAxisLamberet = 6356752.314140356;
+		
+		static double eccentrycitysquare ;
+		static double eccentrycityPrimesquare;
+		static double flattening;
+		static double inverseFlattening;
+		static double semiMajorAxisForCurvature ;
+	    static double radiusOfCurvature ;
+    
+    
+    static List<Point2D> poinsList = new ArrayList<Point2D>();
 	
 	 static Point point = null;
 	 private static ArrayList<Point> pointlist = new ArrayList<Point>();
@@ -76,6 +106,104 @@ public class FileHandler {
 	          }
 		          
    }
+	 
+	/** 
+	 * Readin GeoJson File
+	 * @param layer
+	 * @param file
+	 */
+	 public static void readFromGeoJson() {
+	 
+	 JFileChooser geoJsonFile = new JFileChooser ();
+	 int geoJsonReturnValu = geoJsonFile.showSaveDialog(MainFrame.panel);
+	 File saveSession = geoJsonFile.getSelectedFile();
+	 
+	 setParametr(semiMajorAxisWGS84, semiMinorAxisWGS84);
+     System.out.println(eccentrycityPrimesquare);
+     // the datum parameters are set according to the selected datum
+     /*if(SelcectedDatum == "WGS84") {
+		setParametr(semiMajorAxisWGS84, semiMinorAxisGausKruger); 
+		System.out.println("Selcted Datum Is WGS84");
+	   }else if(SelcectedDatum == "GaussKrurger") {
+		setParametr(semiMajorAxisGauskruger, semiMinorAxisGausKruger); 
+		System.out.println("Selcted Datum Is GaussKurger");
+	   } else if(SelcectedDatum == "Lambert"){
+	      setParametr(semiMajorAxisLambert, semiMinorAxisLamberet); 
+	
+	   }*/
+    	
+
+    	
+	
+    JSONParser parser = new JSONParser();
+     
+     
+    if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
+ 
+		try {
+			 FileReader readfile = new FileReader (saveSession);
+			
+			Object obj = parser.parse(readfile);
+			JSONObject jsonObject = (JSONObject) obj;
+			JSONArray feature = (JSONArray) jsonObject.get("features");
+			String id = (String) jsonObject.get("type");
+			
+			for(int i= 0; i<feature.size();i++) {
+							
+				int start = (feature.get(i).toString()).indexOf("[");
+				int end = (feature.get(i).toString()).lastIndexOf("]");
+				
+				String coords = (feature.get(i).toString()).substring(start, end);
+				
+				String replacer1 = coords.replace("[", "");
+				String replacer2 = replacer1.replace("]", "");					
+				String[] coordsString = replacer2.split(",");
+				
+				for(int j = 0 ; j < coordsString.length - 1; j++) {
+									
+					double latitude = Double.parseDouble(coordsString[j]);
+					double longitude = Double.parseDouble(coordsString[j+1]);
+					
+					double latitudeInDegree = latitude * Math.PI / 180;
+					double longitudeInDegree = longitude * Math.PI / 180;
+					System.out.println(semiMajorAxisForCurvature);				
+					radiusOfCurvature = (semiMajorAxisForCurvature)/(Math.sqrt(1-(eccentrycitysquare*Math.sin(latitudeInDegree))));
+					double xWordCoord =  (radiusOfCurvature + sllipsoidalHeight ) * Math.cos(latitudeInDegree)*Math.cos(longitudeInDegree);
+					double yWordCoord = (radiusOfCurvature + sllipsoidalHeight) * Math.cos(latitudeInDegree)*Math.sin(longitudeInDegree);
+				    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
+				    // world coordinates must be converted to image coordinates
+					poinsList.add(point2d);
+					System.out.println(poinsList);				
+				}
+				
+			}
+			
+			System.out.println( poinsList.size());
+			
+		}catch (Exception e) {
+				e.printStackTrace();
+				
+				
+			}
+        } 
+    }
+	 /*
+	     * seting transformation parameter
+	     */
+	    public static void setParametr(Double semiMajorAxis , Double semiMinorAxis) {
+	    	double SemiMajorAxis = semiMajorAxis;
+	    	double SemiMinorAxis = semiMinorAxis ;
+	    	
+	    	 semiMajorAxisForCurvature = semiMajorAxis;
+	    	eccentrycitysquare = ((SemiMajorAxis * SemiMajorAxis ) - ( SemiMinorAxis * SemiMinorAxis))/(SemiMajorAxis * SemiMajorAxis );
+	    	eccentrycityPrimesquare = ((SemiMajorAxis * SemiMajorAxis ) - ( SemiMinorAxis * SemiMinorAxis))/( SemiMinorAxis * SemiMinorAxis);
+	    	flattening = (SemiMajorAxis - SemiMinorAxis)/SemiMajorAxis ;
+	    	inverseFlattening = 1/ ((SemiMajorAxis - SemiMinorAxis)/SemiMajorAxis ) ;
+	    	
+	    }
+		 
+		 
+	 
 	 /**
 	  * Reading PolylineFeatire  from CSV file.
 	  * @param spliter
