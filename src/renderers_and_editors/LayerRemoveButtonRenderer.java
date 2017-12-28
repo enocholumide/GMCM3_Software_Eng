@@ -1,4 +1,4 @@
-package renderers;
+package renderers_and_editors;
 
 import java.awt.Component;
 

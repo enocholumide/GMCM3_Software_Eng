@@ -1,4 +1,4 @@
-package core_components;
+package renderers_and_editors;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -11,6 +11,7 @@ import javax.swing.JTextField;
 
 import application_frames.MainFrame;
 import application_frames.SettingsFrame;
+import core_components.TableOfContents;
 
 /**
  * Button for removing layer at the table of contents.
@@ -18,7 +19,7 @@ import application_frames.SettingsFrame;
  * @author OlumideEnoch
  *
  */
-public class LayerRemoveButton extends DefaultCellEditor {
+public class LayerRemoveButtonEditor extends DefaultCellEditor {
 
 	private static final long serialVersionUID = 1L;
 	protected JButton removeButton;
@@ -29,7 +30,7 @@ public class LayerRemoveButton extends DefaultCellEditor {
 	 * Creates the LayerRemoveButton
 	 * @param text the text to set
 	 */
-	public LayerRemoveButton(JTextField text) {
+	public LayerRemoveButtonEditor(JTextField text) {
 		super(text);
 		removeButton = new JButton();
 		removeButton.setOpaque(false);

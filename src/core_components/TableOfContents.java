@@ -7,22 +7,34 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableModel;
 
 import application_frames.AttributeTableFrame;
 import application_frames.MainFrame;
 import core_classes.Layer;
-import renderers.LayerRemoveButtonRenderer;
-import renderers.GeometryTableIconRenderer;
+import renderers_and_editors.GeometryPanelEditor;
+import renderers_and_editors.GeometryTableIconRenderer;
+import renderers_and_editors.LayerNameEditor;
+import renderers_and_editors.LayerRemoveButtonEditor;
+import renderers_and_editors.LayerRemoveButtonRenderer;
 
 /**
  * Arranges the list of current layers <br>
@@ -32,6 +44,10 @@ import renderers.GeometryTableIconRenderer;
  * Change the color of a layer.
  * 
  * @author Olumide Igbiloba
+ * @since Dec 7, 2017
+ * @modifications
+ * a. Dec 28, 2017 Added functionality for changing layer name
+ * b. Dec 28, 2017 Validate adding layer with same name on the table of contents
  *
  */
 public class TableOfContents extends JTable {
@@ -94,7 +110,9 @@ public class TableOfContents extends JTable {
 			}
 		});
 		
+		
 		setComponentPopupMenu(menu);
+		
 	}
 	
 	protected void handleTableChangedListener(TableModelEvent e) {
@@ -178,11 +196,13 @@ public class TableOfContents extends JTable {
         
     	// Change the renderer of the second column to display shape type
 		getColumnModel().getColumn(1).setCellRenderer(new GeometryTableIconRenderer());
-        getColumnModel().getColumn(1).setCellEditor(new GeometryPanel(new JTextField()));
+        getColumnModel().getColumn(1).setCellEditor(new GeometryPanelEditor(new JTextField()));
+        
+        getColumnModel().getColumn(2).setCellEditor(new LayerNameEditor(new JTextField()));
         
         // Attach a remove button to the 4th column
         getColumnModel().getColumn(3).setCellRenderer(new LayerRemoveButtonRenderer());
-        getColumnModel().getColumn(3).setCellEditor(new LayerRemoveButton(new JTextField()));
+        getColumnModel().getColumn(3).setCellEditor(new LayerRemoveButtonEditor(new JTextField()));
         
         // Make the 5th column invisible
         // This contains the layer id of the layer initial row
@@ -236,16 +256,14 @@ public class TableOfContents extends JTable {
 	            
 	        // Showing geometry of the layer
 	        case 1: 
-	        	classType = GeometryPanel.class;
+	        	classType = GeometryPanelEditor.class;
 	        	break;
 	        	
-	        // Layer name
-	        case 2:
-	        	classType = String.class;
+	       // Skip cell 2!, use default class
 	        
 	        // Remove button
 	        case 3:
-	        	classType = LayerRemoveButton.class;
+	        	classType = LayerRemoveButtonEditor.class;
 	        	break;
 	        	
 	       // Layer ID (hidden) : width set to 0
@@ -259,22 +277,51 @@ public class TableOfContents extends JTable {
 	/**
 	 * Add a new layer to table of contents
 	 * @param layer the layer to set
+	 * @return 
 	 */
-	public void addRowLayer(Layer layer) {
+	public boolean addRowLayer(Layer layer) {
 		
-		// Add to the layer list
-		layerList.add(layer);
+		// Validate layer
 		
-		// Add to the table 
-		tableModel.addRow(layer.getTableData());
+		if(validateLayer(layer)) {
 		
-		// Increase the layer id
-		layerID++;
-		
-		// Update the combo box model
-		MainFrame.updateLayerComboBoxModel( getListOfLayersInString() );
+			// Add to the layer list
+			layerList.add(layer);
+			
+			// Add to the table 
+			tableModel.addRow(layer.getTableData());
+			
+			// Increase the layer id
+			layerID++;
+			
+			// Update the combo box model
+			MainFrame.updateLayerComboBoxModel( getListOfLayersInString() );
+			
+			return true;
+			
+		} else {
+			MainFrame.log("Cannot add layer, layer with same name exists");
+			JOptionPane.showMessageDialog(null, "Cannot add layer, layer with same name exists", "Error adding new layer", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
 	}
 	
+	/**
+	 * 
+	 * @param layer
+	 * @return
+	 */
+	public boolean validateLayer(Layer layer) {
+
+		for(String existingLayerNames : getListOfLayersInString()) {
+			if(existingLayerNames.equals(layer.getLayerName())) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 	/**
 	 * Returns a new layer ID
 	 * @return new layer id
