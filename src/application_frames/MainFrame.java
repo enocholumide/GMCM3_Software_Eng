@@ -67,7 +67,7 @@ import javax.swing.border.LineBorder;
  * general interface to other application frames in the program e.g. DatabaseCatalog, Settings Frame etc.
  * 
  * @author Olumide Igbiloba
- * @created Dec 7, 2017
+ * @since Dec 7, 2017
  * @modifications
  * a. Dec 20, 2017 - Integrate database connection parameters from the settings frame.<br>
  * b. Dec 26, 2017 - Removed the overloaded constructor with a database connection and <br>
@@ -1108,11 +1108,21 @@ public class MainFrame extends CustomJFrame {
 				
 				if(isEllipse) {
 					
+					List<Rectangle2D> vertices = new ArrayList<Rectangle2D>();
+					
 					double x = aX[0];
 					double y = aY[0];
 					double rx = resultSet.getDouble(6);
 					double ry = resultSet.getDouble(7);
-						
+					
+					// Center vertix
+					vertices.add(new Rectangle2D.Double(x - (SettingsFrame.SNAP_SIZE / 2), y - (SettingsFrame.SNAP_SIZE / 2),
+							SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
+					
+					// AXIS_X
+					vertices.add(new Rectangle2D.Double((x + rx) - (SettingsFrame.SNAP_SIZE / 2), y - (SettingsFrame.SNAP_SIZE / 2),
+							SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
+					
 					// Ellipse
 					Feature feature = new Feature(newLayer.getNextFeatureID());
 					Shape circleShape = new Ellipse2D.Double(x - rx, y - ry , rx * 2, ry * 2);
@@ -1120,16 +1130,20 @@ public class MainFrame extends CustomJFrame {
 					String featureType = "Ellipse";
 					if(rx == ry) {
 						featureType = "Circle";
+					} else {
+						// AXIS_Y
+						vertices.add(new Rectangle2D.Double(x - (SettingsFrame.SNAP_SIZE / 2), (y - ry) - (SettingsFrame.SNAP_SIZE / 2),
+								SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
 					}
 					
 					feature.setEllipse(isEllipse, new Point2D.Double(x,y), rx, ry);
 					feature.setShape(circleShape);
 					feature.setFeatureType(featureType);
+					feature.setVertices(vertices);
 					feature.setVisibile(true);
 					newLayer.setLayerType(layerType);
 					newLayer.getListOfFeatures().add(feature);
 					
-				
 				} 
 				
 				else if (layerType.equals(SettingsFrame.POINT_GEOMETRY)) {

@@ -50,7 +50,10 @@ import application_frames.SettingsFrame;
  * 
  * WORK IN PROGRESS
  * 
- * @author OlumideEnoch
+ * @author Olumide Igbiloba
+ * @since Dec 7, 2017
+ * @modifications
+ * a. Dec 29, 2017 - Added functionality for editing the vertices of a feature
  *
  */
 public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseListener {
@@ -87,6 +90,9 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	
 	/**List of points when mouse is dragged, cleared during new selection session*/
 	private List<Point2D> draggedPoints = new ArrayList<Point2D>(); 
+	
+	/**List of vertex when mouse is dragged, cleared during new selection session*/
+	private List<Rectangle2D> draggedVertex = new ArrayList<Rectangle2D>(); 
 	
 	/**Snapped point when mouse is clicked*/
 	private Rectangle2D snapPoint = null;
@@ -138,6 +144,16 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	
 	/** Text of the mouse tip*/
 	private String currentMouseTipText = SettingsFrame.DEFAULT_MOUSE_TIP;
+
+	/** Last feature that its vertix was dragged during edit mode*/
+	private Feature lastDraggedFeature;
+	
+	/** The vertex of the last dragged feature*/
+	private Rectangle2D lastDraggedVertex;
+	
+	/** The index of the pressed feature vertex during edit mode*/
+	private int pressedVertexIndex;
+	
 	
 	/**
 	 * Constructs a new drawing panel
@@ -230,12 +246,15 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 								g2d.draw(feature.getShape());
 								
 								// Render the shape vertices
-								if(!feature.isEllipse()) {
+								if(layer.equals(currentLayer) && editModeIsOn) {
+									c = SettingsFrame.HIGHLIGHTED_STATE_COLOR;
+								}
+								//if(!feature.isEllipse()) {
 									for(Shape shape : feature.getVertices()) {
 										g2d.setColor(c);
 										g2d.fill(shape);
 									}
-								}
+								//}
 							}
 						}
 					}
@@ -656,9 +675,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			this.tempShape = getRectangleShape(b, m);
 			
 			repaint();
-		
-		} 
-		
+		}
 	}
 	
 	/**
@@ -929,49 +946,8 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				
 				if(snappingModeIsOn) {
 					
-					// Check first current mouse is found on the grid snap points
-					for(Rectangle2D item : this.gridSnapPoints) {
-						if(!(item.contains(e.getPoint()))) {
-							this.snapPoint = null;
-							this.repaint();
-							break;
-						}
-					}
+					findSnaps(e);
 					
-					// Check for if found
-					for(Rectangle2D item : this.gridSnapPoints) {
-						if(item.contains(e.getPoint())) {
-							this.snapPoint = item;
-							this.repaint();
-							//this.handlePolygonClosingProtocol(e);
-							break;
-						}
-					}
-		
-					/*// Check in global snap points
-					for(Rectangle2D item : this.globalDrawingSnapPoints) {
-						if(item.contains(e.getPoint())) {
-							this.snapPoint = item;
-							this.repaint();
-							break;
-						}
-					}
-					
-					// Check in global snap points
-					for(Rectangle2D item : this.globalDrawingSnapPoints) {
-						if(item.contains(e.getPoint())) {
-							this.snapPoint = item;
-							this.repaint();
-							break;
-						} else {
-							this.snapPoint = null;
-							repaint();
-						}
-					}*/
-					
-					//if(!gridIsOn) {
-						this.handleDrawingClosingProtocol(e);
-					//}
 						
 				} else {
 					
@@ -1113,285 +1089,6 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	}
 
 	/**
-	 * Shows temporary polygon on the panel while drawing
-	 * @param pointList the current list of points (should be more than 3) to set
-	 */
-	private void showTempPolygon (List<Rectangle2D> pointList) {
-		
-		if(pointList.size() > 2) {
-			
-			// Construct a new (open) path
-			Path2D path = new Path2D.Double();
-			
-			// Start at the first item on the list
-			path.moveTo(pointList.get(0).getCenterX(), pointList.get(0).getCenterY());
-			
-			// Connect other points
-			for(Rectangle2D vertex : pointList) {
-				path.lineTo(vertex.getCenterX(), vertex.getCenterY());
-			}
-			// Close the path
-			path.closePath();
-			
-			tempShape = path;
-			
-			// Render
-			repaint();
-		} else {
-			tempShape = null;
-			repaint();
-		}
-	}
-	
-	/**
-	 * General handler for updating the message on the mouse tool tip.
-	 * Can be disabled at the settings. <br>
-	 * This is done at every mouse move event. <br>
-	 * The message can be changed or controlled by merely updating the global currentMouseTip variable
-	 * @param mousePoint the current mouse event point to set
-	 */
-	private void getMouseToolTip(Point mousePoint) {
-		
-		// Determine the text from the global currentMouseTip variable
-		String mouseTip = this.currentMouseTipText;
-		
-		// Get the font metrics of the text
-		Rectangle2D rect = g2dFontMetrics.getStringBounds(mouseTip, g2d);
-		
-		// Determine the last vertex
-		Rectangle2D lastVertex = this.vertexList.get(vertexList.size()-1);
-		
-		// Determine the base position of the mouse point by adding a mouse offset
-		Point2D basePosition = new Point2D.Double(mousePoint.getX() + SettingsFrame.mouseOffset, mousePoint.getY());
-		
-		// Get the current mouse position
-		// Tool tip postion will be placed at the right hand side except if
-		// the current mouse postion is at the left of the lastVertex
-		// Therefore the tip base postion will be shifted based on the text's graphics width
-		if(mousePoint.getX() < lastVertex.getCenterX()) {
-			basePosition.setLocation(new Point2D.Double(basePosition.getX() - rect.getWidth(), basePosition.getY()));
-		}
-		
-		// Create the text item
-		this.movingMouseTip = new TextItem(basePosition, mouseTip);
-		
-		repaint();
-		
-	}
-
-	/**
-	 * Shows tips such as length, angle from a point to another point <br>
-	 * Detects conflict between the mouse tool tip as well <br>
-	 * Refuses to draw if such conflict exists <br>
-	 * @param mousePoint the current mouse point to set
-	 */
-
-	private void getDrawDetailsToNewPoint(Point mousePoint) {
-		
-		// 1. Determine the base point
-		// This is the last point on the vertex list
-		Point2D base = new Point2D.Double(
-				this.vertexList.get(vertexList.size()-1).getCenterX(),
-				this.vertexList.get(vertexList.size()-1).getCenterY());
-		
-		// Create a line from the base point to the moouse point
-		Line2D line = new Line2D.Double(base.getX(), base.getY(), mousePoint.getX(), mousePoint.getY());
-		
-		// Calculate length of the line
-		double lineDPI =  base.distance(mousePoint);
-		
-		// Position the tool tip at the center of the line just created
-		Point2D.Double toolTipPosition = Tools.interpolationByDistance(line, (int) (lineDPI/2));
-		
-		// Compute line length with the current DPI settings
-		String lineLength = String.valueOf((int) (lineDPI * 25.4f / 72)) + " mm";
-		
-		// Get the angle
-		int angle = (int) Tools.getAngle(base, mousePoint);
-		
-		// Check for conflict with the mouse tool tip
-		
-		boolean conflict = false;
-		
-		if(this.drawGuide != null && this.movingMouseTip != null) {
-			
-			try {
-				conflict = (movingMouseTip.borderIntersectsAnotherRectangle(drawGuide.getBorderRectangleInPanel().getBounds2D()));
-			}
-			catch(NullPointerException e) {
-				MainFrame.log("The guides were not found, ignoring finding conflict");
-			}
-			
-		}
-		
-		if(!conflict) {
-			
-			// Create a draw guide showing the length and the angle 
-			this.drawGuide = new TextItem(toolTipPosition, lineLength + " " + angle + "\u00b0");
-			
-			repaint();
-			
-		} else {
-			
-			this.drawGuide = null;
-			repaint();
-		}
-	
-	}
-
-	/**
-	 * Renders the grid on the drawing panel
-	 * @param gridSizeMM the grid size specified in MM to set
-	 */
-	public void renderGrid(int gridSizeMM) {
-		
-		this.gridLines.clear();
-		
-		if(gridIsOn) {
-			
-		// 1. Find conversion factor from mm to DPI
-		// ------------------------------------------
-		int grid = (int) ((gridSizeMM * SettingsFrame.DEFAULT_DPI)/25.4);
-		
-		// 2. Draw vertical lines
-		// ------------------------------------------
-		int value = 0;
-		int count = 0;
-		
-		while(true) {
-		
-			if((getBounds().width >= value)) {
-				
-				Point2D start = new Point2D.Double(value, 0);
-				Point2D end = new Point2D.Double(value, getBounds().height);
-				
-				Line2D line = new Line2D.Double(start, end);
-				
-				GridLine gridline = new GridLine(line);
-				if(count != 0) {
-					if(count % SettingsFrame.GRID_MAJOR_INTERVAL == 0) {
-						gridline.setWeight(2);
-					}
-				}
-				
-				// 2.1 Set up snap points for each vertical line using the grid size along the Y
-				// ------------------------------------------------------------------------------
-				for(int i = 0; i < getBounds().height; i = i + grid) {
-				
-					Point2D item = new Point2D.Double(value, i);
-					Rectangle2D snapGrid = new Rectangle2D.Double(item.getX() - (snapSize/2), item.getY() - (snapSize/2), snapSize, snapSize);
-					gridSnapPoints.add(snapGrid);
-						
-				}
-				
-				// 2.2 Increase the grid value
-				// ------------------------------------------
-				value = value + grid;
-				
-				// 2.3 Add the line to the gridLines list
-				// ------------------------------------------
-				gridLines.add(gridline);
-				
-				count++;
-				
-			} else {
-				break;
-			}	
-		};
-		
-		// 3. Draw horizontal lines
-		// ------------------------------------------
-		value = 0;
-		count = 0;
-		while(true) {
-			
-			if((getBounds().height >= value)) {
-				
-				Point2D start = new Point2D.Double(0, value);
-				Point2D end = new Point2D.Double(getBounds().width, value);
-				
-				Line2D line = new Line2D.Double(start, end);
-				GridLine gridline = new GridLine(line);
-				
-				if(count != 0) {
-					if(count % 5 ==0) {
-						gridline.setWeight(2);
-					}
-				}
-				value = value + grid;
-				
-				// 3.1 Add the line to the gridLines list
-				// ------------------------------------------
-				gridLines.add(gridline);
-				count++;
-				
-			} else {
-				break;
-			}	
-		};
-		repaint();
-		}
-	}
-	
-	/**
-	 * Sets the drawing cursor based on the current session
-	 * @param e the MouseEvent originating from the mouse moved to set
-	 * 
-	 */
-	private void setDrawingCursor(MouseEvent e) {
-		
-		if(queryModeIsOn) {
-			
-			Cursor cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
-			
-		    setCursor(cursor);
-		     
-		} 
-		
-		if(selectionModeIsOn) {
-			
-			Cursor cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); 
-		    setCursor(cursor);
-		     
-		     this.selectionCursor = new Rectangle2D.Double(e.getPoint().getX() - (SettingsFrame.cursorSize)/2,
-		    		 e.getPoint().getY() - (SettingsFrame.cursorSize)/2,
-		    		 SettingsFrame.cursorSize, SettingsFrame.cursorSize);
-		        
-		} 
-		
-		else {
-			
-			this.selectionCursor = null;
-		}
-		
-		if(editModeIsOn) {
-			
-			 Cursor cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR); 
-		     setCursor(cursor);
-		}
-		
-		repaint();
-		
-	}
-	
-	/**
-	 * When a feature has been created, log some message, repaint and and clean up the drawing
-	 * @param message the message to be logged
-	 */
-	private void onFeatureCreated(String message) {
-	
-		// Log some message
-		MainFrame.log(message);
-		showAnimatedHint(message, SettingsFrame.FEATURE_CREATED_COLOR);
-		
-		// Clean up the panel
-		cleanUpDrawing();
-	
-		// Update the panel
-		repaint();
-	}
-
-	/**
 	 * Handles editing mode on the drawing panel.<br>
 	 * Cross hair cursor is set at the mouse moved event.<br>
 	 * Originates from mouse clicked event.
@@ -1500,7 +1197,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 							ellipse.setEllipse(true, new Point2D.Double(centerX, centerY), diamX / 2, diamY / 2);
 							ellipse.setShape(shape);
 							ellipse.setFeatureType("Ellipse");
-							ellipse.getVertices().add(vertex);
+							ellipse.getVertices().addAll(this.vertexList);
 							
 							// Add to the current layer's feature list
 							currentLayer.getListOfFeatures().add(ellipse);
@@ -1643,6 +1340,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 						else if (this.vertexList.size() == 1) {
 							
 							// 3.1 Get circle parameters
+							this.vertexList.add(vertex);
 							
 							// (a) The center point will be the first point in the vertex list
 							Point2D centerPoint = new Point2D.Double(this.vertexList.get(0).getCenterX(), this.vertexList.get(0).getCenterY());
@@ -1657,7 +1355,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 							Feature circle = new Feature(currentLayer.getNextFeatureID());
 							circle.setLayerID(currentLayer.getId());
 							circle.setFeatureType("Circle");
-							circle.getVertices().add(vertex);
+							circle.getVertices().addAll(this.vertexList);
 							circle.setEllipse(true, centerPoint, radius, radius);
 							circle.setShape(circleShape);
 							
@@ -1802,7 +1500,360 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			MainFrame.log("No shape have been selected");
 		}
 	}
+
+	private void findSnaps(MouseEvent e) {
+		
+		if(snappingModeIsOn) {
+			// Check first current mouse is found on the grid snap points
+			for(Rectangle2D item : this.gridSnapPoints) {
+				if(!(item.contains(e.getPoint()))) {
+					this.snapPoint = null;
+					this.repaint();
+					break;
+				}
+			}
+			
+			// Check for if found
+			for(Rectangle2D item : this.gridSnapPoints) {
+				if(item.contains(e.getPoint())) {
+					this.snapPoint = item;
+					this.repaint();
+					//this.handlePolygonClosingProtocol(e);
+					break;
+				}
+			}
 	
+			/*// Check in global snap points
+			for(Rectangle2D item : this.globalDrawingSnapPoints) {
+				if(item.contains(e.getPoint())) {
+					this.snapPoint = item;
+					this.repaint();
+					break;
+				}
+			}
+			
+			// Check in global snap points
+			for(Rectangle2D item : this.globalDrawingSnapPoints) {
+				if(item.contains(e.getPoint())) {
+					this.snapPoint = item;
+					this.repaint();
+					break;
+				} else {
+					this.snapPoint = null;
+					repaint();
+				}
+			}*/
+			
+			//if(!gridIsOn) {
+				this.handleDrawingClosingProtocol(e);
+			//}
+		}
+		
+	}
+
+	/**
+	 * Shows temporary polygon on the panel while drawing
+	 * @param pointList the current list of points (should be more than 3) to set
+	 */
+	private void showTempPolygon (List<Rectangle2D> pointList) {
+		
+		if(pointList.size() > 2) {
+			
+			// Construct a new (open) path
+			Path2D path = new Path2D.Double();
+			
+			// Start at the first item on the list
+			path.moveTo(pointList.get(0).getCenterX(), pointList.get(0).getCenterY());
+			
+			// Connect other points
+			for(Rectangle2D vertex : pointList) {
+				path.lineTo(vertex.getCenterX(), vertex.getCenterY());
+			}
+			// Close the path
+			path.closePath();
+			
+			tempShape = path;
+			
+			// Render
+			repaint();
+		} else {
+			tempShape = null;
+			repaint();
+		}
+	}
+	
+	/**
+	 * General handler for updating the message on the mouse tool tip.
+	 * Can be disabled at the settings. <br>
+	 * This is done at every mouse move event. <br>
+	 * The message can be changed or controlled by merely updating the global currentMouseTip variable
+	 * @param mousePoint the current mouse event point to set
+	 */
+	private void getMouseToolTip(Point mousePoint) {
+		
+		// Determine the text from the global currentMouseTip variable
+		String mouseTip = this.currentMouseTipText;
+		
+		// Get the font metrics of the text
+		Rectangle2D rect = g2dFontMetrics.getStringBounds(mouseTip, g2d);
+		
+		// Determine the last vertex
+		Rectangle2D lastVertex = this.vertexList.get(vertexList.size()-1);
+		
+		// Determine the base position of the mouse point by adding a mouse offset
+		Point2D basePosition = new Point2D.Double(mousePoint.getX() + SettingsFrame.mouseOffset, mousePoint.getY());
+		
+		// Get the current mouse position
+		// Tool tip postion will be placed at the right hand side except if
+		// the current mouse postion is at the left of the lastVertex
+		// Therefore the tip base postion will be shifted based on the text's graphics width
+		if(mousePoint.getX() < lastVertex.getCenterX()) {
+			basePosition.setLocation(new Point2D.Double(basePosition.getX() - rect.getWidth(), basePosition.getY()));
+		}
+		
+		// Create the text item
+		this.movingMouseTip = new TextItem(basePosition, mouseTip);
+		
+		repaint();
+		
+	}
+
+	/**
+	 * Shows tips such as length, angle from a point to another point <br>
+	 * Detects conflict between the mouse tool tip as well <br>
+	 * Refuses to draw if such conflict exists <br>
+	 * @param mousePoint the current mouse point to set
+	 */
+
+	private void getDrawDetailsToNewPoint(Point mousePoint) {
+		
+		if(this.vertexList.size() > 0) {
+		
+			// 1. Determine the base point
+			// This is the last point on the vertex list
+			Point2D base = new Point2D.Double(
+					this.vertexList.get(vertexList.size()-1).getCenterX(),
+					this.vertexList.get(vertexList.size()-1).getCenterY());
+			
+			// Create a line from the base point to the moouse point
+			Line2D line = new Line2D.Double(base.getX(), base.getY(), mousePoint.getX(), mousePoint.getY());
+			
+			// Calculate length of the line
+			double lineDPI =  base.distance(mousePoint);
+			
+			// Position the tool tip at the center of the line just created
+			Point2D.Double toolTipPosition = Tools.interpolationByDistance(line, (int) (lineDPI/2));
+			
+			// Compute line length with the current DPI settings
+			String lineLength = String.valueOf((int) (lineDPI * 25.4f / 72)) + " mm";
+			
+			// Get the angle
+			int angle = (int) Tools.getAngle(base, mousePoint);
+			
+			// Check for conflict with the mouse tool tip
+			
+			boolean conflict = false;
+			
+			if(this.drawGuide != null && this.movingMouseTip != null) {
+				
+				try {
+					conflict = (movingMouseTip.borderIntersectsAnotherRectangle(drawGuide.getBorderRectangleInPanel().getBounds2D()));
+				}
+				catch(NullPointerException e) {
+					MainFrame.log("The guides were not found, ignoring finding conflict");
+				}
+				
+			}
+			
+			if(!conflict) {
+				
+				// Create a draw guide showing the length and the angle 
+				this.drawGuide = new TextItem(toolTipPosition, lineLength + " " + angle + "\u00b0");
+				
+				repaint();
+				
+			} else {
+				
+				this.drawGuide = null;
+				repaint();
+			}
+		}
+	
+	}
+
+	/**
+	 * Renders the grid on the drawing panel
+	 * @param gridSizeMM the grid size specified in MM to set
+	 */
+	public void renderGrid(int gridSizeMM) {
+		
+		this.gridLines.clear();
+		
+		if(gridIsOn) {
+			
+		// 1. Find conversion factor from mm to DPI
+		// ------------------------------------------
+		int grid = (int) ((gridSizeMM * SettingsFrame.DEFAULT_DPI)/25.4);
+		
+		// 2. Draw vertical lines
+		// ------------------------------------------
+		int value = 0;
+		int count = 0;
+		
+		while(true) {
+		
+			if((getBounds().width >= value)) {
+				
+				Point2D start = new Point2D.Double(value, 0);
+				Point2D end = new Point2D.Double(value, getBounds().height);
+				
+				Line2D line = new Line2D.Double(start, end);
+				
+				GridLine gridline = new GridLine(line);
+				if(count != 0) {
+					if(count % SettingsFrame.GRID_MAJOR_INTERVAL == 0) {
+						gridline.setWeight(2);
+					}
+				}
+				
+				// 2.1 Set up snap points for each vertical line using the grid size along the Y
+				// ------------------------------------------------------------------------------
+				for(int i = 0; i < getBounds().height; i = i + grid) {
+				
+					Point2D item = new Point2D.Double(value, i);
+					Rectangle2D snapGrid = new Rectangle2D.Double(item.getX() - (snapSize/2), item.getY() - (snapSize/2), snapSize, snapSize);
+					gridSnapPoints.add(snapGrid);
+						
+				}
+				
+				// 2.2 Increase the grid value
+				// ------------------------------------------
+				value = value + grid;
+				
+				// 2.3 Add the line to the gridLines list
+				// ------------------------------------------
+				gridLines.add(gridline);
+				
+				count++;
+				
+			} else {
+				break;
+			}	
+		};
+		
+		// 3. Draw horizontal lines
+		// ------------------------------------------
+		value = 0;
+		count = 0;
+		while(true) {
+			
+			if((getBounds().height >= value)) {
+				
+				Point2D start = new Point2D.Double(0, value);
+				Point2D end = new Point2D.Double(getBounds().width, value);
+				
+				Line2D line = new Line2D.Double(start, end);
+				GridLine gridline = new GridLine(line);
+				
+				if(count != 0) {
+					if(count % 5 ==0) {
+						gridline.setWeight(2);
+					}
+				}
+				value = value + grid;
+				
+				// 3.1 Add the line to the gridLines list
+				// ------------------------------------------
+				gridLines.add(gridline);
+				count++;
+				
+			} else {
+				break;
+			}	
+		};
+		repaint();
+		}
+	}
+	
+	/**
+	 * Sets the drawing cursor based on the current session
+	 * @param e the MouseEvent originating from the mouse moved to set
+	 * 
+	 */
+	private void setDrawingCursor(MouseEvent e) {
+		
+		Cursor handCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+		Cursor crossHaircursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR); 
+		
+		if(queryModeIsOn) {
+			
+		    setCursor(handCursor);
+		     
+		} 
+		
+		if(selectionModeIsOn) {
+			
+		    setCursor(handCursor);
+		     
+		     this.selectionCursor = new Rectangle2D.Double(e.getPoint().getX() - (SettingsFrame.cursorSize)/2,
+		    		 e.getPoint().getY() - (SettingsFrame.cursorSize)/2,
+		    		 SettingsFrame.cursorSize, SettingsFrame.cursorSize);
+		        
+		} 
+		
+		else {
+			
+			this.selectionCursor = null;
+		}
+		
+		if(editModeIsOn) {
+			
+		     setCursor(crossHaircursor);
+		     
+		     for(Feature feature : currentLayer.getListOfFeatures()) {
+					for(Rectangle2D vertix : feature.getVertices()) {
+						if(!vertix.contains(e.getPoint())) {
+							movingMouseTip = null;
+							repaint();
+							break;
+						} 
+					}	
+				}
+		     
+		     for(Feature feature : currentLayer.getListOfFeatures()) {
+				for(Rectangle2D vertix : feature.getVertices()) {
+					if(vertix.contains(e.getPoint())) {
+						setCursor(handCursor);
+						movingMouseTip = new TextItem(e.getPoint(), "Drag to edit vertix");
+						setCurrentMouseGuide(movingMouseTip, SettingsFrame.DEFAULT_LAYER_COLOR);
+						repaint();
+						break;
+					} 
+				}	
+			}
+		}
+		
+		repaint();
+		
+	}
+	
+	/**
+	 * When a feature has been created, log some message, repaint and and clean up the drawing
+	 * @param message the message to be logged
+	 */
+	private void onFeatureCreated(String message) {
+	
+		// Log some message
+		MainFrame.log(message);
+		showAnimatedHint(message, SettingsFrame.FEATURE_CREATED_COLOR);
+		
+		// Clean up the panel
+		cleanUpDrawing();
+	
+		// Update the panel
+		repaint();
+	}
+
 	/**
 	 * Finish drawing of a path, if the current layer is a polygon, the path will be closed and filled<br>
 	 * Creates a new feature in the current layer<br>
@@ -1893,6 +1944,13 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		
 		// Draw guides
 		this.drawGuide = null;
+		
+		//
+		this.lastDraggedFeature = null;
+		
+		//
+		this.draggedPoints.clear();
+		this.draggedVertex.clear();
 		
 		for(Layer layer : TableOfContents.layerList) {
 			layer.highlightAllFeatures(false);
@@ -1994,16 +2052,13 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			handleSelectionMode(this.selectionCursor);
 		}
 		
-		else if (editModeIsOn) {
+		else if ( editModeIsOn ) {
 			
 			handleEditingMode(e);
 				
-		} else {
+		} else if (!editModeIsOn && (!selectionModeIsOn || !queryModeIsOn)) {
 			
-			if(!selectionModeIsOn || !queryModeIsOn) {
-				
-				MainFrame.log("Drawing attempted but edit session is off");	
-			}
+			MainFrame.log("Drawing attempted but edit session is off");	
 		}
 	}
 
@@ -2059,7 +2114,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	public void mousePressed(MouseEvent e) {
 		
 		
-		
+		// For selection with rectangle
 		if( queryModeIsOn ) {
 			
 			for(Layer layer : TableOfContents.layerList) {
@@ -2072,6 +2127,28 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			
 			this.draggedPoints.add(e.getPoint());
 			
+		} 
+		
+		// For dragging vertices
+		// Conditions: 
+		//a. Edit mode is one
+		//b. No drawing tool selected
+		//c. The mouse pressed is not a right click
+		else if ( editModeIsOn && currentFeatureType == null) {
+			
+			if(!SwingUtilities.isRightMouseButton(e)) {
+				// Get the pressed vertix and the feature itself 
+				for(Feature feature : currentLayer.getListOfFeatures()) {
+					for(int i = 0; i < feature.getVertices().size(); i++) {
+						Rectangle2D vertix = feature.getVertices().get(i);
+						if(vertix.contains(e.getPoint())) {
+							this.pressedVertexIndex = i;
+							this.lastDraggedFeature = feature;
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -2090,7 +2167,26 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			}
 		}
 		
-		this.draggedPoints.clear();
+		if( editModeIsOn ) {
+		
+			if(!SwingUtilities.isRightMouseButton(e)) {
+				
+				if(this.lastDraggedVertex != null) {
+					
+					int index = this.pressedVertexIndex;
+
+					this.lastDraggedFeature.getVertices().remove(index);
+					this.lastDraggedFeature.getVertices().add(index, lastDraggedVertex);
+					currentLayer.setNotSaved(true);
+					
+					repaint();
+					
+					this.lastDraggedVertex = null;
+					this.lastDraggedFeature = null;
+				}
+			}
+		}
+
 	}
 	
 	/**
@@ -2099,17 +2195,25 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	 */
 	@Override
 	public void mouseDragged(MouseEvent e) {
-
+		
+		findSnaps(e);
+	
+		Point2D draggedPoint = e.getPoint();
+		if(snapPoint != null ) {
+			draggedPoint = new Point2D.Double(snapPoint.getCenterX(), snapPoint.getCenterY());
+		}
+		
+		// Mouse drag during query mode
 		if( queryModeIsOn ) {
 			
-			// The dragged points will be clear at the mouse released
+			// The dragged points will be cleared at the mouse released
 			// So, for showing the rectangle as user drags, only one point is needed 
 			// on the list, for a new selection
 			
 			if(this.draggedPoints.size() == 1) {
 				
 				// Compute a rectangle with the point and the current  mouse position
-				this.queryBounds = (Rectangle2D) getRectangleShape(this.draggedPoints.get(0), e.getPoint());
+				this.queryBounds = (Rectangle2D) getRectangleShape(this.draggedPoints.get(0), draggedPoint);
 				
 				// Create a moving mouse tip
 				movingMouseTip = new TextItem(e.getPoint(), "Draw bounds to select features");
@@ -2118,6 +2222,183 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				setCurrentMouseGuide(movingMouseTip, SettingsFrame.DEFAULT_LAYER_COLOR);
 				
 				// Repaint
+				repaint();
+			}
+		}
+		
+		// Mouse drag during editing mode
+		if( editModeIsOn ) {
+			// For non-right clicks
+			if(!SwingUtilities.isRightMouseButton(e)) {
+				// Dragging/ editing vertices
+				if(this.lastDraggedFeature != null ) {
+					handleVertixDragging(draggedPoint);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Handles dragging of feature vertices during edit mode.
+	 * 
+	 * @param draggedPoint dragged point comming from the mouse dragged event
+	 */
+	private void handleVertixDragging(Point2D draggedPoint) {
+		
+		// 0. Update the current mouse tip
+		if(this.movingMouseTip != null) {
+			this.movingMouseTip.setBasePosition(draggedPoint);
+			repaint();
+		}
+		
+		// a. For non ellipse shapes
+		if( !this.lastDraggedFeature.isEllipse() ) {
+
+			// 0. Clear existing vertix lists
+			this.vertexList.clear();
+			
+			// 1. Get the index of the vertix that was dragged from the feature list of vertices
+			//
+			int index = this.pressedVertexIndex;
+			for(Rectangle2D vertix : this.lastDraggedFeature.getVertices()) {
+				
+				// 2. Add the other vertices to the list and ignore the vertix that was last dragged
+				//    it will be replaced with the mouse dragged point later
+			    //    therefore the index of the point is important
+				if(index != this.lastDraggedFeature.getVertices().indexOf(vertix)) {
+					this.vertexList.add(vertix);
+				}
+			}
+			// 3. Create a new vertex from the mouse dragged point
+			Rectangle2D vertex = new Rectangle2D.Double(draggedPoint.getX() - (snapSize/2), draggedPoint.getY() - (snapSize/2), snapSize, snapSize);
+			
+			// 4. Add the new dragged vertex to the list of vertex using its previous index 
+			this.vertexList.add(index, vertex);
+			
+			// 5. Start a path from the list of vertex
+			Path2D path = new Path2D.Double();
+			path.moveTo(vertexList.get(0).getCenterX(), vertexList.get(0).getCenterY());
+			
+			// 6. Draw the path to the rest of the vertex in the list
+			for(Rectangle2D v : this.vertexList) {
+				if(vertexList.indexOf(v)!= 0 ) {
+					path.lineTo(v.getCenterX(), v.getCenterY());
+				}
+			}
+			
+			// 7. If the current layer is a polygon, close the path
+			if( currentLayer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY) ) {
+				path.closePath();
+			}
+			
+			// 8. Set the shape of the dragged feature to the path just created
+			this.lastDraggedFeature.setShape(path);
+			
+			this.lastDraggedVertex = vertex;
+			
+			// 9. Clear the vertex list before repainting, so that the feature vertixes are 
+			// only displayed for further dragging
+			this.vertexList.clear();
+			
+			// 10. Update the drawing panel
+			repaint();
+		} 
+		
+		// b. For ellipse shapes
+		else if (this.lastDraggedFeature.isEllipse()) {
+			
+			// 1. Retrieve the pressed vertex by using the index
+			Rectangle2D vertex = lastDraggedFeature.getVertices().get(pressedVertexIndex);
+			
+			// 2. Numbers represent the order of the vertices
+			//    This have been ordered when the ellipse was created !important
+			//    For circles, the index of "2" will be absent, because there is no
+			//    vertex for the semi-minor axis
+			
+			int CENTER = 0; // <-- Center point
+			int AXIS_X = 1; // <-- Axis x
+			int AXIS_Y = 2; // <-- Axis y
+			
+			// 3. Retrieve the radiusX and radiusY of the ellipse shape
+			double radiusX = this.lastDraggedFeature.getRadiusX();
+			double radiusY = this.lastDraggedFeature.getRadiusY();
+			
+			// 4. If the vertex dragged is the center point, the shape will be moved/ translated
+			if( vertex.equals(lastDraggedFeature.getVertices().get(CENTER)) ) {
+				// 4.1 Create a new ellipse shape using the dragged point as the center
+				//     preserving the radiusX and the radiusY
+				Shape shape = new Ellipse2D.Double(draggedPoint.getX() - radiusX, draggedPoint.getY() - radiusY , radiusX * 2, radiusY * 2);
+				// 4.2 Replace the shape of the feature
+				lastDraggedFeature.setShape(shape);
+				// 4.3 Change the center of the feature with the current mouse dragged point !importabt
+				lastDraggedFeature.setCenter(draggedPoint);
+				// 4.4 Make a new center rectangle vertix for the shape for rendering purposes and further selection/ dragging
+				Rectangle2D newCenterVertix = new Rectangle2D.Double(draggedPoint.getX() - (snapSize/2), draggedPoint.getY() - (snapSize/2), snapSize, snapSize);
+				// 4.4 Replace rectangle of the center using the indexes specified at 2.
+				lastDraggedFeature.getVertices().get(CENTER).setRect(newCenterVertix);
+				// 4.5 For circle: Replace the rectangle of the X axis by using the new center of the feature 
+				//     the initial radius X will still be used
+				lastDraggedFeature.getVertices().get(AXIS_X).setRect(
+						(lastDraggedFeature.getCenter().getX() + radiusX) - (snapSize/2),
+						(lastDraggedFeature.getCenter().getY() - (snapSize/2)), (snapSize), (snapSize));
+				// 4.6 For real ellipse : Replace the rectangle of the Y axis by using the new center of the feature 
+				//     the initial radius Y will still be used.
+				//     This can be distingused because the size of the vertix list will be exactly 3 or greater than 2
+				if(lastDraggedFeature.getVertices().size() > 2) {
+					lastDraggedFeature.getVertices().get(AXIS_Y).setRect(
+							(lastDraggedFeature.getCenter().getX()) - (snapSize/2),
+							(lastDraggedFeature.getCenter().getY() - radiusY) - (snapSize/2), (snapSize), (snapSize));
+					
+				}
+				// 4.7 Update the panel as the feature is moved
+				repaint();
+			} 
+			
+			// 5. If the vertex dragged vertex at the X Axis, that means the center will be 
+			//     preserved and radius at X will be changed
+			else if( vertex.equals(lastDraggedFeature.getVertices().get(AXIS_X)) ) {
+				// 5.1 Get the absolute X difference from the ellipse center X to the mouse dragged point
+				radiusX = Math.abs(lastDraggedFeature.getCenter().getX() - draggedPoint.getX());
+				// 5.2 If the feature is a circle, increase the radius Y with the just computed index
+				// again, for circle, the list of vertix will be less than 3 or excatly 2! see 4.6 and 2.
+				if(lastDraggedFeature.getVertices().size() < 3) {
+					radiusY = radiusX;
+				}
+				// 5.3 Create a new shape with the new computed radius X and radius Y, but preseving the center
+				// for circles, the radius will increase uniformly see 5.2 above
+				Shape shape = new Ellipse2D.Double(lastDraggedFeature.getCenter().getX() - radiusX, lastDraggedFeature.getCenter().getY() - radiusY , radiusX * 2, radiusY * 2);
+				// 4.2 Replace the shape of the feature
+				lastDraggedFeature.setShape(shape);
+				// 4.3 Update the parameters of the feature ! important for saving to DB
+				lastDraggedFeature.setRadiusX(radiusX); // <-- radiusX
+				lastDraggedFeature.setRadiusY(radiusY); // <-- radiusY
+				// and then the rectangle vertix of the axis X
+				lastDraggedFeature.getVertices().get(AXIS_X).setRect(
+						(lastDraggedFeature.getCenter().getX() + radiusX) - (snapSize/2),
+						(lastDraggedFeature.getCenter().getY() - (snapSize/2)), (snapSize), (snapSize));
+				
+				// 4.4 Update the panel as the feature is moved
+				repaint();
+			}
+			// 6. If the vertex dragged vertex at the Y Axis, that means the center will be 
+			//     preserved and radius at Y will be changed
+			else if( vertex.equals(lastDraggedFeature.getVertices().get(AXIS_Y)) ) {
+				// 6.1 Get the absolute Y difference from the ellipse center Y to the mouse dragged point
+				radiusY = Math.abs(lastDraggedFeature.getCenter().getY() - draggedPoint.getY());
+				// 6.2 Create a new shape with the new computed and radius Y, but preseving the center
+				// for circles, it will never get to this step because there is no Axis_Y see 2, 4.6
+				Shape shape = new Ellipse2D.Double(lastDraggedFeature.getCenter().getX() - radiusX, lastDraggedFeature.getCenter().getY() - radiusY , radiusX * 2, radiusY * 2);
+				// 6.3 Replace the shape
+				lastDraggedFeature.setShape(shape);
+				// 6.4 Update the parameters of the feature ! important for saving to DB
+				lastDraggedFeature.setRadiusX(radiusX); // <-- radiusX
+				lastDraggedFeature.setRadiusY(radiusY); // <-- radiusY
+				// and then the rectangle vertix of the axis Y
+				lastDraggedFeature.getVertices().get(AXIS_Y).setRect(
+						lastDraggedFeature.getCenter().getX() - (snapSize/2),
+						(lastDraggedFeature.getCenter().getY() - radiusY) - (snapSize/2), (snapSize), (snapSize));
+				
+				// 6.5 Update the panel as the feature is moved
 				repaint();
 			}
 		}
