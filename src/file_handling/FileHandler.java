@@ -229,8 +229,7 @@ public class FileHandler {
 						point = new Point(xcoordpoly,ycoordpoly);
 						pointlist.add(point);
 					    System.out.println( "ID " +id +"  Type " + type + "  Is_Ellipse " + isellipse + "  Coordinates " +point);
-			
-			
+					    
 		 }
 	       }catch(Exception e) {
 	    	   e.printStackTrace();
@@ -262,7 +261,7 @@ public class FileHandler {
 	   				point = new Point(xcoord1,ycoord1);
 	 		        pointlist.add(point);
 	 		        System.out.println( "ID " +id +"  Type " + type + "  Is_Ellipse " + isellipse + "  Coordinates " +point);
-   			
+	 		        
 		         }
 	   		     
 	       }catch(Exception e) {
