@@ -9,7 +9,7 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 
 /**
  * Class for the creation of the DrawingCursor
@@ -20,7 +20,7 @@ import application_frames.Settings;
 public class DrawingCursor {
 	
 	private Rectangle cursor;
-	private Color color = Settings.cursorColor;
+	private Color color = SettingsFrame.cursorColor;
 	private List<Line2D> lines = new ArrayList<Line2D>();
 	
 	/**

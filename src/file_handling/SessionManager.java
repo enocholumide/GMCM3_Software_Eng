@@ -4,9 +4,14 @@ import core_components.TableOfContents;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import application_frames.MainFrame;
 import core_classes.Layer;
@@ -22,6 +27,7 @@ public class SessionManager {
      * String array representing the names of currently active layers in the table of contents.
      */
     String[] currentActiveLayers;
+    FileNameExtensionFilter sessionFileFilter = new FileNameExtensionFilter("GMCM Application Session Files", "gmcm");
 
     /**
      * Constructor for SessionManager. Builds the currentActiveLayers array.
@@ -78,6 +84,7 @@ public class SessionManager {
             while ((line = sessionReader.readLine()) != null) {
                 layerList.add(line);
             }
+            sessionReader.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,4 +94,42 @@ public class SessionManager {
 
     }
 
+	public void onSaveSessionIntent() {
+		
+		JFileChooser saveSessionFileChooser = new JFileChooser();
+		saveSessionFileChooser.addChoosableFileFilter(sessionFileFilter);
+
+		// Once the user selects a file name, write the session to it.
+		int saveSessionReturnVal = saveSessionFileChooser.showSaveDialog(null);
+		if (saveSessionReturnVal == JFileChooser.APPROVE_OPTION) {
+			File saveSession = saveSessionFileChooser.getSelectedFile();
+			String saveSessionPath = saveSession.getPath();
+			if (!saveSessionPath.substring(saveSessionPath.length()-5).equals(".gmcm")) {
+				saveSessionPath += ".gmcm";
+			}
+			saveCurrentSession(saveSessionPath);
+		}
+	}
+
+	public void onOpenSessionIntent() {
+		
+		JFileChooser openSessionFileChooser = new JFileChooser();
+		openSessionFileChooser.addChoosableFileFilter(sessionFileFilter);
+
+		// When the user selects a file, read it with the SessionManager and try to add the layers from the database, if they exist.
+		int openSessionReturnVal = openSessionFileChooser.showOpenDialog(null);
+		if (openSessionReturnVal == JFileChooser.APPROVE_OPTION) {
+			File openSession = openSessionFileChooser.getSelectedFile();
+			ArrayList<String> layersToOpen = openSession(openSession.getPath());
+			for (int i=0; i<layersToOpen.size(); i++) {
+				String layerName = layersToOpen.get(i);
+				try {
+					ResultSet layerContents = MainFrame.dbConnection.readTable(layerName);
+					MainFrame.createLayerFromResultSet(layerContents, layerName);
+				} catch (Exception ex) {
+					MainFrame.log("Table '" + layerName + "' does not exist in database.");
+				}
+			}
+		}
+	}
 }

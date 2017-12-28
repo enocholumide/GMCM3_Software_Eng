@@ -10,7 +10,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import application_frames.MainFrame;
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 
 /**
  * Button for removing layer at the table of contents.
@@ -35,7 +35,7 @@ public class LayerRemoveButton extends DefaultCellEditor {
 		removeButton.setOpaque(false);
 		removeButton.setContentAreaFilled(false);
 		removeButton.setBorderPainted(false);
-		removeButton.setIcon(Settings.LAYER_DELETE_ICON);
+		removeButton.setIcon(SettingsFrame.LAYER_DELETE_ICON);
 		
 		removeButton.addActionListener(new ActionListener() {
 			@Override

@@ -4,7 +4,7 @@ import java.awt.*;
 
 import javax.swing.JFrame;
 
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 import toolset.Tools;
 
 /**

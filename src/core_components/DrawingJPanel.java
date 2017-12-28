@@ -41,7 +41,7 @@ import features.PolygonItem;
 import features.PolylineItem;
 import toolset.Tools;
 import application_frames.MainFrame;
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 
 /**
  * Panel for drawing items
@@ -59,7 +59,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	private static final long serialVersionUID = -6318145875906198958L;
 	
 	/**Size of snaps*/
-	private int snapSize = Settings.SNAP_SIZE;
+	private int snapSize = SettingsFrame.SNAP_SIZE;
 	
 	/**Snapping mode*/
 	public boolean snappingModeIsOn = false;
@@ -137,7 +137,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	private TextItem movingMouseTip;
 	
 	/** Text of the mouse tip*/
-	private String currentMouseTipText = Settings.DEFAULT_MOUSE_TIP;
+	private String currentMouseTipText = SettingsFrame.DEFAULT_MOUSE_TIP;
 	
 	/**
 	 * Constructs a new drawing panel
@@ -149,10 +149,10 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		
 		addMouseMotionListener(this);
 		addMouseListener(this);
-		setBackground(Settings.DRAFTING_BACKGROUND.getBackground());
+		setBackground(SettingsFrame.DRAFTING_BACKGROUND.getBackground());
 		
-		renderGrid(Settings.GRID_MM);
-		showAnimatedHint("Welcome", Settings.DEFAULT_STATE_COLOR);
+		renderGrid(SettingsFrame.GRID_MM);
+		showAnimatedHint("Welcome", SettingsFrame.DEFAULT_STATE_COLOR);
 		
 	}
 	
@@ -163,7 +163,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	@Override 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		setBackground(Settings.DRAFTING_BACKGROUND.getBackground());
+		setBackground(SettingsFrame.DRAFTING_BACKGROUND.getBackground());
 		
 		// Clone the graphics object
 		g2d = (Graphics2D) g.create();
@@ -175,7 +175,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			// 0. Set drawing pen to default
 			// --------------------------------------
 			g2d.setStroke(new BasicStroke(1));
-			g2d.setColor(Settings.DEFAULT_LAYER_COLOR);
+			g2d.setColor(SettingsFrame.DEFAULT_LAYER_COLOR);
 			g2d.setFont(new Font("Tw Cen MT", Font.ITALIC, 18)); 
 			g2dFontMetrics = g2d.getFontMetrics();
 			
@@ -184,7 +184,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			for(GridLine item : this.gridLines) {
 				Line2D line = item.getLine();
 				g2d.setStroke(new BasicStroke(item.getWeight()));
-				g2d.setColor(Settings.GRID_COLOR.getBackground());
+				g2d.setColor(SettingsFrame.GRID_COLOR.getBackground());
 				g2d.draw(line);
 			}
 			
@@ -201,14 +201,14 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 						if(feature.isVisibile()) {
 						
 							if(feature.isHighlighted()) {
-								c = Settings.FEATURE_HIGHLIGHTED_STATE_COLOR.getBackground();
+								c = SettingsFrame.FEATURE_HIGHLIGHTED_STATE_COLOR.getBackground();
 							} 
 							
 							else if (!feature.isHighlighted()) {
 								c = layer.getLayerColor();
 							}
 							
-							if(layer.getLayerType().equals(Settings.POINT_GEOMETRY)){
+							if(layer.getLayerType().equals(SettingsFrame.POINT_GEOMETRY)){
 								
 								PointItem point = (PointItem) feature;
 								g2d.setColor(c);
@@ -218,7 +218,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 							
 							else {
 							
-								if(layer.getLayerType().equals(Settings.POLYGON_GEOMETRY)) {
+								if(layer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY)) {
 									// Fill the shape
 									g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 100));
 									g2d.fill(feature.getShape());
@@ -258,12 +258,12 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				
 				g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 100));
 				
-				if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY)) {
+				if(currentLayer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY)) {
 					// Fill the shape
 					g2d.fill(tempShape);
 				}
 				
-				if(currentLayer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)){
+				if(currentLayer.getLayerType().equals(SettingsFrame.POLYLINE_GEOMETRY)){
 					stroke = new BasicStroke(currentLayer.getLineWeight(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
 				}
 				
@@ -276,9 +276,9 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			// 4. Render selection bounds
 			if(this.queryBounds != null ) {
 				
-				Color c = Settings.SELECTION_COLOR.getBackground();
+				Color c = SettingsFrame.SELECTION_COLOR.getBackground();
 				
-				g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), Settings.TRANSPARENCY_LEVEL_2));
+				g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), SettingsFrame.TRANSPARENCY_LEVEL_2));
 				g2d.fill(queryBounds);
 				
 				// Draw border
@@ -295,12 +295,12 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				g2d.setColor(currentLayer.getLayerColor());
 				
 				if(count == 0) {
-					g2d.setColor(Settings.HIGHLIGHTED_STATE_COLOR);
+					g2d.setColor(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 				}
 				// For poly lines - change color of the first and last vertex
-				if(currentLayer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)) {
+				if(currentLayer.getLayerType().equals(SettingsFrame.POLYLINE_GEOMETRY)) {
 					if(count == this.vertexList.size() - 1) {
-						g2d.setColor(Settings.HIGHLIGHTED_STATE_COLOR);
+						g2d.setColor(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 					}
 				}
 				
@@ -325,8 +325,8 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				
 				g2d.setFont(new Font("Tw Cen MT", Font.ITALIC, 18)); 
 	            Rectangle2D rect = g2dFontMetrics.getStringBounds(tooltip.getText(), g2d); 	
-	            Color c = Settings.DEFAULT_STATE_COLOR;
-	            g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), Settings.TRANSPARENCY_LEVEL_1));									
+	            Color c = SettingsFrame.DEFAULT_STATE_COLOR;
+	            g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), SettingsFrame.TRANSPARENCY_LEVEL_1));									
 	            g2d.fillRect((int)tooltip.getBasePosition().getX(),
 	            		(int)tooltip.getBasePosition().getY() - g2dFontMetrics.getAscent(),
 	                       (int) rect.getWidth(),
@@ -360,7 +360,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			
 			if(this.selectionCursor != null) {
 				
-				g2d.setColor(Settings.cursorColor);
+				g2d.setColor(SettingsFrame.cursorColor);
 				g2d.draw(selectionCursor);
 			}
 			
@@ -368,7 +368,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			// ---------------------
 			if(this.drawGuide!=null) {
 				
-				setCurrentMouseGuide(drawGuide, Settings.DEFAULT_STATE_COLOR);
+				setCurrentMouseGuide(drawGuide, SettingsFrame.DEFAULT_STATE_COLOR);
 			}
 			if(this.movingMouseTip!=null) {
 				
@@ -404,11 +404,11 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		} else if (this.gridLines.isEmpty()) {
 			
 			this.gridIsOn = true;
-			renderGrid(Settings.GRID_MM);
+			renderGrid(SettingsFrame.GRID_MM);
 			
 		}
-		if(Settings.gridToggle.getState() != gridIsOn) {
-			Settings.gridToggle.doClick();
+		if(SettingsFrame.gridToggle.getState() != gridIsOn) {
+			SettingsFrame.gridToggle.doClick();
 		}
 		repaint();
 	}
@@ -429,8 +429,8 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			snappingModeIsOn = true;
 		}
 		
-		if(Settings.snapToggle.getState() != snappingModeIsOn) {
-			Settings.snapToggle.doClick();
+		if(SettingsFrame.snapToggle.getState() != snappingModeIsOn) {
+			SettingsFrame.snapToggle.doClick();
 		}
 		
 		repaint();
@@ -456,7 +456,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		}
 		
 		// Only turn off or on when the signal is a new edit session
-		if(!signal.equals(Settings.DRAW_CONTINUE)) {
+		if(!signal.equals(SettingsFrame.DRAW_CONTINUE)) {
 			
 			cleanUpDrawing();
 			
@@ -464,14 +464,14 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				
 				editModeIsOn = false;
 				
-				showAnimatedHint("Edit session turned off", Settings.HIGHLIGHTED_STATE_COLOR);
+				showAnimatedHint("Edit session turned off", SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 			} else {
 				
 				editModeIsOn = true;
 				
 				this.vertexList.clear();
 				
-				showAnimatedHint("Edit session turned on", Settings.DEFAULT_STATE_COLOR);
+				showAnimatedHint("Edit session turned on", SettingsFrame.DEFAULT_STATE_COLOR);
 				
 				// Update draw buttons
 				MainFrame.updateDrawButtonGroup();
@@ -495,7 +495,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		else {
 
 			queryModeIsOn = true;
-			MainFrame.queryButton.setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+			MainFrame.queryButton.setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 			MainFrame.disableAllDrawButtons();
 			MainFrame.log("Query mode started, all draw buttons disabled");
 		}
@@ -517,7 +517,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		else {
 
 			selectionModeIsOn = true;
-			MainFrame.selectionButton.setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+			MainFrame.selectionButton.setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 			MainFrame.disableAllDrawButtons();
 			
 			MainFrame.log("Selection mode started, all draw buttons disabled");	
@@ -532,7 +532,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		queryModeIsOn = false;
 		
 		MainFrame.queryButton.setButtonReleased(false);
-		MainFrame.queryButton.setBackground(Settings.DEFAULT_STATE_COLOR);
+		MainFrame.queryButton.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 		
 		cleanUpDrawing();
 	}
@@ -545,7 +545,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		selectionModeIsOn = false;
 		
 		MainFrame.selectionButton.setButtonReleased(false);
-		MainFrame.selectionButton.setBackground(Settings.DEFAULT_STATE_COLOR);
+		MainFrame.selectionButton.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 		
 		cleanUpDrawing();
 	}
@@ -577,15 +577,15 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				Rectangle2D rect = fm.getStringBounds(guideOrTip.getText(), g2d); 
 				
 				if(guideOrTip.getBasePosition().getX() < 0) {
-					guideOrTip.setBasePosition(new Point2D.Double(getMousePosition().getX() + Settings.mouseOffset, getMousePosition().getY()));
+					guideOrTip.setBasePosition(new Point2D.Double(getMousePosition().getX() + SettingsFrame.mouseOffset, getMousePosition().getY()));
 				}
 				
 				if(guideOrTip.getBasePosition().getX() + rect.getWidth() > getWidth()) {
-					guideOrTip.setBasePosition(new Point2D.Double(getMousePosition().getX() - Settings.mouseOffset - rect.getWidth(), getMousePosition().getY()));
+					guideOrTip.setBasePosition(new Point2D.Double(getMousePosition().getX() - SettingsFrame.mouseOffset - rect.getWidth(), getMousePosition().getY()));
 				}
 				
-				int padding = Settings.TOOL_TIP_PADDING;
-				g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Settings.TRANSPARENCY_LEVEL_1));
+				int padding = SettingsFrame.TOOL_TIP_PADDING;
+				g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), SettingsFrame.TRANSPARENCY_LEVEL_1));
 				
 				RoundRectangle2D roundedRect = getRoundedFrameRectForText(guideOrTip, fm, padding);
 				guideOrTip.setBorderRectangleInPanel(roundedRect);
@@ -778,7 +778,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 							// 1.5 Erase the snap and the tool tip if mouse goes away
 							// ------------------------------------------------
 							this.snapPoint = null;
-							this.currentMouseTipText = Settings.CLOSE_POLYGON_MESSAGE;;
+							this.currentMouseTipText = SettingsFrame.CLOSE_POLYGON_MESSAGE;;
 							repaint();
 						}
 					}
@@ -787,7 +787,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			
 			// 2. For polylines
 			/// ------------------------------------------------
-			if(currentLayer.getLayerType() == Settings.POLYLINE_GEOMETRY) {
+			if(currentLayer.getLayerType() == SettingsFrame.POLYLINE_GEOMETRY) {
 
 				// 2.1 Ensure that at least one point have been drawn
 				// ------------------------------------------------
@@ -804,12 +804,12 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 						
 						// 2.3 Show some tips
 						// ------------------------------------------------
-						this.currentMouseTipText  = Settings.CLOSE_POLYLINE_MESSAGE;
+						this.currentMouseTipText  = SettingsFrame.CLOSE_POLYLINE_MESSAGE;
 						
 					} 
 					else if ( lastVertex.contains(e.getPoint()) ) {
 						
-						this.currentMouseTipText  = Settings.FINISH_POLYLINE_MESSAGE;
+						this.currentMouseTipText  = SettingsFrame.FINISH_POLYLINE_MESSAGE;
 					} 
 					else {
 						
@@ -894,7 +894,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				
 				// Drawing guides
 				
-				if(Settings.DRAW_GUIDES_AND_TIPS == true) {
+				if(SettingsFrame.DRAW_GUIDES_AND_TIPS == true) {
 					
 					if(this.vertexList.size() > 0) {
 						getDrawDetailsToNewPoint(e.getPoint());
@@ -903,27 +903,27 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				}
 	
 				// Handling Polyline 
-				if(currentLayer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)) {
+				if(currentLayer.getLayerType().equals(SettingsFrame.POLYLINE_GEOMETRY)) {
 					this.handleDrawingPolyline(e);
 				}
 				
 				// Handling Rectangle 
-				if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY) && MainFrame.getCurrentFeatureType().equals("Ellipse")) {
+				if(currentLayer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY) && MainFrame.getCurrentFeatureType().equals("Ellipse")) {
 					this.handleDrawingEllipse(e);
 				}
 					
 				// Handling Rectangle 
-				if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY) && MainFrame.getCurrentFeatureType().equals("Rectangle")) {
+				if(currentLayer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY) && MainFrame.getCurrentFeatureType().equals("Rectangle")) {
 					this.handleDrawingRectangle(e);
 				}
 				
 				// Handling Circle 
-				if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY) && MainFrame.getCurrentFeatureType().equals("Circle")) {
+				if(currentLayer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY) && MainFrame.getCurrentFeatureType().equals("Circle")) {
 					this.handleDrawingCircle(e);
 				}
 				
 				// Handling Triangle 
-				if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY) && MainFrame.getCurrentFeatureType().equals("Triangle")) {
+				if(currentLayer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY) && MainFrame.getCurrentFeatureType().equals("Triangle")) {
 					this.handleDrawingTriangle(e);
 				}
 				
@@ -979,7 +979,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 					
 					//if(this.editModeIsOn) {
 						
-						if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY) || currentLayer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)) {
+						if(currentLayer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY) || currentLayer.getLayerType().equals(SettingsFrame.POLYLINE_GEOMETRY)) {
 							this.handleDrawingClosingProtocol(e);
 						}
 					//}
@@ -997,12 +997,12 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			
 			vertexList.remove(vertexList.size() - 1);
 			
-			if(currentLayer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)) {
+			if(currentLayer.getLayerType().equals(SettingsFrame.POLYLINE_GEOMETRY)) {
 				
 				tempLine.remove(tempLine.size() - 1);
 			}
 			
-			if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY)) {
+			if(currentLayer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY)) {
 				
 				showTempPolygon(vertexList);
 			}
@@ -1019,7 +1019,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			repaint();
 		}
 		
-		if(currentLayer.getLayerType().equals(Settings.POINT_GEOMETRY)) {
+		if(currentLayer.getLayerType().equals(SettingsFrame.POINT_GEOMETRY)) {
 			
 			currentLayer.removeLastItem();
 		}
@@ -1060,7 +1060,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 							Area areaA = new Area(queryBounds);
 							
 							// 4.1 Test for polygon -> intersects
-							if(layer.getLayerType().equals(Settings.POLYGON_GEOMETRY)) {
+							if(layer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY)) {
 								areaA.intersect(new Area(feature.getShape()));
 								if(!areaA.isEmpty()) {
 									feature.setHighlighted(true);
@@ -1069,7 +1069,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 							} 
 							
 							// 4.2. Test for polyline -> intersects
-							else if (layer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)) {
+							else if (layer.getLayerType().equals(SettingsFrame.POLYLINE_GEOMETRY)) {
 								
 								PolylineItem polyline = (PolylineItem) feature;
 								
@@ -1107,7 +1107,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		// 6. Give hint on how to desect feature(s)
 		else {
 			
-			showAnimatedHint("Click again to unhighlight and highlight feature", Settings.HIGHLIGHTED_STATE_COLOR);
+			showAnimatedHint("Click again to unhighlight and highlight feature", SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 			MainFrame.log("Click again to unhighlight and highlight feature");
 		}
 	}
@@ -1162,7 +1162,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		Rectangle2D lastVertex = this.vertexList.get(vertexList.size()-1);
 		
 		// Determine the base position of the mouse point by adding a mouse offset
-		Point2D basePosition = new Point2D.Double(mousePoint.getX() + Settings.mouseOffset, mousePoint.getY());
+		Point2D basePosition = new Point2D.Double(mousePoint.getX() + SettingsFrame.mouseOffset, mousePoint.getY());
 		
 		// Get the current mouse position
 		// Tool tip postion will be placed at the right hand side except if
@@ -1251,7 +1251,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			
 		// 1. Find conversion factor from mm to DPI
 		// ------------------------------------------
-		int grid = (int) ((gridSizeMM * Settings.DEFAULT_DPI)/25.4);
+		int grid = (int) ((gridSizeMM * SettingsFrame.DEFAULT_DPI)/25.4);
 		
 		// 2. Draw vertical lines
 		// ------------------------------------------
@@ -1269,7 +1269,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				
 				GridLine gridline = new GridLine(line);
 				if(count != 0) {
-					if(count % Settings.GRID_MAJOR_INTERVAL == 0) {
+					if(count % SettingsFrame.GRID_MAJOR_INTERVAL == 0) {
 						gridline.setWeight(2);
 					}
 				}
@@ -1353,9 +1353,9 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			Cursor cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); 
 		    setCursor(cursor);
 		     
-		     this.selectionCursor = new Rectangle2D.Double(e.getPoint().getX() - (Settings.cursorSize)/2,
-		    		 e.getPoint().getY() - (Settings.cursorSize)/2,
-		    		 Settings.cursorSize, Settings.cursorSize);
+		     this.selectionCursor = new Rectangle2D.Double(e.getPoint().getX() - (SettingsFrame.cursorSize)/2,
+		    		 e.getPoint().getY() - (SettingsFrame.cursorSize)/2,
+		    		 SettingsFrame.cursorSize, SettingsFrame.cursorSize);
 		        
 		} 
 		
@@ -1382,7 +1382,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	
 		// Log some message
 		MainFrame.log(message);
-		showAnimatedHint(message, Settings.FEATURE_CREATED_COLOR);
+		showAnimatedHint(message, SettingsFrame.FEATURE_CREATED_COLOR);
 		
 		// Clean up the panel
 		cleanUpDrawing();
@@ -1426,14 +1426,14 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			
 			//------------------------------------------------------------------------
 			
-			else if(currentLayer.getLayerType().equals(Settings.POINT_GEOMETRY)) {
+			else if(currentLayer.getLayerType().equals(SettingsFrame.POINT_GEOMETRY)) {
 				
 				Feature point  = new PointItem(currentLayer.getNextFeatureID(), clickedPoint);
-				point.setFeatureType(Settings.POINT_GEOMETRY);
+				point.setFeatureType(SettingsFrame.POINT_GEOMETRY);
 				point.setLayerID(currentLayer.getId());
-				point.setShape(new Ellipse2D.Double(clickedPoint.getX() - Settings.POINT_SIZE/2,
-						clickedPoint.getY() - Settings.POINT_SIZE/2,
-						Settings.POINT_SIZE, Settings.POINT_SIZE));
+				point.setShape(new Ellipse2D.Double(clickedPoint.getX() - SettingsFrame.POINT_SIZE/2,
+						clickedPoint.getY() - SettingsFrame.POINT_SIZE/2,
+						SettingsFrame.POINT_SIZE, SettingsFrame.POINT_SIZE));
 				point.getVertices().add(vertex);
 				currentLayer.getListOfFeatures().add(point);
 				currentLayer.setNotSaved(true);
@@ -1445,7 +1445,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			//                   Protocol for drawing polygon
 			
 			//------------------------------------------------------------------------
-			else if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY)) {
+			else if(currentLayer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY)) {
 				
 				
 				if(!SwingUtilities.isRightMouseButton(e)) {
@@ -1528,8 +1528,8 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 							
 							// 4.1 Show some message to the user
 							// ----------------------------------
-							MainFrame.log("Tip: " + Settings.CLOSE_POLYGON_MESSAGE);
-							this.currentMouseTipText = Settings.CLOSE_POLYGON_MESSAGE;
+							MainFrame.log("Tip: " + SettingsFrame.CLOSE_POLYGON_MESSAGE);
+							this.currentMouseTipText = SettingsFrame.CLOSE_POLYGON_MESSAGE;
 							repaint();
 							
 							// 4.2 If at least 3 points have been drawn, show a temporary polygon
@@ -1707,7 +1707,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			//------------------------------------------------------------------------
 			//                   Protocol for drawing polyline
 			//-----------------------------------------------------------------------
-			else if(currentLayer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)) {
+			else if(currentLayer.getLayerType().equals(SettingsFrame.POLYLINE_GEOMETRY)) {
 				
 				// 1. Current size of the drawn vertex
 				// ------------------------------------
@@ -1798,7 +1798,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		
 		else {
 			
-			showAnimatedHint("No shape have been selected", Settings.HIGHLIGHTED_STATE_COLOR);
+			showAnimatedHint("No shape have been selected", SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 			MainFrame.log("No shape have been selected");
 		}
 	}
@@ -1827,7 +1827,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		}
 		
 		// Close path , if the current layer is a polygon
-		if(currentLayer.getLayerType().equals(Settings.POLYGON_GEOMETRY)){
+		if(currentLayer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY)){
 			
 			path.closePath();
 			
@@ -1844,7 +1844,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			currentLayer.setNotSaved(true);
 		}
 		
-		else if (currentLayer.getLayerType().equals(Settings.POLYLINE_GEOMETRY)) {
+		else if (currentLayer.getLayerType().equals(SettingsFrame.POLYLINE_GEOMETRY)) {
 			
 			PolylineItem featurePolyline = new PolylineItem(currentLayer.getNextFeatureID(), path);
 			featurePolyline.getVertices().addAll(pointList);
@@ -1911,7 +1911,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	 */
 	public void showAnimatedHint(String message, Color stateColor) {
 		
-		if(Settings.HINT.getState() == true) {
+		if(SettingsFrame.HINT.getState() == true) {
 			
 			animatorTime = 0;
 			movingHint = null;
@@ -2020,7 +2020,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			
 			movingMouseTip = new TextItem(e.getPoint(), "Draw bounds to select features");
 			
-			setCurrentMouseGuide(movingMouseTip, Settings.DEFAULT_LAYER_COLOR);
+			setCurrentMouseGuide(movingMouseTip, SettingsFrame.DEFAULT_LAYER_COLOR);
 			
 			repaint();
 		} 
@@ -2115,7 +2115,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				movingMouseTip = new TextItem(e.getPoint(), "Draw bounds to select features");
 				
 				// Set the mouse tip
-				setCurrentMouseGuide(movingMouseTip, Settings.DEFAULT_LAYER_COLOR);
+				setCurrentMouseGuide(movingMouseTip, SettingsFrame.DEFAULT_LAYER_COLOR);
 				
 				// Repaint
 				repaint();

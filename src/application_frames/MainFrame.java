@@ -8,7 +8,6 @@ import javax.swing.GroupLayout.Alignment;
 import java.awt.Color;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultCaret;
 
 import core_classes.Feature;
@@ -31,7 +30,6 @@ import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -71,10 +69,11 @@ import javax.swing.border.LineBorder;
  * @author Olumide Igbiloba
  * @created Dec 7, 2017
  * @modifications
- * a. Dec 22, 2017 - Integrate database connection parameters from the settings frame<br>
+ * a. Dec 20, 2017 - Integrate database connection parameters from the settings frame<br>
  * b. Dec 26, 2017 - Removed the overloaded constructor with a database connection and <br>
  * changed it to a private method within the class<br>
  * c. Dec 27, 2017 - Integrate drawing settings from the settings frame<br>
+ * d. Dec 28, 2017 - Created separate (popup) frame for saving and opening drawing sessions<br>
  *
  */
 public class MainFrame extends CustomJFrame {
@@ -143,12 +142,16 @@ public class MainFrame extends CustomJFrame {
 	private DatabaseCatalog dbCatalog;
 	
 	/**Settings frame*/
-	private Settings settingsFrame = new Settings(true, this);
+	private SettingsFrame settingsFrame = new SettingsFrame(true, this);
+	
+	/**Files frame*/
+	private FilesFrame filesFrame = new FilesFrame();
 	
 	/**List of tools icon buttons*/
 	public static List<ToolIconButton> buttonsList = new ArrayList<ToolIconButton>();
 	
-	JPopupMenu sessionMenu;
+	private SessionManager sessionManager = new SessionManager(tableOfContents);
+	
 
 	/**
 	 * Starts the application
@@ -193,10 +196,10 @@ public class MainFrame extends CustomJFrame {
 		setVisible(true);
 		
 		// Position at the middle of the screen
-		setBounds(Settings.window.x  + (Settings.window.width - Settings.MAINFRAME_SIZE.width) / 2, 
-				Settings.window.y + (Settings.window.height - Settings.MAINFRAME_SIZE.height) / 2,
-				Settings.MAINFRAME_SIZE.width,
-				Settings.MAINFRAME_SIZE.height);
+		setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - SettingsFrame.MAINFRAME_SIZE.width) / 2, 
+				SettingsFrame.window.y + (SettingsFrame.window.height - SettingsFrame.MAINFRAME_SIZE.height) / 2,
+				SettingsFrame.MAINFRAME_SIZE.width,
+				SettingsFrame.MAINFRAME_SIZE.height);
 		
 		// Adding window listener
 		addWindowListener(new WindowAdapter() {
@@ -229,7 +232,7 @@ public class MainFrame extends CustomJFrame {
 		// Project name textfield
 		projectName = new JTextField();
 		projectName.setHorizontalAlignment(SwingConstants.CENTER);
-		projectName.setText(Settings.txtNewDoc.getText().toString());
+		projectName.setText(SettingsFrame.txtNewDoc.getText().toString());
 		projectName.setFont(new Font("Tahoma", Font.BOLD, 18));
 		projectName.setColumns(10);
 		
@@ -377,7 +380,7 @@ public class MainFrame extends CustomJFrame {
 		panel_6.add(btnAddLayer);
 		
 		layerListComboBox = new JComboBox<String[]>();
-		layerListComboBox.setBackground(Settings.DEFAULT_STATE_COLOR);
+		layerListComboBox.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 		layerListComboBox.setForeground(Color.WHITE);
 		
 		ToolIconButton btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
@@ -428,7 +431,7 @@ public class MainFrame extends CustomJFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(!panel.editModeIsOn) {
 					log("Attempted to delete feature, but edit mode is off");
-					panel.showAnimatedHint("Edit mode if off", Settings.DEFAULT_ERROR_COLOR);
+					panel.showAnimatedHint("Edit mode if off", SettingsFrame.DEFAULT_ERROR_COLOR);
 				} else
 					panel.deleteSelectedItem();
 			}
@@ -444,31 +447,31 @@ public class MainFrame extends CustomJFrame {
 		drawRibbon.setBorder(new CompoundBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Draw", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
 		drawRibbon.setLayout(new GridLayout(2, 8, 5, 5));
 		
-		DrawIconButton geomRec = new DrawIconButton("Rectangle", Settings.POLYGON_GEOMETRY ,"/images/rectangle.png", 25, 25);
+		DrawIconButton geomRec = new DrawIconButton("Rectangle", SettingsFrame.POLYGON_GEOMETRY ,"/images/rectangle.png", 25, 25);
 		geomRec.setToolTipText("Rectangle");
 		drawRibbon.add(geomRec);
 		
-		DrawIconButton geomTriangle = new DrawIconButton("Triangle", Settings.POLYGON_GEOMETRY, "/images/triangle.png", 25, 25);
+		DrawIconButton geomTriangle = new DrawIconButton("Triangle", SettingsFrame.POLYGON_GEOMETRY, "/images/triangle.png", 25, 25);
 		geomTriangle.setToolTipText("Triangle");
 		drawRibbon.add(geomTriangle);
 		
-		DrawIconButton geomCircle = new DrawIconButton("Circle", Settings.POLYGON_GEOMETRY, "/images/circle.png", 25, 25);
+		DrawIconButton geomCircle = new DrawIconButton("Circle", SettingsFrame.POLYGON_GEOMETRY, "/images/circle.png", 25, 25);
 		geomCircle.setToolTipText("Circle");
 		drawRibbon.add(geomCircle);
 		
-		DrawIconButton geomFreeformPolygon = new DrawIconButton("Freeform Polygon", Settings.POLYGON_GEOMETRY, "/images/polygon.png", 30, 30);
+		DrawIconButton geomFreeformPolygon = new DrawIconButton("Freeform Polygon", SettingsFrame.POLYGON_GEOMETRY, "/images/polygon.png", 30, 30);
 		geomFreeformPolygon.setToolTipText("Freeform Polygon");
 		drawRibbon.add(geomFreeformPolygon);
 		
-		DrawIconButton geomPoint = new DrawIconButton("Point", Settings.POINT_GEOMETRY, "/images/point.png", 25, 25);
+		DrawIconButton geomPoint = new DrawIconButton("Point", SettingsFrame.POINT_GEOMETRY, "/images/point.png", 25, 25);
 		geomPoint.setToolTipText("Point");
 		drawRibbon.add(geomPoint);
 		
-		DrawIconButton geomSingleLine = new DrawIconButton("Line", Settings.POLYLINE_GEOMETRY, "/images/line.png", 25, 25);
+		DrawIconButton geomSingleLine = new DrawIconButton("Line", SettingsFrame.POLYLINE_GEOMETRY, "/images/line.png", 25, 25);
 		geomSingleLine.setToolTipText("Single line");
 		drawRibbon.add(geomSingleLine);
 		
-		DrawIconButton geomMultiLine = new DrawIconButton("Multiline", Settings.POLYLINE_GEOMETRY ,"/images/polyline.png", 25, 25);
+		DrawIconButton geomMultiLine = new DrawIconButton("Multiline", SettingsFrame.POLYLINE_GEOMETRY ,"/images/polyline.png", 25, 25);
 		geomMultiLine.setToolTipText("Multi line");
 		drawRibbon.add(geomMultiLine);
 		
@@ -536,7 +539,7 @@ public class MainFrame extends CustomJFrame {
 			
 		    public void componentResized(ComponentEvent e) {
 		       
-		        panel.renderGrid(Settings.GRID_MM);
+		        panel.renderGrid(SettingsFrame.GRID_MM);
 		        
 		        if(getBounds().width > 1366) {
 		        	splitPane.setDividerLocation((int)(getBounds().width / 4));
@@ -581,92 +584,32 @@ public class MainFrame extends CustomJFrame {
 		// ---------------------------------------------------------------------------
 		// ACTION LISTENERS 
 		// ---------------------------------------------------------------------------
-
-
-		filesBtn.addMouseListener(new MouseAdapter() {
-
+		
+		filesBtn.addActionListener(new ActionListener() {
+			
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				log("Work in progress -> ");
-				/*// Initialize a SessionManager with all the active layers & a file extension filter for later
-				SessionManager sessionManager = new SessionManager(tableOfContents);
-				FileNameExtensionFilter sessionFileFilter = new FileNameExtensionFilter("GMCM Application Session Files", "gmcm");
-
-				// Build & display the save/close menu for the files button
-				sessionMenu = new JPopupMenu();
-				JMenuItem saveSessionMenuItem = new JMenuItem ("Save Session");
-				JMenuItem openSessionMenuItem = new JMenuItem ("Open Session");
-				sessionMenu.add(saveSessionMenuItem);
-				sessionMenu.add(openSessionMenuItem);
-				sessionMenu.setLocation(e.getXOnScreen(), e.getYOnScreen());
-				sessionMenu.setVisible(true);
-
-				// Add action listener for "Save Session" option.
-				saveSessionMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				
+				filesFrame.setVisible(true);
+				
+				filesFrame.getSaveButton().addActionListener(new ActionListener() {
+					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-
-						// Hide the menu once clicked and open a save dialog.
-						sessionMenu.setVisible(false);
-						JFileChooser saveSessionFileChooser = new JFileChooser();
-						saveSessionFileChooser.addChoosableFileFilter(sessionFileFilter);
-
-						// Once the user selects a file name, write the session to it.
-						int saveSessionReturnVal = saveSessionFileChooser.showSaveDialog(filesBtn);
-						if (saveSessionReturnVal == JFileChooser.APPROVE_OPTION) {
-							File saveSession = saveSessionFileChooser.getSelectedFile();
-							String saveSessionPath = saveSession.getPath();
-							if (!saveSessionPath.substring(saveSessionPath.length()-5).equals(".gmcm")) {
-								saveSessionPath += ".gmcm";
-							}
-							sessionManager.saveCurrentSession(saveSessionPath);
-						}
+						sessionManager.onSaveSessionIntent();
+						
 					}
 				});
-
-				// Add action listener for "Open Session" option.
-				openSessionMenuItem.addActionListener(new ActionListener() {
+				
+				filesFrame.getOpenButton().addActionListener(new ActionListener() {
+					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-
-						// Hide the menu once clicked and open an open dialog.
-						sessionMenu.setVisible(false);
-						JFileChooser openSessionFileChooser = new JFileChooser();
-						openSessionFileChooser.addChoosableFileFilter(sessionFileFilter);
-
-						// When the user selects a file, read it with the SessionManager and try to add the layers from the database, if they exist.
-						int openSessionReturnVal = openSessionFileChooser.showOpenDialog(filesBtn);
-						if (openSessionReturnVal == JFileChooser.APPROVE_OPTION) {
-							File openSession = openSessionFileChooser.getSelectedFile();
-							ArrayList<String> layersToOpen = sessionManager.openSession(openSession.getPath());
-							for (int i=0; i<layersToOpen.size(); i++) {
-								String layerName = layersToOpen.get(i);
-								try {
-									ResultSet layerContents = dbConnection.readTable(layerName);
-									createLayerFromResultSet(layerContents, layerName);
-								} catch (Exception ex) {
-									log("Table '" + layerName + "' does not exist in database.");
-								}
-							}
-						}
+						sessionManager.onOpenSessionIntent();
 					}
-				});
-
-				sessionMenu.addFocusListener(new FocusListener() {
-
-					@Override
-					public void focusLost(FocusEvent arg0) {
-						sessionMenu.setVisible(false);
-					}
-
-					@Override
-					public void focusGained(FocusEvent arg0) {
-					}
-
-				});
-*/
+				}); 
 			}
-
 		});
 		
 		selectionButton.addActionListener(new ActionListener() {
@@ -678,7 +621,7 @@ public class MainFrame extends CustomJFrame {
 					
 					MainFrame.btnDrawEdit.setButtonReleased(true);
 					MainFrame.btnDrawEdit.doClick();
-					MainFrame.btnDrawEdit.setBackground(Settings.DEFAULT_STATE_COLOR);
+					MainFrame.btnDrawEdit.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 
 				}
 				
@@ -686,7 +629,7 @@ public class MainFrame extends CustomJFrame {
 					
 					MainFrame.queryButton.setButtonReleased(true);
 					MainFrame.queryButton.doClick();
-					MainFrame.queryButton.setBackground(Settings.DEFAULT_STATE_COLOR);
+					MainFrame.queryButton.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 
 				}
 				
@@ -704,7 +647,7 @@ public class MainFrame extends CustomJFrame {
 					
 					MainFrame.btnDrawEdit.setButtonReleased(true);
 					MainFrame.btnDrawEdit.doClick();
-					MainFrame.btnDrawEdit.setBackground(Settings.DEFAULT_STATE_COLOR);
+					MainFrame.btnDrawEdit.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 
 				}
 				
@@ -712,7 +655,7 @@ public class MainFrame extends CustomJFrame {
 					
 					MainFrame.selectionButton.setButtonReleased(true);
 					MainFrame.selectionButton.doClick();
-					MainFrame.selectionButton.setBackground(Settings.DEFAULT_STATE_COLOR);
+					MainFrame.selectionButton.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 
 				}
 				
@@ -782,11 +725,11 @@ public class MainFrame extends CustomJFrame {
 			
 		});
 		
-		if(Settings.gridToggle.getState() != panel.gridIsOn) {
+		if(SettingsFrame.gridToggle.getState() != panel.gridIsOn) {
 			btnGrid.doClick();
 			btnGrid.setButtonReleased(panel.gridIsOn);
 			if(panel.gridIsOn) {
-				btnGrid.setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+				btnGrid.setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 			}
 		}
 		
@@ -808,11 +751,11 @@ public class MainFrame extends CustomJFrame {
 			}
 		});
 		
-		if(Settings.snapToggle.getState() != panel.snappingModeIsOn) {
+		if(SettingsFrame.snapToggle.getState() != panel.snappingModeIsOn) {
 			btnSnap.doClick();
 			btnSnap.setButtonReleased(panel.snappingModeIsOn);
 			if(panel.snappingModeIsOn) {
-				btnSnap.setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+				btnSnap.setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 			}
 		}
 		
@@ -850,7 +793,7 @@ public class MainFrame extends CustomJFrame {
 		
 		// 1. Create list of possible geometries
 		// -------------------------------------
-		String[] geom = {Settings.POLYGON_GEOMETRY, Settings.POLYLINE_GEOMETRY, Settings.POINT_GEOMETRY};
+		String[] geom = {SettingsFrame.POLYGON_GEOMETRY, SettingsFrame.POLYLINE_GEOMETRY, SettingsFrame.POINT_GEOMETRY};
 		
 		// 2. Put list inside a combo box
 		// ------------------------------
@@ -862,7 +805,7 @@ public class MainFrame extends CustomJFrame {
 	    layerPanel.setLayout(new GridLayout(4,1));
 	  
 	    // b. Create the text fields
-	    String autoGeneratedLayerName = Settings.txtNewlayer.getText().toString() + TableOfContents.getNewLayerID();
+	    String autoGeneratedLayerName = SettingsFrame.txtNewlayer.getText().toString() + TableOfContents.getNewLayerID();
 	    JTextField layerNameTextField = new JTextField(autoGeneratedLayerName);
 	   
 	    // c. Add componets to panel
@@ -880,9 +823,9 @@ public class MainFrame extends CustomJFrame {
 		if(response == JOptionPane.OK_OPTION) {
 			
 			// 4.1 Get the selected item on the combo box
-			if( geomList.getSelectedItem().toString().equals(Settings.POLYGON_GEOMETRY ) ||
-			    geomList.getSelectedItem().toString().equals(Settings.POLYLINE_GEOMETRY) ||
-			    geomList.getSelectedItem().toString().equals(Settings.POINT_GEOMETRY )
+			if( geomList.getSelectedItem().toString().equals(SettingsFrame.POLYGON_GEOMETRY ) ||
+			    geomList.getSelectedItem().toString().equals(SettingsFrame.POLYLINE_GEOMETRY) ||
+			    geomList.getSelectedItem().toString().equals(SettingsFrame.POINT_GEOMETRY )
 					) {
 
 				// 4.2 Gets the layer name from the text field
@@ -1015,7 +958,7 @@ public class MainFrame extends CustomJFrame {
  			   
  			   	dbConnection.writeTable(layer.getLayerName(), layer);
 				
-				panel.showAnimatedHint("Saved!", Settings.FEATURE_CREATED_COLOR);
+				panel.showAnimatedHint("Saved!", SettingsFrame.FEATURE_CREATED_COLOR);
 				log("Layer saved to DB");
 				
 				layer.setNotSaved(false);
@@ -1024,7 +967,7 @@ public class MainFrame extends CustomJFrame {
 				
  		   } else {
  			   
- 			  panel.showAnimatedHint("Layer name exists!", Settings.DEFAULT_ERROR_COLOR);
+ 			  panel.showAnimatedHint("Layer name exists!", SettingsFrame.DEFAULT_ERROR_COLOR);
  			  log("Layer with same name was found in the database, confirm to overwrite");
  			  
  			  int response = JOptionPane.showConfirmDialog(null, "Overwrite existing layer?", "Confirm", JOptionPane.YES_NO_OPTION );
@@ -1033,7 +976,7 @@ public class MainFrame extends CustomJFrame {
  				  
  				 dbConnection.writeTable(layer.getLayerName(), layer);
  				
- 				 panel.showAnimatedHint("Saved!", Settings.FEATURE_CREATED_COLOR);
+ 				 panel.showAnimatedHint("Saved!", SettingsFrame.FEATURE_CREATED_COLOR);
  				 log("Layer saved to DB");
  				
  				 layer.setNotSaved(false);
@@ -1046,7 +989,7 @@ public class MainFrame extends CustomJFrame {
 			
 			e.printStackTrace();
 			
-			panel.showAnimatedHint("Something went wrong /n Cannot save to DB", Settings.DEFAULT_ERROR_COLOR);
+			panel.showAnimatedHint("Something went wrong /n Cannot save to DB", SettingsFrame.DEFAULT_ERROR_COLOR);
 			log(e.getMessage());
 			
 			return false;
@@ -1066,7 +1009,7 @@ public class MainFrame extends CustomJFrame {
 		// 3. Log some message
 		String message = "New " + newLayer.getLayerType() + " layer: "+ newLayer.getLayerName() + " was created";
 		log(message);
-		panel.showAnimatedHint(message, Settings.DEFAULT_STATE_COLOR);
+		panel.showAnimatedHint(message, SettingsFrame.DEFAULT_STATE_COLOR);
 	
 	}
 	
@@ -1117,21 +1060,21 @@ public class MainFrame extends CustomJFrame {
 				
 				} 
 				
-				else if (layerType.equals(Settings.POINT_GEOMETRY)) {
+				else if (layerType.equals(SettingsFrame.POINT_GEOMETRY)) {
 					
 					for(int i = 0; i < Math.min(aX.length, aY.length); i++) {
 						
 						Point2D pointCoord = new Point2D.Double(aX[0], aY[0]);
 						
 						Feature point  = new PointItem(newLayer.getNextFeatureID(), pointCoord);
-						point.setFeatureType(Settings.POINT_GEOMETRY);
+						point.setFeatureType(SettingsFrame.POINT_GEOMETRY);
 						point.setLayerID(newLayer.getId());
-						point.setShape(new Ellipse2D.Double(pointCoord.getX() - Settings.POINT_SIZE/2,
-								pointCoord.getY() - Settings.POINT_SIZE/2,
-								Settings.POINT_SIZE, Settings.POINT_SIZE));
+						point.setShape(new Ellipse2D.Double(pointCoord.getX() - SettingsFrame.POINT_SIZE/2,
+								pointCoord.getY() - SettingsFrame.POINT_SIZE/2,
+								SettingsFrame.POINT_SIZE, SettingsFrame.POINT_SIZE));
 						
 						newLayer.getListOfFeatures().add(point);
-						newLayer.setLayerType(Settings.POINT_GEOMETRY);
+						newLayer.setLayerType(SettingsFrame.POINT_GEOMETRY);
 						newLayer.setNotSaved(true);
 						
 					}
@@ -1143,8 +1086,8 @@ public class MainFrame extends CustomJFrame {
 					List<Rectangle2D> vertices = new ArrayList<Rectangle2D>();
 
 					for(int i = 0; i < Math.min(aX.length, aY.length); i++) {
-						vertices.add(new Rectangle2D.Double(aX[i] - (Settings.SNAP_SIZE / 2), aY[i] - (Settings.SNAP_SIZE / 2),
-								Settings.SNAP_SIZE, Settings.SNAP_SIZE));
+						vertices.add(new Rectangle2D.Double(aX[i] - (SettingsFrame.SNAP_SIZE / 2), aY[i] - (SettingsFrame.SNAP_SIZE / 2),
+								SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
 					}
 
 					newLayer.setLayerType(layerType); // ! important
@@ -1297,7 +1240,7 @@ public class MainFrame extends CustomJFrame {
 			
 			// Disable the edit start button
 			btnDrawEdit.setButtonReleased(false);
-			btnDrawEdit.setBackground(Settings.DEFAULT_STATE_COLOR);
+			btnDrawEdit.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 			
 		}
 			
@@ -1336,7 +1279,7 @@ public class MainFrame extends CustomJFrame {
 				
 				button.setButtonReleased(true);
 				button.setSelected(false);
-				button.setBackground(Settings.DEFAULT_STATE_COLOR);
+				button.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 				
 			}
         }

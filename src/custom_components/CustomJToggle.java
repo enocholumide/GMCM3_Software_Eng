@@ -11,7 +11,7 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
 
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 
 
 /**
@@ -65,7 +65,7 @@ public class CustomJToggle extends JButton {
 		} else {
 			state = true;
 			setText("ON");
-			setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+			setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 		}
 	}
 	

@@ -7,7 +7,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 
 /**
  * Defines the structure of a layer in the system.<br>
@@ -45,9 +45,9 @@ public class Layer  {
 	/** The geometry type of a layer i.e point, polygon or polyline */
 	private String layerType = "";
 	/** The default color of a layer */
-	private Color layerColor = Settings.DEFAULT_LAYER_COLOR;
+	private Color layerColor = SettingsFrame.DEFAULT_LAYER_COLOR;
 	/** The default line weight of a layer */
-	private int lineWeight = Settings.DEFAULT_LAYER_LINE_WEIGHT;
+	private int lineWeight = SettingsFrame.DEFAULT_LAYER_LINE_WEIGHT;
 	/** The Visibility of a layer, when layer is not visible, all features in the layer will be not painted, nor 
 	 * selectable */
 	private boolean isVisible = true;

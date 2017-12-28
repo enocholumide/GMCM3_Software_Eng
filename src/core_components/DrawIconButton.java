@@ -9,7 +9,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.plaf.metal.MetalToggleButtonUI;
 
 import application_frames.MainFrame;
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 import toolset.Tools;
 
 /**
@@ -40,7 +40,7 @@ public class DrawIconButton extends JToggleButton {
 		setBorderPainted(false);
 		setFocusPainted(false);
 		setActionCommand(name);
-		setBackground(Settings.DEFAULT_STATE_COLOR);
+		setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 		
 		addChangeListener(new ChangeListener() {
             @Override
@@ -64,17 +64,17 @@ public class DrawIconButton extends JToggleButton {
 						setUI(new MetalToggleButtonUI() {
 						    @Override
 						    protected Color getSelectColor() {
-						        return Settings.HIGHLIGHTED_STATE_COLOR;
+						        return SettingsFrame.HIGHLIGHTED_STATE_COLOR;
 						    }
 						});
 					}
 					
 					else  {
 						MainFrame.log( featureType +  " deselected. (" + getActionCommand() + " family)");
-						setBackground(Settings.DEFAULT_STATE_COLOR);
+						setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 					}
 				} else
-					setBackground(Settings.DEFAULT_STATE_COLOR);
+					setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 				
 			}
 		});
