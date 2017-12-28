@@ -43,3 +43,7 @@ local.properties
 *.launch
 
 .idea
+
+#others
+.
+*.db

@@ -4,6 +4,7 @@
 package core_classes;
 
 import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -228,6 +229,20 @@ public class Feature {
 	}
 
 	/**
+	 * @param radiusX the radiusX to set
+	 */
+	public void setRadiusX(double radiusX) {
+		this.radiusX = radiusX;
+	}
+
+	/**
+	 * @param radiusY the radiusY to set
+	 */
+	public void setRadiusY(double radiusY) {
+		this.radiusY = radiusY;
+	}
+
+	/**
 	 * Returns the Layer ID of which a Feature belongs to
 	 * @return the layerID
 	 */
@@ -279,6 +294,7 @@ public class Feature {
 	 * @return the center
 	 */
 	public Point2D getCenter() {
+		this.center = new Point2D.Double(getVertices().get(0).getCenterX(), getVertices().get(0).getCenterY());
 		return center;
 	}
 
@@ -287,6 +303,7 @@ public class Feature {
 	 * @param center the center to set
 	 */
 	public void setCenter(Point2D center) {
+		
 		this.center = center;
 	}
 }
