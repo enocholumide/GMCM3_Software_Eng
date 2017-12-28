@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -32,6 +33,9 @@ import renderers.GeometryTableIconRenderer;
  * Change the color of a layer.
  * 
  * @author Olumide Igbiloba
+ * @since Dec 7, 2017
+ * @modifications
+ * a. Dec 28, 2017 Validate adding layer with same name on the table of contents
  *
  */
 public class TableOfContents extends JTable {
@@ -259,22 +263,53 @@ public class TableOfContents extends JTable {
 	/**
 	 * Add a new layer to table of contents
 	 * @param layer the layer to set
+	 * @return 
 	 */
-	public void addRowLayer(Layer layer) {
+	public boolean addRowLayer(Layer layer) {
 		
-		// Add to the layer list
-		layerList.add(layer);
+		// Validate layer
 		
-		// Add to the table 
-		tableModel.addRow(layer.getTableData());
+		if(validateLayer(layer)) {
 		
-		// Increase the layer id
-		layerID++;
-		
-		// Update the combo box model
-		MainFrame.updateLayerComboBoxModel( getListOfLayersInString() );
+			// Add to the layer list
+			layerList.add(layer);
+			
+			// Add to the table 
+			tableModel.addRow(layer.getTableData());
+			
+			// Increase the layer id
+			layerID++;
+			
+			// Update the combo box model
+			MainFrame.updateLayerComboBoxModel( getListOfLayersInString() );
+			
+			return true;
+			
+		} else {
+			MainFrame.log("Cannot add layer, layer with same name exists");
+			JOptionPane.showMessageDialog(null, "Cannot add layer, layer with same name exists", "Error adding new layer", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
 	}
 	
+	/**
+	 * 
+	 * @param layer
+	 * @return
+	 */
+	public boolean validateLayer(Layer layer) {
+
+		for(String existingLayerNames : getListOfLayersInString()) {
+			if(existingLayerNames.equals(layer.getLayerName())) {
+				System.out.println(existingLayerNames);
+				System.out.println(layer.getLayerName());
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 	/**
 	 * Returns a new layer ID
 	 * @return new layer id
