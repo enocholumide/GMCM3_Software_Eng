@@ -77,7 +77,7 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 		JPanel contentPane;
 		
 		setAlwaysOnTop(true);
-		setBounds(Settings.window.getBounds().x + MainFrame.panel.getBounds().x, 100, 300, 783);
+		setBounds(SettingsFrame.window.getBounds().x + MainFrame.panel.getBounds().x, 100, 300, 783);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);

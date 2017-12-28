@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 import toolset.Tools;
 
 /**
@@ -106,7 +106,7 @@ public class Feature {
 		double[] x = Tools.copyFromIntArray(xp);
 		double[] y = Tools.copyFromIntArray(xp);
 		
-		int snapSize = Settings.SNAP_SIZE;
+		int snapSize = SettingsFrame.SNAP_SIZE;
 		
 		for(int i = 0; i < x.length; i++) {
 			this.vertices.add(new Rectangle2D.Double(x[i] - (snapSize/2), y[i] - (snapSize/2), snapSize, snapSize));
@@ -120,7 +120,7 @@ public class Feature {
 	 */
 	public void setVerticesFromDoubleArray(double[] x, double[] y) {
 		
-		int snapSize = Settings.SNAP_SIZE;
+		int snapSize = SettingsFrame.SNAP_SIZE;
 		
 		for(int i = 0; i < x.length; i++) {
 			this.vertices.add(new Rectangle2D.Double(x[i] - (snapSize/2), y[i] - (snapSize/2), snapSize, snapSize));

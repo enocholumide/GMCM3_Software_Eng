@@ -41,7 +41,7 @@ import toolset.Tools;
  * In this class the general settings of the application are defined
  *
  */
-public class Settings extends CustomJFrame {
+public class SettingsFrame extends CustomJFrame {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -81,7 +81,7 @@ public class Settings extends CustomJFrame {
 	 * @param openMainFrame the openMainFrame to be set
 	 * @param mainFrame 
 	 */
-	public Settings(boolean openMainFrame, MainFrame mainFrame) {
+	public SettingsFrame(boolean openMainFrame, MainFrame mainFrame) {
 		
 		super("Settings");
 		
@@ -96,8 +96,8 @@ public class Settings extends CustomJFrame {
 		
 		//1222, 750
 		
-		setBounds(Settings.window.x  + (Settings.window.width - 1222) / 2, 
-				Settings.window.y + (Settings.window.height - 750) / 2,
+		setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - 1222) / 2, 
+				SettingsFrame.window.y + (SettingsFrame.window.height - 750) / 2,
 				1222, 
 				750);
 		
@@ -252,11 +252,11 @@ public class Settings extends CustomJFrame {
 				
 				try {
 					
-					String host = (Settings.dbHost.getText());
-					int port = Integer.parseInt((Settings.dbPort.getText()));
-					String database = (Settings.dbName.getText());
-					String user = Settings.dbUsername.getText();
-					String password = String.valueOf(Settings.dbPassword.getPassword());
+					String host = (SettingsFrame.dbHost.getText());
+					int port = Integer.parseInt((SettingsFrame.dbPort.getText()));
+					String database = (SettingsFrame.dbName.getText());
+					String user = SettingsFrame.dbUsername.getText();
+					String password = String.valueOf(SettingsFrame.dbPassword.getPassword());
 					
 					PASSWORD = password;
 					
@@ -355,7 +355,8 @@ public class Settings extends CustomJFrame {
 		drawingSettingsPanel.add(drawingSettingsSubPanel);
 		
 		JLabel lblDraftSettings = new JLabel("Drafting and colors");
-		lblDraftSettings.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDraftSettings.setForeground(Color.GRAY);
+		lblDraftSettings.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblDraftSettings.setBounds(10, 11, 272, 28);
 		drawingSettingsSubPanel.add(lblDraftSettings);
 		
@@ -369,10 +370,10 @@ public class Settings extends CustomJFrame {
 		lblDraftingBackgrouns.setBounds(202, 50, 131, 28);
 		drawingSettingsSubPanel.add(lblDraftingBackgrouns);
 		
-		JLabel lblVerticesColor = new JLabel("Highlight color");
-		lblVerticesColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblVerticesColor.setBounds(202, 89, 131, 28);
-		drawingSettingsSubPanel.add(lblVerticesColor);
+		JLabel lblHighlightColor = new JLabel("Highlight color");
+		lblHighlightColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblHighlightColor.setBounds(202, 89, 131, 28);
+		drawingSettingsSubPanel.add(lblHighlightColor);
 		
 		DRAFTING_BACKGROUND = new CustomColorPicker();
 		DRAFTING_BACKGROUND.setBounds(332, 50, 36, 28);
@@ -394,10 +395,10 @@ public class Settings extends CustomJFrame {
 		GRID_COLOR.setBounds(140, 123, 36, 28);
 		drawingSettingsSubPanel.add(GRID_COLOR);
 		
-		JLabel lblHighlightState = new JLabel("Selection color");
-		lblHighlightState.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblHighlightState.setBounds(202, 123, 131, 28);
-		drawingSettingsSubPanel.add(lblHighlightState);
+		JLabel lblSelectionColor = new JLabel("Selection color");
+		lblSelectionColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblSelectionColor.setBounds(202, 123, 131, 28);
+		drawingSettingsSubPanel.add(lblSelectionColor);
 		
 		SELECTION_COLOR = new CustomColorPicker();
 		SELECTION_COLOR.setBackground(new Color (135, 234, 105));
@@ -405,14 +406,15 @@ public class Settings extends CustomJFrame {
 		drawingSettingsSubPanel.add(SELECTION_COLOR);
 		
 		JLabel lblTextAndDefault = new JLabel("Text and default names");
-		lblTextAndDefault.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblTextAndDefault.setForeground(Color.GRAY);
+		lblTextAndDefault.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblTextAndDefault.setBounds(598, 10, 272, 28);
 		drawingSettingsSubPanel.add(lblTextAndDefault);
 		
-		JLabel newLayerName = new JLabel("New layer name");
-		newLayerName.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		newLayerName.setBounds(598, 49, 131, 28);
-		drawingSettingsSubPanel.add(newLayerName);
+		JLabel lblNewLayerName = new JLabel("New layer name");
+		lblNewLayerName.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNewLayerName.setBounds(598, 49, 131, 28);
+		drawingSettingsSubPanel.add(lblNewLayerName);
 		
 		txtNewlayer = new JTextField();
 		txtNewlayer.setText("New_layer");
@@ -420,10 +422,10 @@ public class Settings extends CustomJFrame {
 		txtNewlayer.setBounds(732, 50, 106, 28);
 		drawingSettingsSubPanel.add(txtNewlayer);
 		
-		JLabel newDocName = new JLabel("New document name");
-		newDocName.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		newDocName.setBounds(598, 88, 131, 28);
-		drawingSettingsSubPanel.add(newDocName);
+		JLabel lblNewDocName = new JLabel("New document name");
+		lblNewDocName.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNewDocName.setBounds(598, 88, 131, 28);
+		drawingSettingsSubPanel.add(lblNewDocName);
 		
 		txtNewDoc = new JTextField();
 		txtNewDoc.setText("Untitled");
@@ -432,7 +434,8 @@ public class Settings extends CustomJFrame {
 		drawingSettingsSubPanel.add(txtNewDoc);
 		
 		JLabel lblDisplay = new JLabel("Others");
-		lblDisplay.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDisplay.setForeground(Color.GRAY);
+		lblDisplay.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblDisplay.setBounds(880, 11, 183, 28);
 		drawingSettingsSubPanel.add(lblDisplay);
 		
@@ -441,15 +444,15 @@ public class Settings extends CustomJFrame {
 		lblMonitor.setBounds(880, 50, 131, 28);
 		drawingSettingsSubPanel.add(lblMonitor);
 		
-		JLabel lblShowHint = new JLabel("Autosave on close");
-		lblShowHint.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblShowHint.setBounds(881, 128, 131, 28);
-		drawingSettingsSubPanel.add(lblShowHint);
+		JLabel lblAutoSave = new JLabel("Autosave on close");
+		lblAutoSave.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblAutoSave.setBounds(881, 128, 131, 28);
+		drawingSettingsSubPanel.add(lblAutoSave);
 		
-		JLabel label_2 = new JLabel("Show hint");
-		label_2.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		label_2.setBounds(881, 89, 131, 28);
-		drawingSettingsSubPanel.add(label_2);
+		JLabel lblShowHint = new JLabel("Show hint");
+		lblShowHint.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblShowHint.setBounds(881, 89, 131, 28);
+		drawingSettingsSubPanel.add(lblShowHint);
 		
 		JLabel lblSnap = new JLabel("Snap");
 		lblSnap.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -502,7 +505,7 @@ public class Settings extends CustomJFrame {
 		btnFinish.setBorderPainted(false);
 		btnFinish.setFocusPainted(false);
 		btnFinish.setForeground(SystemColor.text);
-		btnFinish.setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+		btnFinish.setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 		btnFinish.setBounds(1057, 662, 139, 38);
 		contentPane.add(btnFinish);
 		
@@ -515,11 +518,11 @@ public class Settings extends CustomJFrame {
 					
 					try {
 						
-						String host = (Settings.dbHost.getText());
-						int port = Integer.parseInt((Settings.dbPort.getText()));
-						String database = (Settings.dbName.getText());
-						String user = Settings.dbUsername.getText();
-						String password = String.valueOf(Settings.dbPassword.getPassword());
+						String host = (SettingsFrame.dbHost.getText());
+						int port = Integer.parseInt((SettingsFrame.dbPort.getText()));
+						String database = (SettingsFrame.dbName.getText());
+						String user = SettingsFrame.dbUsername.getText();
+						String password = String.valueOf(SettingsFrame.dbPassword.getPassword());
 						
 						if(!initialized){
 							mainFrame.start(new DatabaseConnection(host, port, database, user, password));
@@ -654,23 +657,23 @@ public class Settings extends CustomJFrame {
 
 			// Drawing settings
 			
-			Settings.GRID_MM = (int) Settings.gridSizeSpinner.getValue();
-			Settings.SNAP_SIZE = (int) Settings.snapSizeSpinner.getValue();
+			SettingsFrame.GRID_MM = (int) SettingsFrame.gridSizeSpinner.getValue();
+			SettingsFrame.SNAP_SIZE = (int) SettingsFrame.snapSizeSpinner.getValue();
 			
 			if(MainFrame.panel != null) {
-				MainFrame.panel.renderGrid(Settings.GRID_MM);
+				MainFrame.panel.renderGrid(SettingsFrame.GRID_MM);
 			}
 			
 			
 			// Log some messages
 			
 			settingsMessage.setText("Settings saved");
-			settingsMessage.setForeground(Settings.defaultColor);
+			settingsMessage.setForeground(SettingsFrame.defaultColor);
 			
 		} catch (Exception e) {
 			
 			settingsMessage.setText("Something went wrong:  " + e.getMessage());
-			settingsMessage.setForeground(Settings.DEFAULT_ERROR_COLOR);
+			settingsMessage.setForeground(SettingsFrame.DEFAULT_ERROR_COLOR);
 			
 			e.printStackTrace();
 		}

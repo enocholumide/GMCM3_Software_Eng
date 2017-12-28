@@ -1,11 +1,12 @@
 package core_components;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JButton;
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 import toolset.Tools;
 
 /**
@@ -32,7 +33,8 @@ public class ToolIconButton extends JButton {
 	public ToolIconButton(String text, String iconPath, int x, int y) {
 		
 		super();
-		setBackground(Settings.DEFAULT_STATE_COLOR);
+		setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
+		setForeground(Color.WHITE);
 		setBorderPainted(false);
 		setFocusPainted(false);
 		setActionCommand(text);
@@ -67,7 +69,7 @@ public class ToolIconButton extends JButton {
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
 				super.mouseEntered(e);
-				setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+				setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 			}
 			
 			@Override
@@ -75,7 +77,7 @@ public class ToolIconButton extends JButton {
 				// TODO Auto-generated method stub
 				super.mouseExited(e);
 				if(!buttonReleased) {
-					setBackground(Settings.DEFAULT_STATE_COLOR);
+					setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 				}
 			}
 			
@@ -83,9 +85,9 @@ public class ToolIconButton extends JButton {
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
 				if(!buttonReleased) {
-					setBackground(Settings.DEFAULT_STATE_COLOR);
+					setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
 				} else
-					setBackground(Settings.HIGHLIGHTED_STATE_COLOR);
+					setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 			}
 		});
 		

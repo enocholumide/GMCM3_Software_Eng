@@ -6,7 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 
 /**
  * Class which renders the remove icon on the table cell
@@ -24,7 +24,7 @@ public class LayerRemoveButtonRenderer extends JButton implements TableCellRende
 		setOpaque(false);
 		setContentAreaFilled(false);
 		setBorderPainted(false);
-		setIcon(Settings.LAYER_DELETE_ICON);
+		setIcon(SettingsFrame.LAYER_DELETE_ICON);
 	}
 	
 	/**

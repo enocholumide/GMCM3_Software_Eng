@@ -11,7 +11,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import application_frames.Settings;
+import application_frames.SettingsFrame;
 
 /**
  * Class for the creation of a ShapeItem
@@ -19,7 +19,7 @@ import application_frames.Settings;
  */
 public class ShapeItem implements Shape {
 	
-	private Color color = Settings.defaultColor;
+	private Color color = SettingsFrame.defaultColor;
 	private int shapeID;
 	
 	/**
