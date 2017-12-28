@@ -2402,6 +2402,8 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				repaint();
 			}
 		}
+		// Prompt for save 
+		currentLayer.setNotSaved(true);
 	}
 
 	/**

@@ -46,8 +46,8 @@ public class ImportExportFrame extends CustomJFrame {
 		super.setTitle(operation);
 	    Container contentPane = getContentPane();
 	    JPanel panel = new JPanel();
-	    csvLoader = new ToolIconButton("CSV", "/images/save.png", 50, 50);
-	    geoJsonLoader = new ToolIconButton("GEOJSON", "/images/file.png", 50, 50);
+	    csvLoader = new ToolIconButton("CSV", "/images/csv.png", 50, 50);
+	    geoJsonLoader = new ToolIconButton("GEOJSON", "/images/geojson.png", 50, 50);
 	    csvLoader.setText(operation + " Csv");
 	    geoJsonLoader.setText(operation + " GeoJson");
 	    panel.setLayout(new GridLayout(2, 1, 10, 10));
