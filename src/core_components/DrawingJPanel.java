@@ -168,7 +168,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		setBackground(SettingsFrame.DRAFTING_BACKGROUND.getBackground());
 		
 		renderGrid(SettingsFrame.GRID_MM);
-		showAnimatedHint("Welcome", SettingsFrame.DEFAULT_STATE_COLOR);
+		showAnimatedHint("Welcome", SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 		
 	}
 	
@@ -483,14 +483,14 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				
 				editModeIsOn = false;
 				
-				showAnimatedHint("Edit session turned off", SettingsFrame.HIGHLIGHTED_STATE_COLOR);
+				showAnimatedHint("Edit session turned off", SettingsFrame.DEFAULT_STATE_COLOR);
 			} else {
 				
 				editModeIsOn = true;
 				
 				this.vertexList.clear();
 				
-				showAnimatedHint("Edit session turned on", SettingsFrame.DEFAULT_STATE_COLOR);
+				showAnimatedHint("Edit session turned on", SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 				
 				// Update draw buttons
 				MainFrame.updateDrawButtonGroup();

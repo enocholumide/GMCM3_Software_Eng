@@ -67,7 +67,6 @@ public class ToolIconButton extends JButton {
 			
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
 				super.mouseEntered(e);
 				setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
 			}
