@@ -2113,7 +2113,6 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	@Override
 	public void mousePressed(MouseEvent e) {
 		
-		
 		// For selection with rectangle
 		if( queryModeIsOn ) {
 			
@@ -2134,7 +2133,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		//a. Edit mode is one
 		//b. No drawing tool selected
 		//c. The mouse pressed is not a right click
-		else if ( editModeIsOn && currentFeatureType == null) {
+		else if ( editModeIsOn && MainFrame.getCurrentFeatureType() == null) {
 			
 			if(!SwingUtilities.isRightMouseButton(e)) {
 				// Get the pressed vertix and the feature itself 
