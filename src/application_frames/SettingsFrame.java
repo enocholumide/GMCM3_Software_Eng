@@ -16,6 +16,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -28,18 +29,22 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import core_components.ToolIconButton;
 import custom_components.CustomColorPicker;
 import custom_components.CustomJFrame;
 import custom_components.CustomJToggle;
 import database.DatabaseConnection;
 import file_handling.DatabaseCredentialsManager;
 import toolset.Tools;
+import javax.swing.JComboBox;
 
 /**
  * Class contains the general settings for the application
+ * In this class the general settings of the application are defined.
  * @author Olumide Igbiloba
- * In this class the general settings of the application are defined
- *
+ * @since Dec 7, 2017
+ * @modifications
+ * a. Dec 29, 2017 - Implement look and feel<br>
  */
 public class SettingsFrame extends CustomJFrame {
 
@@ -72,8 +77,11 @@ public class SettingsFrame extends CustomJFrame {
 	private static boolean initialized = false;
 	private static String PASSWORD = "";
 	public static CustomJToggle snapToggle, gridToggle;
+	public static int THEME = 1;
 	
 	private MainFrame mainFrame;
+	public static JComboBox<String[]> themeCmbBox;
+	public static DefaultComboBoxModel<String[]> model;
 	
 
 	/**
@@ -81,11 +89,14 @@ public class SettingsFrame extends CustomJFrame {
 	 * @param openMainFrame the openMainFrame to be set
 	 * @param mainFrame 
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SettingsFrame(boolean openMainFrame, MainFrame mainFrame) {
 		
 		super("Settings");
 		
 		this.mainFrame = mainFrame;
+		
+		setUpLookAndFeel();
 		
 		addWindowListener(new WindowAdapter() {
 			@Override 
@@ -94,12 +105,10 @@ public class SettingsFrame extends CustomJFrame {
 			} 
 		});
 		
-		//1222, 750
-		
-		setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - 1222) / 2, 
-				SettingsFrame.window.y + (SettingsFrame.window.height - 750) / 2,
-				1222, 
-				750);
+		setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - 1215) / 2, 
+				SettingsFrame.window.y + (SettingsFrame.window.height - 740) / 2,
+				1215, 
+				740);
 		
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
@@ -146,6 +155,8 @@ public class SettingsFrame extends CustomJFrame {
 		contentPane.add(separator);
 		
 		settingsMessage = new JLabel("Click to the green button to test connection to your database");
+		settingsMessage.setForeground(Color.BLACK);
+		settingsMessage.setBackground(Color.BLACK);
 		settingsMessage.setFont(new Font("Tahoma", Font.BOLD, 12));
 		settingsMessage.setBounds(90, 151, 1106, 14);
 		contentPane.add(settingsMessage);
@@ -155,7 +166,7 @@ public class SettingsFrame extends CustomJFrame {
 		}
 		
 		JPanel databaseConnectionPanel = new JPanel();
-		databaseConnectionPanel.setBackground(SystemColor.inactiveCaption);
+		databaseConnectionPanel.setBackground(Color.DARK_GRAY);
 		databaseConnectionPanel.setBounds(90, 189, 536, 215);
 		contentPane.add(databaseConnectionPanel);
 		databaseConnectionPanel.setLayout(null);
@@ -236,14 +247,15 @@ public class SettingsFrame extends CustomJFrame {
 		lblDbConn.setBounds(10, 11, 280, 28);
 		databaseConnectionPanel.add(lblDbConn);
 		
-		JButton btnTestConnection = new JButton("");
-		btnTestConnection.setBackground(SystemColor.inactiveCaption);
+		ToolIconButton btnTestConnection = new ToolIconButton("", "/images/testdb.png", 20, 20);
+		btnTestConnection.setBackground(Color.DARK_GRAY);
+		//btnTestConnection.setOpaque(true);
 		btnTestConnection.setToolTipText("Test database connection");
 		btnTestConnection.setBounds(503, 11, 23, 23);
 		databaseConnectionPanel.add(btnTestConnection);
-		btnTestConnection.setBorderPainted(false);
+		/*btnTestConnection.setBorderPainted(false);
 		btnTestConnection.setFocusPainted(false);
-		btnTestConnection.setIcon(Tools.getIconImage("/images/testdb.png", 20, 20));
+		btnTestConnection.setIcon(Tools.getIconImage("/images/testdb.png", 20, 20));*/
 		
 		btnTestConnection.addActionListener(new ActionListener() {
 			
@@ -275,7 +287,7 @@ public class SettingsFrame extends CustomJFrame {
 		
 		JPanel generalSettingsPanel = new JPanel();
 		generalSettingsPanel.setLayout(null);
-		generalSettingsPanel.setBackground(SystemColor.inactiveCaption);
+		generalSettingsPanel.setBackground(Color.DARK_GRAY);
 		generalSettingsPanel.setBounds(660, 189, 536, 215);
 		contentPane.add(generalSettingsPanel);
 		
@@ -344,7 +356,7 @@ public class SettingsFrame extends CustomJFrame {
 		
 		JPanel drawingSettingsPanel = new JPanel();
 		drawingSettingsPanel.setLayout(null);
-		drawingSettingsPanel.setBackground(SystemColor.inactiveCaption);
+		drawingSettingsPanel.setBackground(Color.DARK_GRAY);
 		drawingSettingsPanel.setBounds(90, 415, 1106, 223);
 		contentPane.add(drawingSettingsPanel);
 		
@@ -361,23 +373,26 @@ public class SettingsFrame extends CustomJFrame {
 		drawingSettingsSubPanel.add(lblDraftSettings);
 		
 		JLabel lblGridSize = new JLabel("Grid size (mm)");
+		lblGridSize.setForeground(Color.BLACK);
 		lblGridSize.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblGridSize.setBounds(10, 50, 85, 28);
 		drawingSettingsSubPanel.add(lblGridSize);
 		
 		JLabel lblDraftingBackgrouns = new JLabel("Drafting background");
+		lblDraftingBackgrouns.setForeground(Color.BLACK);
 		lblDraftingBackgrouns.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblDraftingBackgrouns.setBounds(202, 50, 131, 28);
 		drawingSettingsSubPanel.add(lblDraftingBackgrouns);
 		
 		JLabel lblHighlightColor = new JLabel("Highlight color");
+		lblHighlightColor.setForeground(Color.BLACK);
 		lblHighlightColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblHighlightColor.setBounds(202, 89, 131, 28);
 		drawingSettingsSubPanel.add(lblHighlightColor);
 		
 		DRAFTING_BACKGROUND = new CustomColorPicker();
 		DRAFTING_BACKGROUND.setBounds(332, 50, 36, 28);
-		DRAFTING_BACKGROUND.setBackground(Color.WHITE);
+		DRAFTING_BACKGROUND.setBackground(Color.BLACK);
 		drawingSettingsSubPanel.add(DRAFTING_BACKGROUND);
 		
 		FEATURE_HIGHLIGHTED_STATE_COLOR = new CustomColorPicker();
@@ -386,16 +401,18 @@ public class SettingsFrame extends CustomJFrame {
 		drawingSettingsSubPanel.add(FEATURE_HIGHLIGHTED_STATE_COLOR);
 		
 		JLabel lblGridColor = new JLabel("Grid color");
+		lblGridColor.setForeground(Color.BLACK);
 		lblGridColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblGridColor.setBounds(10, 123, 131, 28);
 		drawingSettingsSubPanel.add(lblGridColor);
 		
 		GRID_COLOR = new CustomColorPicker();
-		GRID_COLOR.setBackground(Color.LIGHT_GRAY);
+		GRID_COLOR.setBackground(Color.DARK_GRAY);
 		GRID_COLOR.setBounds(140, 123, 36, 28);
 		drawingSettingsSubPanel.add(GRID_COLOR);
 		
 		JLabel lblSelectionColor = new JLabel("Selection color");
+		lblSelectionColor.setForeground(Color.BLACK);
 		lblSelectionColor.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblSelectionColor.setBounds(202, 123, 131, 28);
 		drawingSettingsSubPanel.add(lblSelectionColor);
@@ -412,6 +429,7 @@ public class SettingsFrame extends CustomJFrame {
 		drawingSettingsSubPanel.add(lblTextAndDefault);
 		
 		JLabel lblNewLayerName = new JLabel("New layer name");
+		lblNewLayerName.setForeground(Color.BLACK);
 		lblNewLayerName.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLayerName.setBounds(598, 49, 131, 28);
 		drawingSettingsSubPanel.add(lblNewLayerName);
@@ -423,6 +441,7 @@ public class SettingsFrame extends CustomJFrame {
 		drawingSettingsSubPanel.add(txtNewlayer);
 		
 		JLabel lblNewDocName = new JLabel("New document name");
+		lblNewDocName.setForeground(Color.BLACK);
 		lblNewDocName.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewDocName.setBounds(598, 88, 131, 28);
 		drawingSettingsSubPanel.add(lblNewDocName);
@@ -440,21 +459,25 @@ public class SettingsFrame extends CustomJFrame {
 		drawingSettingsSubPanel.add(lblDisplay);
 		
 		JLabel lblMonitor = new JLabel("Monitor");
+		lblMonitor.setForeground(Color.BLACK);
 		lblMonitor.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblMonitor.setBounds(880, 50, 131, 28);
 		drawingSettingsSubPanel.add(lblMonitor);
 		
 		JLabel lblAutoSave = new JLabel("Autosave on close");
+		lblAutoSave.setForeground(Color.BLACK);
 		lblAutoSave.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblAutoSave.setBounds(881, 128, 131, 28);
 		drawingSettingsSubPanel.add(lblAutoSave);
 		
 		JLabel lblShowHint = new JLabel("Show hint");
+		lblShowHint.setForeground(Color.BLACK);
 		lblShowHint.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblShowHint.setBounds(881, 89, 131, 28);
 		drawingSettingsSubPanel.add(lblShowHint);
 		
 		JLabel lblSnap = new JLabel("Snap");
+		lblSnap.setForeground(Color.BLACK);
 		lblSnap.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblSnap.setBounds(391, 50, 107, 28);
 		drawingSettingsSubPanel.add(lblSnap);
@@ -464,6 +487,7 @@ public class SettingsFrame extends CustomJFrame {
 		drawingSettingsSubPanel.add(snapToggle);
 		
 		JLabel lblGrid = new JLabel("Grid");
+		lblGrid.setForeground(Color.BLACK);
 		lblGrid.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblGrid.setBounds(391, 88, 107, 28);
 		drawingSettingsSubPanel.add(lblGrid);
@@ -488,6 +512,7 @@ public class SettingsFrame extends CustomJFrame {
 		drawingSettingsSubPanel.add(gridSizeSpinner);
 		
 		JLabel lblGI = new JLabel("Snap size (mm)");
+		lblGI.setForeground(Color.BLACK);
 		lblGI.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblGI.setBounds(10, 89, 131, 28);
 		drawingSettingsSubPanel.add(lblGI);
@@ -495,6 +520,48 @@ public class SettingsFrame extends CustomJFrame {
 		snapSizeSpinner = new JSpinner(new SpinnerNumberModel(15, 10, 20, 1));
 		snapSizeSpinner.setBounds(140, 89, 36, 28);
 		drawingSettingsSubPanel.add(snapSizeSpinner);
+		
+		JLabel lblTheme = new JLabel("Theme");
+		lblTheme.setForeground(Color.BLACK);
+		lblTheme.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblTheme.setBounds(598, 128, 131, 28);
+		drawingSettingsSubPanel.add(lblTheme);
+		
+		String[] themes = {"Dark"};
+		model = new DefaultComboBoxModel( themes );
+		
+		themeCmbBox = new JComboBox<String[]>();
+		
+		themeCmbBox.setModel(model);
+		themeCmbBox.setBounds(732, 128, 106, 28);
+		drawingSettingsSubPanel.add(themeCmbBox);
+		
+		/*themeCmbBox.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				String lnfName = "com.jtattoo.plaf.smart.SmartLookAndFeel";
+				if(themeCmbBox.getSelectedIndex() == 1) {
+					lnfName = "com.jtattoo.plaf.hifi.HiFiLookAndFeel";
+				} 
+				
+				else if (themeCmbBox.getSelectedIndex() == 0) {
+					DEFAULT_STATE_COLOR = new Color(31, 105, 224);
+				}
+				
+				try {
+					UIManager.setLookAndFeel(lnfName);
+					SwingUtilities.updateComponentTreeUI(mainFrame);;
+					mainFrame.pack();
+					mainFrame.repaint();
+					mainFrame.revalidate();
+				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+						| UnsupportedLookAndFeelException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});*/
 		
 		JLabel lblDrawingSettings = new JLabel("Drawing settings");
 		lblDrawingSettings.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -582,6 +649,13 @@ public class SettingsFrame extends CustomJFrame {
 				saveAllChanges();
 			}
 		});
+	}
+
+	private void setUpLookAndFeel() {
+		
+		JButton testButton = new JButton();
+		SettingsFrame.DEFAULT_STATE_COLOR = testButton.getBackground();
+		
 	}
 
 	private static Rectangle getWindow() {
@@ -736,9 +810,9 @@ public class SettingsFrame extends CustomJFrame {
 	public static CustomJToggle HINT;
 	
 	public static final Color ICON_COLOR = new Color(31, 105, 224);
-	public static final Color DEFAULT_LAYER_COLOR = Color.BLACK;
+	public static final Color DEFAULT_LAYER_COLOR = Color.LIGHT_GRAY;
 	public static final Color MUTE_STATE_COLOR = Color.LIGHT_GRAY;
-	public static final Color DEFAULT_STATE_COLOR = new Color(31, 105, 224);
+	public static Color DEFAULT_STATE_COLOR = new Color(31, 105, 224);
 	public static final Color HIGHLIGHTED_STATE_COLOR = new Color(239, 66, 14);
 	public static final Color FEATURE_CREATED_COLOR = new Color (16, 91, 26);
 	public static final int MONITOR_SCREEN = 1;

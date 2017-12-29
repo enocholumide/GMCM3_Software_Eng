@@ -76,6 +76,7 @@ import javax.swing.border.LineBorder;
  * d. Dec 28, 2017 - Created separate (popup) frame for saving and opening drawing sessions.<br>
  * e. Dec 28, 2017 - Created separate (popup) frame for importing and exporting csv/ files.<br>
  * f. Dec 28, 2017 - Validate adding layer with same name on the table of contents<br>
+ * g. Dec 29, 2017 - Implement look and feel<br>
  */
 public class MainFrame extends CustomJFrame {
 
@@ -92,6 +93,7 @@ public class MainFrame extends CustomJFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					UIManager.setLookAndFeel("com.jtattoo.plaf.hifi.HiFiLookAndFeel");
 					new MainFrame();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -195,6 +197,9 @@ public class MainFrame extends CustomJFrame {
 		
 		// Make visible
 		setVisible(true);
+		
+		// Set title
+		setTitle("GMCM3 Software Engineering (Group 1), Geomatics – Hochschule Karlsruhe – Technik und Wirtschaft (HsKA)");
 		
 		// Position at the middle of the screen
 		setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - SettingsFrame.MAINFRAME_SIZE.width) / 2, 
