@@ -11,11 +11,17 @@ import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Enumeration;
 
+import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -27,8 +33,12 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
+import core_components.DrawIconButton;
 import core_components.ToolIconButton;
 import custom_components.CustomColorPicker;
 import custom_components.CustomJFrame;
@@ -37,6 +47,8 @@ import database.DatabaseConnection;
 import file_handling.DatabaseCredentialsManager;
 import toolset.Tools;
 import javax.swing.JComboBox;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * Class contains the general settings for the application
@@ -45,13 +57,20 @@ import javax.swing.JComboBox;
  * @since Dec 7, 2017
  * @modifications
  * a. Dec 29, 2017 - Implement look and feel<br>
+ * b. Dec 30, 2017 - Added support for changing application theme<br>
  */
-public class SettingsFrame extends CustomJFrame {
-
-	private static final long serialVersionUID = 1L;
+public class SettingsFrame {
 	
 	private JPanel contentPane;
+	private CustomJFrame frame;
 	
+	/**
+	 * @return the frame
+	 */
+	public CustomJFrame getFrame() {
+		return frame;
+	}
+
 	// Database params
 	public static JTextField dbHost;
 	public static JTextField dbPort;
@@ -92,28 +111,31 @@ public class SettingsFrame extends CustomJFrame {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SettingsFrame(boolean openMainFrame, MainFrame mainFrame) {
 		
-		super("Settings");
-		
 		this.mainFrame = mainFrame;
+		
+		frame = new CustomJFrame();
+		frame.setResizable(false);
+		frame.setTitle("Settings");
+		
 		
 		setUpLookAndFeel();
 		
-		addWindowListener(new WindowAdapter() {
+		frame.addWindowListener(new WindowAdapter() {
 			@Override 
 			public void windowClosing(WindowEvent e) { 
 				handleWindowClosingEvent(e);
 			} 
 		});
 		
-		setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - 1215) / 2, 
-				SettingsFrame.window.y + (SettingsFrame.window.height - 740) / 2,
-				1215, 
-				740);
+		frame.setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - 1210) / 2, 
+				SettingsFrame.window.y + (SettingsFrame.window.height - 735) / 2,
+				1210, 
+				735);
 		
 		contentPane = new JPanel();
-		contentPane.setBackground(Color.WHITE);
+		contentPane.setBackground(SystemColor.window);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
+		frame.setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JPanel panel = new JPanel();
@@ -166,7 +188,6 @@ public class SettingsFrame extends CustomJFrame {
 		}
 		
 		JPanel databaseConnectionPanel = new JPanel();
-		databaseConnectionPanel.setBackground(Color.DARK_GRAY);
 		databaseConnectionPanel.setBounds(90, 189, 536, 215);
 		contentPane.add(databaseConnectionPanel);
 		databaseConnectionPanel.setLayout(null);
@@ -243,25 +264,22 @@ public class SettingsFrame extends CustomJFrame {
 		databaseConnectionSubPanel.add(btnUsername);
 		
 		JLabel lblDbConn = new JLabel("Database connection");
-		lblDbConn.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDbConn.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblDbConn.setBounds(10, 11, 280, 28);
 		databaseConnectionPanel.add(lblDbConn);
 		
-		ToolIconButton btnTestConnection = new ToolIconButton("", "/images/testdb.png", 20, 20);
-		btnTestConnection.setBackground(Color.DARK_GRAY);
-		//btnTestConnection.setOpaque(true);
-		btnTestConnection.setToolTipText("Test database connection");
-		btnTestConnection.setBounds(503, 11, 23, 23);
-		databaseConnectionPanel.add(btnTestConnection);
-		/*btnTestConnection.setBorderPainted(false);
-		btnTestConnection.setFocusPainted(false);
-		btnTestConnection.setIcon(Tools.getIconImage("/images/testdb.png", 20, 20));*/
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setToolTipText("Test database connection");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setIcon(Tools.getIconImage("/images/testdb.png", 25, 25));
+		lblNewLabel.setBounds(496, 11, 30, 30);
+		databaseConnectionPanel.add(lblNewLabel);
 		
-		btnTestConnection.addActionListener(new ActionListener() {
-			
+		lblNewLabel.addMouseListener(new MouseAdapter() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				super.mousePressed(e);
 				try {
 					
 					String host = (SettingsFrame.dbHost.getText());
@@ -287,7 +305,6 @@ public class SettingsFrame extends CustomJFrame {
 		
 		JPanel generalSettingsPanel = new JPanel();
 		generalSettingsPanel.setLayout(null);
-		generalSettingsPanel.setBackground(Color.DARK_GRAY);
 		generalSettingsPanel.setBounds(660, 189, 536, 215);
 		contentPane.add(generalSettingsPanel);
 		
@@ -350,13 +367,12 @@ public class SettingsFrame extends CustomJFrame {
 		panel_5.add(userOccupation);
 		
 		JLabel lblFile = new JLabel("General");
-		lblFile.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblFile.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblFile.setBounds(10, 11, 280, 28);
 		generalSettingsPanel.add(lblFile);
 		
 		JPanel drawingSettingsPanel = new JPanel();
 		drawingSettingsPanel.setLayout(null);
-		drawingSettingsPanel.setBackground(Color.DARK_GRAY);
 		drawingSettingsPanel.setBounds(90, 415, 1106, 223);
 		contentPane.add(drawingSettingsPanel);
 		
@@ -392,7 +408,7 @@ public class SettingsFrame extends CustomJFrame {
 		
 		DRAFTING_BACKGROUND = new CustomColorPicker();
 		DRAFTING_BACKGROUND.setBounds(332, 50, 36, 28);
-		DRAFTING_BACKGROUND.setBackground(Color.BLACK);
+		DRAFTING_BACKGROUND.setBackground(Color.WHITE);
 		drawingSettingsSubPanel.add(DRAFTING_BACKGROUND);
 		
 		FEATURE_HIGHLIGHTED_STATE_COLOR = new CustomColorPicker();
@@ -407,7 +423,7 @@ public class SettingsFrame extends CustomJFrame {
 		drawingSettingsSubPanel.add(lblGridColor);
 		
 		GRID_COLOR = new CustomColorPicker();
-		GRID_COLOR.setBackground(Color.DARK_GRAY);
+		GRID_COLOR.setBackground(Color.LIGHT_GRAY);
 		GRID_COLOR.setBounds(140, 123, 36, 28);
 		drawingSettingsSubPanel.add(GRID_COLOR);
 		
@@ -521,13 +537,23 @@ public class SettingsFrame extends CustomJFrame {
 		snapSizeSpinner.setBounds(140, 89, 36, 28);
 		drawingSettingsSubPanel.add(snapSizeSpinner);
 		
+		snapSizeSpinner.getModel().addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+
+				SettingsFrame.SNAP_SIZE = (int) snapSizeSpinner.getValue();
+				MainFrame.panel.repaint();
+			}
+		});
+		
 		JLabel lblTheme = new JLabel("Theme");
 		lblTheme.setForeground(Color.BLACK);
 		lblTheme.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblTheme.setBounds(598, 128, 131, 28);
 		drawingSettingsSubPanel.add(lblTheme);
 		
-		String[] themes = {"Dark"};
+		String[] themes = {"Light","Dark"};
 		model = new DefaultComboBoxModel( themes );
 		
 		themeCmbBox = new JComboBox<String[]>();
@@ -536,35 +562,56 @@ public class SettingsFrame extends CustomJFrame {
 		themeCmbBox.setBounds(732, 128, 106, 28);
 		drawingSettingsSubPanel.add(themeCmbBox);
 		
-		/*themeCmbBox.addItemListener(new ItemListener() {
+		
+		
+		themeCmbBox.addItemListener(new ItemListener() {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				String lnfName = "com.jtattoo.plaf.smart.SmartLookAndFeel";
 				if(themeCmbBox.getSelectedIndex() == 1) {
 					lnfName = "com.jtattoo.plaf.hifi.HiFiLookAndFeel";
-				} 
-				
-				else if (themeCmbBox.getSelectedIndex() == 0) {
-					DEFAULT_STATE_COLOR = new Color(31, 105, 224);
+				} else {
+					
 				}
+					
 				
 				try {
 					UIManager.setLookAndFeel(lnfName);
-					SwingUtilities.updateComponentTreeUI(mainFrame);;
-					mainFrame.pack();
+					
+					
+					SettingsFrame.DEFAULT_STATE_COLOR = new JButton().getBackground();
+					if(themeCmbBox.getSelectedItem().toString().toUpperCase().equals("LIGHT")) {
+						DEFAULT_STATE_COLOR = new Color(31, 105, 224);
+						SettingsFrame.DRAFTING_BACKGROUND.setBackground(Color.WHITE);
+						SettingsFrame.GRID_COLOR.setBackground(Color.LIGHT_GRAY);
+					} else {
+						SettingsFrame.DRAFTING_BACKGROUND.setBackground(Color.BLACK);
+						SettingsFrame.GRID_COLOR.setBackground(Color.DARK_GRAY);
+					}
+					updateCustomButtonsLookAndFeel(SettingsFrame.DEFAULT_STATE_COLOR);
+					SwingUtilities.updateComponentTreeUI(frame);
+					SwingUtilities.updateComponentTreeUI(mainFrame);
+					
+					//frame.pack();
+					frame.repaint();
+					frame.revalidate();
+					
+					//mainFrame.pack();
 					mainFrame.repaint();
 					mainFrame.revalidate();
+					
 				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 						| UnsupportedLookAndFeelException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				
 			}
-		});*/
+		});
 		
 		JLabel lblDrawingSettings = new JLabel("Drawing settings");
-		lblDrawingSettings.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblDrawingSettings.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblDrawingSettings.setBounds(10, 11, 280, 28);
 		drawingSettingsPanel.add(lblDrawingSettings);
 		
@@ -597,10 +644,8 @@ public class SettingsFrame extends CustomJFrame {
 						}
 						
 					} catch (ClassNotFoundException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 					
@@ -608,7 +653,7 @@ public class SettingsFrame extends CustomJFrame {
 					
 				}
 				//dispose();
-				setVisible(false);
+				frame.setVisible(false);
 			}
 			
 		});
@@ -630,6 +675,7 @@ public class SettingsFrame extends CustomJFrame {
 		btnSave.setBackground(Color.DARK_GRAY);
 		btnSave.setBounds(908, 662, 139, 38);
 		contentPane.add(btnSave);
+		
 
 		// Get DB params from credential manager
 		try {
@@ -638,6 +684,7 @@ public class SettingsFrame extends CustomJFrame {
 			dbPort.setText(String.valueOf(databaseCredentialsManager.port));
 			dbName.setText(databaseCredentialsManager.database);
 			dbUsername.setText(databaseCredentialsManager.user);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -650,11 +697,29 @@ public class SettingsFrame extends CustomJFrame {
 			}
 		});
 	}
+	
+	/**
+	 * 
+	 * @param newColor
+	 */
+	private void updateCustomButtonsLookAndFeel(Color newColor) {
+		for(ToolIconButton button : MainFrame.buttonsList) {
+			if(!button.getBackground().equals(SettingsFrame.HIGHLIGHTED_STATE_COLOR)) {
+				button.setBackground(newColor);
+			}
+		}
+		for (Enumeration<AbstractButton> buttons = MainFrame.drawButtonGroup.getElements(); buttons.hasMoreElements();) {
+			DrawIconButton button = (DrawIconButton) buttons.nextElement();
+			if(!button.isSelected()) {
+				button.setBackground(newColor);
+			}
+		}
+	}
 
 	private void setUpLookAndFeel() {
 		
 		JButton testButton = new JButton();
-		SettingsFrame.DEFAULT_STATE_COLOR = testButton.getBackground();
+		//SettingsFrame.DEFAULT_STATE_COLOR = testButton.getBackground();
 		
 	}
 
@@ -759,7 +824,7 @@ public class SettingsFrame extends CustomJFrame {
 	 * @param e the WindowEvent to set
 	 */
 	protected void handleWindowClosingEvent(WindowEvent e) {
-		setVisible(false);
+		frame.setVisible(false);
 	}
 
 	// Software information

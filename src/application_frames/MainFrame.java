@@ -1,5 +1,7 @@
 package application_frames;
 
+import com.jtattoo.plaf.smart.SmartLookAndFeel;
+
 import java.awt.EventQueue;
 
 import javax.swing.*;
@@ -94,7 +96,7 @@ public class MainFrame extends CustomJFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					UIManager.setLookAndFeel("com.jtattoo.plaf.hifi.HiFiLookAndFeel");
+					UIManager.setLookAndFeel("com.jtattoo.plaf.smart.SmartLookAndFeel");
 					new MainFrame();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -187,7 +189,7 @@ public class MainFrame extends CustomJFrame {
 	 */
 	private void setUp() {
 	
-		settingsFrame.setVisible(true);
+		settingsFrame.getFrame().setVisible(true);
 	
 	}
 
@@ -387,8 +389,8 @@ public class MainFrame extends CustomJFrame {
 		panel_6.add(btnAddLayer);
 		
 		layerListComboBox = new JComboBox<String[]>();
-		layerListComboBox.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
-		layerListComboBox.setForeground(Color.WHITE);
+		//layerListComboBox.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
+		//layerListComboBox.setForeground(Color.WHITE);
 		
 		ToolIconButton btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
 		btnSnap.setToolTipText("Turn of snap");
@@ -575,9 +577,11 @@ public class MainFrame extends CustomJFrame {
 		});
 		
 		
-		buttonsList.add(filesBtn);
+		/*buttonsList.add(filesBtn);
 		buttonsList.add(importBtn);
 		buttonsList.add(exportBtn);
+		buttonsList.add(selectionButton);
+		buttonsList.add(e)*/
 		
 		drawButtonGroup.add(geomRec);
 		drawButtonGroup.add(geomTriangle);
@@ -642,7 +646,7 @@ public class MainFrame extends CustomJFrame {
 							panel.showAnimatedHint("Sucessfully exported to CSV", SettingsFrame.DEFAULT_SUCCESS_COLOR);
 							log("Sucessfully exported to CSV");
 						} catch (Exception e1) {
-							log("An error occured, can not export to CSV");
+							log("An error occured, can not export to CSV: " + e1.getMessage());
 						}
 					}
 				});
@@ -784,10 +788,10 @@ public class MainFrame extends CustomJFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				if(settingsFrame != null) {
-					if(settingsFrame.isVisible()) {
-						settingsFrame.setVisible(false);
-					} else if(!settingsFrame.isVisible()) {
-						settingsFrame.setVisible(true);
+					if(settingsFrame.getFrame().isVisible()) {
+						settingsFrame.getFrame().setVisible(false);
+					} else if(!settingsFrame.getFrame().isVisible()) {
+						settingsFrame.getFrame().setVisible(true);
 					}
 				} 	
 			}
@@ -1366,7 +1370,7 @@ public class MainFrame extends CustomJFrame {
 		
 		// 1. Loop through all the buttons in the draw button group
 		// ----------------------------------------------------------
-		for (Enumeration<AbstractButton> buttons = toolsButtonGroup.getElements(); buttons.hasMoreElements();) {
+		for (Enumeration<AbstractButton> buttons = drawButtonGroup.getElements(); buttons.hasMoreElements();) {
             
 			ToolIconButton button = (ToolIconButton) buttons.nextElement();
 			
