@@ -250,9 +250,9 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 									c = SettingsFrame.HIGHLIGHTED_STATE_COLOR;
 								}
 								//if(!feature.isEllipse()) {
-									for(Shape shape : feature.getVertices()) {
+									for(Rectangle2D shape : feature.getVertices()) {
 										g2d.setColor(c);
-										g2d.fill(shape);
+										g2d.fill(getCurrentVertixSize(shape));
 									}
 								//}
 							}
@@ -323,8 +323,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 					}
 				}
 				
-				
-				g2d.fill(item);
+				g2d.fill(getCurrentVertixSize(item));
 				count++;
 				
 			}
@@ -334,7 +333,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			if(!(snapPoint == null)) {
 				g2d.setStroke(new BasicStroke(1));
 				g2d.setColor(Color.PINK);
-				g2d.draw(snapPoint);
+				g2d.draw(getCurrentVertixSize(snapPoint));
 			}
 			
 			// 6. Render tool tips
@@ -407,7 +406,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			g2d.dispose();
 		}
 	}
-
+	
 	/**
 	 * Turns the grid on and off
 	 */
@@ -580,6 +579,23 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			editModeIsOn = false;
 		}
 	}
+	/**
+	 * 
+	 * @param vertix
+	 * @return
+	 */
+	private Shape getCurrentVertixSize(Rectangle2D  vertix) {
+		int size = SettingsFrame.SNAP_SIZE;
+		vertix = new Rectangle2D.Double(
+				vertix.getCenterX() - (size/2),
+				vertix.getCenterY() - (size/2),
+				size,
+				size
+				);
+		
+		return vertix;
+	}
+
 	/**
 	 * Helps the paint component to compute rendering and conflict calculations for mouse guides <br>
 	 * The repaint method should be called wherever this method is used

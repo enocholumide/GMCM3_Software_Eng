@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JButton;
+
+import application_frames.MainFrame;
 import application_frames.SettingsFrame;
 import toolset.Tools;
 
@@ -41,6 +43,7 @@ public class ToolIconButton extends JButton {
 		setIcon(Tools.getIconImage(iconPath, x,y));
 		setText(null);
 		
+		MainFrame.buttonsList.add(this);
 		
 		addActionListener(new ActionListener() {
 
@@ -91,7 +94,7 @@ public class ToolIconButton extends JButton {
 		});
 		
 	}
-
+	
 	/**
 	 * Returns whether the ToolIconButton is released or not
 	 * @return the buttonReleased
