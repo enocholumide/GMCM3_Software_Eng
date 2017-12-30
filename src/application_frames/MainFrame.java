@@ -19,6 +19,7 @@ import core_components.ToolIconButton;
 import custom_components.CustomJFrame;
 import database.DatabaseConnection;
 import features.PointItem;
+import file_handling.FileHandler;
 import file_handling.SessionManager;
 import toolset.Tools;
 
@@ -635,7 +636,14 @@ public class MainFrame extends CustomJFrame {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						log("Musa, handle export to CSV");
+						panel.abandonEditSession();
+						try {
+							FileHandler.writeToCSV(TableOfContents.layerList);
+							panel.showAnimatedHint("Sucessfully exported to CSV", SettingsFrame.DEFAULT_SUCCESS_COLOR);
+							log("Sucessfully exported to CSV");
+						} catch (Exception e1) {
+							log("An error occured, can not export to CSV");
+						}
 					}
 				});
 				
@@ -643,7 +651,7 @@ public class MainFrame extends CustomJFrame {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						log("Musa, hhandle export to geoJson");
+						log("Musa, handle export to geoJson");
 					}
 				});
 			}
@@ -1187,7 +1195,7 @@ public class MainFrame extends CustomJFrame {
 
 				}		
 			}
-			
+			newLayer.setLayerName(layerName);
 			newLayer.setNotSaved(false);
 			tableOfContents.addRowLayer(newLayer);
 			

@@ -802,6 +802,8 @@ public class SettingsFrame extends CustomJFrame {
 	public static Color cursorColor = new Color(244, 98, 66);
 	public static Color defaultColor = Color.BLACK;
 	public static Color DEFAULT_ERROR_COLOR = Color.RED;
+	public static Color DEFAULT_SUCCESS_COLOR = new Color(31, 105, 224);
+	public static Color DEFAULT_STATE_COLOR = new Color(31, 105, 224);
 	
 	public static CustomColorPicker DRAFTING_BACKGROUND;
 	public static CustomColorPicker GRID_COLOR;
@@ -812,11 +814,13 @@ public class SettingsFrame extends CustomJFrame {
 	public static final Color ICON_COLOR = new Color(31, 105, 224);
 	public static final Color DEFAULT_LAYER_COLOR = Color.LIGHT_GRAY;
 	public static final Color MUTE_STATE_COLOR = Color.LIGHT_GRAY;
-	public static Color DEFAULT_STATE_COLOR = new Color(31, 105, 224);
+	
 	public static final Color HIGHLIGHTED_STATE_COLOR = new Color(239, 66, 14);
 	public static final Color FEATURE_CREATED_COLOR = new Color (16, 91, 26);
 	public static final int MONITOR_SCREEN = 1;
 	public static final Dimension MAINFRAME_SIZE = new Dimension(1366, 768);
+
+	
 	public static JTextField txtNewlayer;
 	public static JTextField txtNewDoc;
 }
