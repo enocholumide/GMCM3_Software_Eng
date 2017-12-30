@@ -21,6 +21,9 @@ import org.json.simple.parser.JSONParser;
 import application_frames.MainFrame;
 import core_classes.Feature;
 import core_classes.Layer;
+import features.PointItem;
+import features.PolygonItem;
+import features.PolylineItem;
 
 
 
@@ -47,17 +50,17 @@ public class FileHandler {
 	    static double radiusOfCurvature ;
     
     
-    static List<Point2D> poinsList = new ArrayList<Point2D>();
+    static List<Point2D> poinsList2d = new ArrayList<Point2D>();
 	
 	 static Point point = null;
 	 private static ArrayList<Point> pointlist = new ArrayList<Point>();
 	 
-	 /**
+	 /**s
 	  * Reading CSV
 	  * @param file
 	  * @throws IOException
 	  */
-	 public static void readFromCSV(File file) throws IOException {
+	 public static Feature readFromCSV(File file) throws IOException {
              
 	       FileReader filereader = null;
 	       BufferedReader bfreader = null;
@@ -76,11 +79,13 @@ public class FileHandler {
 		          
 		          while((line = bfreader.readLine()) != null) {
 		        	  
-		        	  String [] splitline= line.split(";"); 
-		        	  String id  =  splitline[0];
-		        	  String type = splitline[1];
-		        	  String sprx = splitline[3];
-		   	   	      String spry = splitline[4];
+		        	  String [] splitedline= line.split(";"); 
+		        	  String id  =  splitedline[0];
+		        	  String type = splitedline[1];
+		        	  String sprx = splitedline[3];
+		   	   	      String spry = splitedline[4];
+		   	   	      // seting type to uppercase to be tested for gemometry type.
+		   	   	      type.toUpperCase();
 		        	  // skip the first line
 		        	  if(count == 0) {
 	        			  count = count+1;
@@ -88,11 +93,11 @@ public class FileHandler {
 	        		  }
 		        	  if(count == 1) {
 	        			  if(type.equals("POINT")) {
-	        				  readPointFeature(splitline);
+	        				  readPointFeature(splitedline);
 	        			  } else if (type.equals("POLYGON")) {
-	        				  readPolygonFeature(splitline);
+	        				  readPolygonFeature(splitedline);
 	        			  } else if(type.equals("POLYLINE")) { 
-		        	      readPolylineFeature(splitline);
+		        	      readPolylineFeature(splitedline);
 		        	     }
 	        		  }			        			 			        						        						        	  			        	  		        	 			        	        		  
 		       } // while close  
@@ -104,6 +109,10 @@ public class FileHandler {
 	      }finally {
 	        	  filereader.close();
 	          }
+	          
+	           
+	          
+			return null;
 		          
    }
 	 
@@ -112,8 +121,8 @@ public class FileHandler {
 	 * @param layer
 	 * @param file
 	 */
-	 public static void readFromGeoJson() {
-	 
+	 public static Feature readFromGeoJson() {
+		 Feature FeatureInfo = null; 
 	 JFileChooser geoJsonFile = new JFileChooser ();
 	 int geoJsonReturnValu = geoJsonFile.showSaveDialog(MainFrame.panel);
 	 File saveSession = geoJsonFile.getSelectedFile();
@@ -172,20 +181,21 @@ public class FileHandler {
 					double yWordCoord = (radiusOfCurvature + sllipsoidalHeight) * Math.cos(latitudeInDegree)*Math.sin(longitudeInDegree);
 				    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
 				    // world coordinates must be converted to image coordinates
-					poinsList.add(point2d);
-					System.out.println(poinsList);				
+				    poinsList2d.add(point2d);
+					System.out.println(poinsList2d);				
 				}
 				
 			}
 			
-			System.out.println( poinsList.size());
+			System.out.println( poinsList2d.size());
 			
 		}catch (Exception e) {
 				e.printStackTrace();
 				
 				
 			}
-        } 
+        }
+	return FeatureInfo; 
     }
 	 /*
 	     * seting transformation parameter
@@ -208,8 +218,8 @@ public class FileHandler {
 	  * Reading PolylineFeatire  from CSV file.
 	  * @param spliter
 	  */
-	 private static void readPolylineFeature(String[] spliter) {
-		 
+	 private static PolylineItem readPolylineFeature(String[] spliter) {
+		   PolylineItem  PolylineInfo = null;
 		   int i;
 	       int j ;
 	       int  xcoordpoly =0;
@@ -234,13 +244,15 @@ public class FileHandler {
 	       }catch(Exception e) {
 	    	   e.printStackTrace();
 	       }
+		return PolylineInfo;
 	}
 	 
 	 /**
 	  * * Reading PolygoneFeatire from CSV file.
 	  * @param spliter
 	  */
-	private static void readPolygonFeature(String[] spliter) {
+	private static PolygonItem readPolygonFeature(String[] spliter) {
+		PolygonItem PolygonInfor = null;
 		// TODO Auto-generated method stub
 	       int i;
 	       int j ;
@@ -267,13 +279,15 @@ public class FileHandler {
 	       }catch(Exception e) {
 	    	   e.printStackTrace();
 	       }
+		return PolygonInfor;
 	}
  	 
 	/**
 	  * Reading (x,y) PointFeatire coordinates from CSV file.
 	  * @param spliter
 	  */
-	 public static void readPointFeature(String[] spliter) {
+	 public static PointItem readPointFeature(String[] spliter) {
+		 PointItem PointInfo = null;
 		 
 		 try {
 			 
@@ -290,11 +304,13 @@ public class FileHandler {
 		    //DrawingPanel.ellipses.add(ellipse);
 		    System.out.println(ellipse);
 		    pointlist.add(point);
-			System.out.println( "ID " +id +"  Type " + type + "  Is_Ellipse " + isellipse + "  Coordinates " +point);
+		    
+			
 			 
 		 }catch(Exception e) {
 			 e.printStackTrace();
 		 }
+		return PointInfo;
 		
 	}
   
@@ -302,42 +318,8 @@ public class FileHandler {
 	  * Writing to CSV 
 	  * @param file
 	  * @throws IOException
-	  */
-	 public static void writeToCSV() throws IOException{
-		 // cant set path for the created file
-		 File file = new File("‪filely1.txt");
-		 FileWriter filewriter = null;
-		 BufferedWriter bufferedWriter = null;
-		 /**
-		  * Reading a file to write to
-		  */
-		 try {
-			 file.createNewFile();
-			 filewriter = new FileWriter("‪filely1.txt",true);
-			 bufferedWriter = new BufferedWriter(filewriter);
-			 String x=null,y=null;
-			/*for(Point e:DrawingPanel.listpont) {
-				x = Integer.toString(e.x);
-				y = Integer.toString(e.y);
-				System.out.println(x);
-				filewriter.write(x+";"+y);
-				
-				System.out.println("Written into the file");
-				
-			}*/
-			 
-			 
-		 }catch(Exception e) {
-			  e.printStackTrace();
-		 }finally {
-			 filewriter.close();
-			 
-		 }
-		 
-		 
-	 }
-	 
-	 public static void writeToCSV(List<Layer> listOfLayers) {
+	  */	 
+	 public static boolean writeToCSV(List<Layer> listOfLayers) {
 		 
 		 JFileChooser saveSessionFileChooser = new JFileChooser();
 		 int saveSessionReturnVal = saveSessionFileChooser.showSaveDialog(MainFrame.panel);
@@ -378,6 +360,7 @@ public class FileHandler {
 				e.printStackTrace();
 			}
 		 }
+		return true;
 		 
 		 
 		 
