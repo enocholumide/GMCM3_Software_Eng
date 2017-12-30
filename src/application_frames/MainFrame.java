@@ -23,6 +23,7 @@ import database.DatabaseConnection;
 import features.PointItem;
 import file_handling.FileHandler;
 import file_handling.SessionManager;
+import javafx.scene.control.RadioButton;
 import toolset.Tools;
 
 import javax.swing.border.EmptyBorder;
@@ -618,7 +619,42 @@ public class MainFrame extends CustomJFrame {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						log("Musa, handle import from geoJson");
+						
+						importExportFrame.setVisible(false);
+						
+						JPanel panel = new JPanel();
+						panel.setLayout(new GridLayout(3, 1));
+						ButtonGroup group = new ButtonGroup();
+						JRadioButton wgs84 = new JRadioButton("WGS 84");
+						wgs84.setActionCommand("WGS84");
+						JRadioButton gausKru = new JRadioButton("Gauss–Krüger");
+						gausKru.setActionCommand("GaussKrurger");
+						JRadioButton lambert = new JRadioButton("Lambert 2005");
+						lambert.setActionCommand("Lambert");
+						
+						wgs84.setSelected(true);
+						group.add(wgs84);
+						group.add(gausKru);
+						group.add(lambert);
+						
+						panel.add(wgs84);
+						panel.add(gausKru);
+						panel.add(lambert);
+						
+						
+						int response = JOptionPane.showConfirmDialog( MainFrame.this, panel , "Choose datum", JOptionPane.OK_CANCEL_OPTION);
+						
+						if(response == JOptionPane.OK_OPTION) {
+							importExportFrame.dispose();
+							
+							String datumSelected = group.getSelection().getActionCommand();
+							
+							System.out.println(datumSelected);
+							FileHandler.readFromGeoJson(datumSelected);
+							
+						} else {
+							importExportFrame.setVisible(true);
+						}
 					}
 				});
 			}
