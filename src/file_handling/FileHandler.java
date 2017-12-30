@@ -35,8 +35,8 @@ public class FileHandler {
 		public static final double  semiMinorAxisWGS84 = 6356752.314245179;
 		
 		//second datum Gausskruger ellipsoid parameter
-		public static final double  semiMajorAxisGauskruger = 6377397.155; 
-		public static final double  semiMinorAxisGausKruger = 6356078.962818189;
+		public static final double  semiMajorAxisGausskruger = 6377397.155; 
+		public static final double  semiMinorAxisGaussKruger = 6356078.962818189;
 		
 		//third datum  Lambert ellipsoid parameter
 		public static final double  semiMajorAxisLambert = 6378137.0;
@@ -60,8 +60,20 @@ public class FileHandler {
 	  * @param file
 	  * @throws IOException
 	  */
-	 public static Feature readFromCSV(File file) throws IOException {
-             
+	 public static Feature readFromCSV() throws IOException {
+		 
+       	  
+		 Feature FeatureInfo = null; 
+		 
+	     JFileChooser CSVFile = new JFileChooser ();
+	     int geoJsonReturnValu = CSVFile.showSaveDialog(MainFrame.panel);
+	     File file = CSVFile.getSelectedFile();
+         JSONParser parser = new JSONParser();
+     
+     
+       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
+ 
+		            
 	       FileReader filereader = null;
 	       BufferedReader bfreader = null;
 		       
@@ -70,6 +82,8 @@ public class FileHandler {
 	         * Reading the  CSV file 
 	         */
 	          try {
+	        	  
+	        	 
 	        	  filereader = new FileReader(file);
 	        	 
 	        	  bfreader = new BufferedReader(filereader);
@@ -110,10 +124,10 @@ public class FileHandler {
 	        	  filereader.close();
 	          }
 	          
-	           
+       }        
 	          
 			return null;
-		          
+               
    }
 	 
 	/** 
@@ -121,81 +135,84 @@ public class FileHandler {
 	 * @param layer
 	 * @param file
 	 */
-	 public static Feature readFromGeoJson() {
-		 Feature FeatureInfo = null; 
-	 JFileChooser geoJsonFile = new JFileChooser ();
-	 int geoJsonReturnValu = geoJsonFile.showSaveDialog(MainFrame.panel);
-	 File saveSession = geoJsonFile.getSelectedFile();
+	 public static Feature readFromGeoJson(String SelectedDatum) {
+		 String slectedDatum = SelectedDatum;
+		
 	 
-	 setParametr(semiMajorAxisWGS84, semiMinorAxisWGS84);
-     System.out.println(eccentrycityPrimesquare);
-     // the datum parameters are set according to the selected datum
-     /*if(SelcectedDatum == "WGS84") {
-		setParametr(semiMajorAxisWGS84, semiMinorAxisGausKruger); 
-		System.out.println("Selcted Datum Is WGS84");
-	   }else if(SelcectedDatum == "GaussKrurger") {
-		setParametr(semiMajorAxisGauskruger, semiMinorAxisGausKruger); 
-		System.out.println("Selcted Datum Is GaussKurger");
-	   } else if(SelcectedDatum == "Lambert"){
-	      setParametr(semiMajorAxisLambert, semiMinorAxisLamberet); 
-	
-	   }*/
+		
+	     if(slectedDatum.equals("WGS84")) {
+	    	 
+			setParametr(semiMajorAxisWGS84, semiMinorAxisWGS84); 
+			
+		   }else if(slectedDatum.equals("GaussKrurger")) {
+			   
+			   
+			setParametr(semiMajorAxisGausskruger, semiMinorAxisGaussKruger); 
+			
+		   } else if(slectedDatum.equals("Lambert")){
+			   
+		      setParametr(semiMajorAxisLambert, semiMinorAxisLamberet); 
+		
+		   }
     	
 
     	
-	
-    JSONParser parser = new JSONParser();
-     
-     
-    if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
- 
-		try {
-			 FileReader readfile = new FileReader (saveSession);
-			
-			Object obj = parser.parse(readfile);
-			JSONObject jsonObject = (JSONObject) obj;
-			JSONArray feature = (JSONArray) jsonObject.get("features");
-			String id = (String) jsonObject.get("type");
-			
-			for(int i= 0; i<feature.size();i++) {
-							
-				int start = (feature.get(i).toString()).indexOf("[");
-				int end = (feature.get(i).toString()).lastIndexOf("]");
-				
-				String coords = (feature.get(i).toString()).substring(start, end);
-				
-				String replacer1 = coords.replace("[", "");
-				String replacer2 = replacer1.replace("]", "");					
-				String[] coordsString = replacer2.split(",");
-				
-				for(int j = 0 ; j < coordsString.length - 1; j++) {
-									
-					double latitude = Double.parseDouble(coordsString[j]);
-					double longitude = Double.parseDouble(coordsString[j+1]);
+		     Feature FeatureInfo = null; 
+		     JFileChooser geoJsonFile = new JFileChooser ();
+		     int geoJsonReturnValu = geoJsonFile.showSaveDialog(MainFrame.panel);
+		     File saveSession = geoJsonFile.getSelectedFile();
+	         JSONParser parser = new JSONParser();
+	     
+	     
+	       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
+	 
+				try {
+					 FileReader readfile = new FileReader (saveSession);
 					
-					double latitudeInDegree = latitude * Math.PI / 180;
-					double longitudeInDegree = longitude * Math.PI / 180;
-					System.out.println(semiMajorAxisForCurvature);				
-					radiusOfCurvature = (semiMajorAxisForCurvature)/(Math.sqrt(1-(eccentrycitysquare*Math.sin(latitudeInDegree))));
-					double xWordCoord =  (radiusOfCurvature + sllipsoidalHeight ) * Math.cos(latitudeInDegree)*Math.cos(longitudeInDegree);
-					double yWordCoord = (radiusOfCurvature + sllipsoidalHeight) * Math.cos(latitudeInDegree)*Math.sin(longitudeInDegree);
-				    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
-				    // world coordinates must be converted to image coordinates
-				    poinsList2d.add(point2d);
-					System.out.println(poinsList2d);				
-				}
-				
-			}
-			
-			System.out.println( poinsList2d.size());
-			
-		}catch (Exception e) {
-				e.printStackTrace();
-				
-				
-			}
-        }
-	return FeatureInfo; 
+					Object obj = parser.parse(readfile);
+					JSONObject jsonObject = (JSONObject) obj;
+					JSONArray feature = (JSONArray) jsonObject.get("features");
+					String id = (String) jsonObject.get("type");
+					
+					for(int i= 0; i<feature.size();i++) {
+									
+						int start = (feature.get(i).toString()).indexOf("[");
+						int end = (feature.get(i).toString()).lastIndexOf("]");
+						
+						String coords = (feature.get(i).toString()).substring(start, end);
+						
+						String replacer1 = coords.replace("[", "");
+						String replacer2 = replacer1.replace("]", "");					
+						String[] coordsString = replacer2.split(",");
+						
+						for(int j = 0 ; j < coordsString.length - 1; j++) {
+											
+							double latitude = Double.parseDouble(coordsString[j]);
+							double longitude = Double.parseDouble(coordsString[j+1]);
+							
+							double latitudeInDegree = latitude * Math.PI / 180;
+							double longitudeInDegree = longitude * Math.PI / 180;
+							System.out.println(semiMajorAxisForCurvature);				
+							radiusOfCurvature = (semiMajorAxisForCurvature)/(Math.sqrt(1-(eccentrycitysquare*Math.sin(latitudeInDegree))));
+							double xWordCoord =  (radiusOfCurvature + sllipsoidalHeight ) * Math.cos(latitudeInDegree)*Math.cos(longitudeInDegree);
+							double yWordCoord = (radiusOfCurvature + sllipsoidalHeight) * Math.cos(latitudeInDegree)*Math.sin(longitudeInDegree);
+						    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
+						    // world coordinates must be converted to image coordinates
+						    poinsList2d.add(point2d);
+							System.out.println(poinsList2d);				
+						}
+						
+					}
+					
+					System.out.println( poinsList2d.size());
+					
+				}catch (Exception e) {
+						e.printStackTrace();
+						
+						
+					}
+		        }
+			return FeatureInfo; 
     }
 	 /*
 	     * seting transformation parameter
@@ -288,13 +305,13 @@ public class FileHandler {
 	  */
 	 public static PointItem readPointFeature(String[] spliter) {
 		 PointItem PointInfo = null;
-		 
+		 int id = 0 ;
 		 try {
 			 
-			 String id = spliter[0];
+			 String iid = spliter[0];
 			 String type = spliter[1];
 			 String isellipse = spliter[2];
-			 
+			 id = Integer.parseInt(iid);
 	       	 double a =  Double.parseDouble(spliter[3]);
 	       	 double b =  Double.parseDouble(spliter[4]);
 	       	 int xcoord= (int) a;
@@ -310,6 +327,8 @@ public class FileHandler {
 		 }catch(Exception e) {
 			 e.printStackTrace();
 		 }
+		 PointInfo = new PointItem (id , point);
+		 System.out.println(PointInfo);
 		return PointInfo;
 		
 	}
@@ -354,15 +373,17 @@ public class FileHandler {
 				 }
 				
 				sessionWriter.close();
+				return true;
 			
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				
 			}
 		 }
-		return true;
+		
 		 
-		 
+		 return false;
 		 
 	 }
 	 
