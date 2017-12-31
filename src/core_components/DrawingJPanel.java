@@ -224,15 +224,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 								c = layer.getLayerColor();
 							}
 							
-							if(layer.getLayerType().equals(SettingsFrame.POINT_GEOMETRY)){
-								
-								PointItem point = (PointItem) feature;
-								g2d.setColor(c);
-								g2d.fill(point.getShape());
-								
-							}
-							
-							else {
+							if (!layer.getLayerType().equals(SettingsFrame.POINT_GEOMETRY)) {
 							
 								if(layer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY)) {
 									// Fill the shape
@@ -255,6 +247,15 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 										g2d.fill(getCurrentVertixSize(shape));
 									}
 								//}
+							} else {
+								
+								if(layer.equals(currentLayer) && editModeIsOn) {
+									c = SettingsFrame.HIGHLIGHTED_STATE_COLOR;
+								}
+								
+								PointItem point = (PointItem) feature;
+								g2d.setColor(c);
+								g2d.fill(point.getShape());
 							}
 						}
 					}

@@ -1292,6 +1292,10 @@ public class MainFrame extends CustomJFrame {
 				point.setShape(new Ellipse2D.Double(pointCoord.getX() - SettingsFrame.POINT_SIZE/2,
 						pointCoord.getY() - SettingsFrame.POINT_SIZE/2,
 						SettingsFrame.POINT_SIZE, SettingsFrame.POINT_SIZE));
+				point.getVertices().clear();
+				point.getVertices().add(new Rectangle2D.Double(pointCoord.getX() - SettingsFrame.POINT_SIZE/2,
+						pointCoord.getY() - SettingsFrame.POINT_SIZE/2,
+						SettingsFrame.POINT_SIZE, SettingsFrame.POINT_SIZE));
 				
 				newLayer.getListOfFeatures().add(point);
 				newLayer.setLayerType(SettingsFrame.POINT_GEOMETRY);
