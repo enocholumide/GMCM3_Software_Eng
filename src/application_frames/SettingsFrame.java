@@ -841,7 +841,7 @@ public class SettingsFrame {
 	public static double mouseOffset = 20;
 	public static boolean DRAW_GUIDES_AND_TIPS = true;
 	
-	public static int POINT_SIZE = 5;
+	public static int POINT_SIZE = SettingsFrame.SNAP_SIZE;
 
 	// GUI parameters
 	public static final ImageIcon LAYER_DELETE_ICON = Tools.getIconImage("/images/bin.png", 15, 15);

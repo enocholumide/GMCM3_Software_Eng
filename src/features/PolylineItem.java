@@ -28,6 +28,7 @@ public class PolylineItem extends Feature {
 	public PolylineItem(int id, Path2D shape) {
 		super(id);
 		this.shape = shape;
+		super.setShape(shape);
 	}
 
 	/**
@@ -44,6 +45,7 @@ public class PolylineItem extends Feature {
 	 */
 	public void setShape(Shape shape) {
 		this.shape = (Path2D) shape;
+		super.setShape(shape);
 	}
 	
 	/**
