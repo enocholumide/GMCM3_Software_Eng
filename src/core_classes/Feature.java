@@ -79,6 +79,13 @@ public class Feature {
     public int getId() {
         return this.id;
     }
+    
+    /**
+     * Sets the ID of a Feature
+     */
+    public void setId(int id) {
+       this.id = id;
+    }
 
 	/**
 	 * Returns a list of vertices. The vertices are used for rendering. They are all Rectangle 2D <br>
@@ -93,7 +100,9 @@ public class Feature {
 	 * @param vertices the vertices to set
 	 */
 	public void setVertices(List<Rectangle2D> vertices) {
-		this.vertices = vertices;
+		if(!isEllipse) {
+			this.vertices = vertices;
+		}
 	}
 	
 	/**
@@ -104,14 +113,16 @@ public class Feature {
 	
 	public void setVerticesFromArray(int[] xp, int[] yp) {
 		
-		double[] x = Tools.copyFromIntArray(xp);
-		double[] y = Tools.copyFromIntArray(xp);
-		
-		int snapSize = SettingsFrame.SNAP_SIZE;
-		
-		for(int i = 0; i < x.length; i++) {
-			this.vertices.add(new Rectangle2D.Double(x[i] - (snapSize/2), y[i] - (snapSize/2), snapSize, snapSize));
-		}	
+		if(!isEllipse) {
+			double[] x = Tools.copyFromIntArray(xp);
+			double[] y = Tools.copyFromIntArray(xp);
+			
+			int snapSize = SettingsFrame.SNAP_SIZE;
+			
+			for(int i = 0; i < x.length; i++) {
+				this.vertices.add(new Rectangle2D.Double(x[i] - (snapSize/2), y[i] - (snapSize/2), snapSize, snapSize));
+			}
+		}
 	}
 	
 	/**
@@ -121,11 +132,13 @@ public class Feature {
 	 */
 	public void setVerticesFromDoubleArray(double[] x, double[] y) {
 		
-		int snapSize = SettingsFrame.SNAP_SIZE;
-		
-		for(int i = 0; i < x.length; i++) {
-			this.vertices.add(new Rectangle2D.Double(x[i] - (snapSize/2), y[i] - (snapSize/2), snapSize, snapSize));
-		}	
+		if(!isEllipse) {
+			int snapSize = SettingsFrame.SNAP_SIZE;
+			
+			for(int i = 0; i < x.length; i++) {
+				this.vertices.add(new Rectangle2D.Double(x[i] - (snapSize/2), y[i] - (snapSize/2), snapSize, snapSize));
+			}
+		}
 	}
 	
 	/**
@@ -181,6 +194,22 @@ public class Feature {
 		this.radiusY = radiusY;
 		this.setCenter(center);
 		this.isEllipse = isEllipse;
+		
+		if(isEllipse) {
+			this.vertices.clear();
+			// Center
+			vertices.add(new Rectangle2D.Double(center.getX() - (SettingsFrame.SNAP_SIZE / 2), center.getY() - (SettingsFrame.SNAP_SIZE / 2),
+					SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
+			// X
+			vertices.add(new Rectangle2D.Double((center.getX() + radiusX) - (SettingsFrame.SNAP_SIZE / 2), center.getY()  - (SettingsFrame.SNAP_SIZE / 2),
+					SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
+			
+			// Y
+			if(radiusX != radiusY) {
+				vertices.add(new Rectangle2D.Double(center.getX() - (SettingsFrame.SNAP_SIZE / 2), (center.getY() - radiusY)  - (SettingsFrame.SNAP_SIZE / 2),
+						SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
+			}
+		}
 	}
 
 	/**

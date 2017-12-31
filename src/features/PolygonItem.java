@@ -6,6 +6,7 @@ package features;
 import java.awt.Shape;
 import java.awt.geom.Path2D;
 
+import application_frames.SettingsFrame;
 import core_classes.Feature;
 import java.awt.Polygon;
 
@@ -24,6 +25,7 @@ public class PolygonItem extends Feature {
 	 */
 	public PolygonItem(int id, Path2D shape) {
 		super(id);
+		super.setFeatureType(SettingsFrame.POLYGON_GEOMETRY);
 		this.shape = shape;
 	}
 

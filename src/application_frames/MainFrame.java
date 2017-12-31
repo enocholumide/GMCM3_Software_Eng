@@ -23,7 +23,6 @@ import database.DatabaseConnection;
 import features.PointItem;
 import file_handling.FileHandler;
 import file_handling.SessionManager;
-import javafx.scene.control.RadioButton;
 import toolset.Tools;
 
 import javax.swing.border.EmptyBorder;
@@ -34,6 +33,7 @@ import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -81,6 +81,7 @@ import javax.swing.border.LineBorder;
  * e. Dec 28, 2017 - Created separate (popup) frame for importing and exporting csv/ files.<br>
  * f. Dec 28, 2017 - Validate adding layer with same name on the table of contents<br>
  * g. Dec 29, 2017 - Implement look and feel<br>
+ * i. Dec 31, 2017 - Integrate CSV loading and export to/from the drawing space;
  */
 public class MainFrame extends CustomJFrame {
 
@@ -612,6 +613,60 @@ public class MainFrame extends CustomJFrame {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						log("Musa, handle import from CSV");
+						Layer layer = new Layer(TableOfContents.getNewLayerID(), true, "", "");
+						try {
+							importExportFrame.setVisible(false);
+							
+							JPanel panel = new JPanel();
+							panel.setLayout(new GridLayout(3, 1));
+							ButtonGroup group = new ButtonGroup();
+							JRadioButton point = new JRadioButton(SettingsFrame.POINT_GEOMETRY);
+							point.setActionCommand(SettingsFrame.POINT_GEOMETRY);
+							JRadioButton polyline = new JRadioButton(SettingsFrame.POLYLINE_GEOMETRY);
+							polyline.setActionCommand(SettingsFrame.POLYLINE_GEOMETRY);
+							JRadioButton polygon = new JRadioButton(SettingsFrame.POLYGON_GEOMETRY);
+							polygon.setActionCommand(SettingsFrame.POLYGON_GEOMETRY);
+							
+							point.setSelected(true);
+							group.add(point);
+							group.add(polyline);
+							group.add(polygon);
+							
+							panel.add(point);
+							panel.add(polyline);
+							panel.add(polygon);
+							
+							
+							int response = JOptionPane.showConfirmDialog( MainFrame.this, panel , "Choose geometry type", JOptionPane.OK_CANCEL_OPTION);
+							
+							if(response == JOptionPane.OK_OPTION) {
+								
+								importExportFrame.dispose();
+								
+								String geomSelected = group.getSelection().getActionCommand();
+								
+								FileHandler.readFromCSV(layer, geomSelected);
+								String layerName = JOptionPane.showInputDialog(MainFrame.this, "Enter new layer name ");
+								if(layerName != null) {
+									System.out.println("Layer name " + layerName);
+									layer.setLayerName(layerName);
+									boolean added = tableOfContents.addRowLayer(layer);
+									if(added) {
+										System.out.println("Added");
+										layer.setNotSaved(false);
+										
+									}
+								}
+								
+							} else {
+								importExportFrame.setVisible(true);
+							}
+							
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
 					}
 				});
 				
@@ -1158,82 +1213,12 @@ public class MainFrame extends CustomJFrame {
 				
 				Double[] aX = (Double[]) resultSet.getArray(4).getArray();
 				Double[] aY = (Double[]) resultSet.getArray(5).getArray();
+				double rx = resultSet.getDouble(6);
+				double ry = resultSet.getDouble(7);
 				
-				if(isEllipse) {
-					
-					List<Rectangle2D> vertices = new ArrayList<Rectangle2D>();
-					
-					double x = aX[0];
-					double y = aY[0];
-					double rx = resultSet.getDouble(6);
-					double ry = resultSet.getDouble(7);
-					
-					// Center vertix
-					vertices.add(new Rectangle2D.Double(x - (SettingsFrame.SNAP_SIZE / 2), y - (SettingsFrame.SNAP_SIZE / 2),
-							SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
-					
-					// AXIS_X
-					vertices.add(new Rectangle2D.Double((x + rx) - (SettingsFrame.SNAP_SIZE / 2), y - (SettingsFrame.SNAP_SIZE / 2),
-							SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
-					
-					// Ellipse
-					Feature feature = new Feature(newLayer.getNextFeatureID());
-					Shape circleShape = new Ellipse2D.Double(x - rx, y - ry , rx * 2, ry * 2);
-					
-					String featureType = "Ellipse";
-					if(rx == ry) {
-						featureType = "Circle";
-					} else {
-						// AXIS_Y
-						vertices.add(new Rectangle2D.Double(x - (SettingsFrame.SNAP_SIZE / 2), (y - ry) - (SettingsFrame.SNAP_SIZE / 2),
-								SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
-					}
-					
-					feature.setEllipse(isEllipse, new Point2D.Double(x,y), rx, ry);
-					feature.setShape(circleShape);
-					feature.setFeatureType(featureType);
-					feature.setVertices(vertices);
-					feature.setVisibile(true);
-					newLayer.setLayerType(layerType);
-					newLayer.getListOfFeatures().add(feature);
-					
-				} 
+				createFeatureFromResultSet(newLayer, layerType, isEllipse, aX, aY, rx, ry);
 				
-				else if (layerType.equals(SettingsFrame.POINT_GEOMETRY)) {
-					
-					for(int i = 0; i < Math.min(aX.length, aY.length); i++) {
-						
-						Point2D pointCoord = new Point2D.Double(aX[0], aY[0]);
-						
-						Feature point  = new PointItem(newLayer.getNextFeatureID(), pointCoord);
-						point.setFeatureType(SettingsFrame.POINT_GEOMETRY);
-						point.setLayerID(newLayer.getId());
-						point.setShape(new Ellipse2D.Double(pointCoord.getX() - SettingsFrame.POINT_SIZE/2,
-								pointCoord.getY() - SettingsFrame.POINT_SIZE/2,
-								SettingsFrame.POINT_SIZE, SettingsFrame.POINT_SIZE));
-						
-						newLayer.getListOfFeatures().add(point);
-						newLayer.setLayerType(SettingsFrame.POINT_GEOMETRY);
-						newLayer.setNotSaved(true);
-						
-					}
-				}
 				
-				else {
-					
-					// Normal path - polygon and polyline
-					List<Rectangle2D> vertices = new ArrayList<Rectangle2D>();
-
-					for(int i = 0; i < Math.min(aX.length, aY.length); i++) {
-						vertices.add(new Rectangle2D.Double(aX[i] - (SettingsFrame.SNAP_SIZE / 2), aY[i] - (SettingsFrame.SNAP_SIZE / 2),
-								SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
-					}
-
-					newLayer.setLayerType(layerType); // ! important
-					
-					panel.finishPath(vertices, newLayer);
-
-				}		
 			}
 			newLayer.setLayerName(layerName);
 			newLayer.setNotSaved(false);
@@ -1244,7 +1229,94 @@ public class MainFrame extends CustomJFrame {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * 
+	 * @param newLayer
+	 * @param layerType
+	 * @param isEllipse
+	 * @param aX
+	 * @param aY
+	 * @param rx
+	 * @param ry
+	 */
+	public static void createFeatureFromResultSet(Layer newLayer, String layerType, boolean isEllipse, Double[] aX,
+			Double[] aY, double rx, double ry) {
+		if(isEllipse) {
+			
+			List<Rectangle2D> vertices = new ArrayList<Rectangle2D>();
+			
+			double x = aX[0];
+			double y = aY[0];
+			
+			
+			// Center vertix
+			vertices.add(new Rectangle2D.Double(x - (SettingsFrame.SNAP_SIZE / 2), y - (SettingsFrame.SNAP_SIZE / 2),
+					SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
+			
+			// AXIS_X
+			vertices.add(new Rectangle2D.Double((x + rx) - (SettingsFrame.SNAP_SIZE / 2), y - (SettingsFrame.SNAP_SIZE / 2),
+					SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
+			
+			// Ellipse
+			Feature feature = new Feature(newLayer.getNextFeatureID());
+			Shape circleShape = new Ellipse2D.Double(x - rx, y - ry , rx * 2, ry * 2);
+			
+			String featureType = "Ellipse";
+			if(rx == ry) {
+				featureType = "Circle";
+			} else {
+				// AXIS_Y
+				vertices.add(new Rectangle2D.Double(x - (SettingsFrame.SNAP_SIZE / 2), (y - ry) - (SettingsFrame.SNAP_SIZE / 2),
+						SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
+			}
+			
+			feature.setEllipse(isEllipse, new Point2D.Double(x,y), rx, ry);
+			feature.setShape(circleShape);
+			feature.setFeatureType(featureType);
+			feature.setVertices(vertices);
+			feature.setVisibile(true);
+			newLayer.setLayerType(layerType);
+			newLayer.getListOfFeatures().add(feature);
+			
+		} 
+		
+		else if (layerType.equals(SettingsFrame.POINT_GEOMETRY)) {
+			
+			for(int i = 0; i < Math.min(aX.length, aY.length); i++) {
+				
+				Point2D pointCoord = new Point2D.Double(aX[0], aY[0]);
+				
+				Feature point  = new PointItem(newLayer.getNextFeatureID(), pointCoord);
+				point.setFeatureType(SettingsFrame.POINT_GEOMETRY);
+				point.setLayerID(newLayer.getId());
+				point.setShape(new Ellipse2D.Double(pointCoord.getX() - SettingsFrame.POINT_SIZE/2,
+						pointCoord.getY() - SettingsFrame.POINT_SIZE/2,
+						SettingsFrame.POINT_SIZE, SettingsFrame.POINT_SIZE));
+				
+				newLayer.getListOfFeatures().add(point);
+				newLayer.setLayerType(SettingsFrame.POINT_GEOMETRY);
+				newLayer.setNotSaved(true);
+				
+			}
+		}
+		
+		else {
+			
+			// Normal path - polygon and polyline
+			List<Rectangle2D> vertices = new ArrayList<Rectangle2D>();
+
+			for(int i = 0; i < Math.min(aX.length, aY.length); i++) {
+				vertices.add(new Rectangle2D.Double(aX[i] - (SettingsFrame.SNAP_SIZE / 2), aY[i] - (SettingsFrame.SNAP_SIZE / 2),
+						SettingsFrame.SNAP_SIZE, SettingsFrame.SNAP_SIZE));
+			}
+
+			newLayer.setLayerType(layerType); // ! important
+			
+			panel.finishPath(vertices, newLayer);
+
+		}
+	}
+
 	/**
 	 * Gets the current feature type selected on the drawButtonGroup
 	 * @return
@@ -1463,4 +1535,5 @@ public class MainFrame extends CustomJFrame {
 			panel.showAnimatedHint("Error", SettingsFrame.DEFAULT_ERROR_COLOR);
 		}
 	}
+
 }

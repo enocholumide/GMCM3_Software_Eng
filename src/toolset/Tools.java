@@ -188,4 +188,12 @@ public class Tools {
         }
         return false;
     }
+
+	public static Double[] copyFromStringArray(String[] source) {
+		Double[] doubleArray = new Double[source.length];
+		for(int i = 0; i < source.length; i++) {
+			doubleArray[i] = Double.parseDouble(source[i]);
+		}
+		return doubleArray;
+	}
 }

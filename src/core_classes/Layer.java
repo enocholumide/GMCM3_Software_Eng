@@ -101,6 +101,7 @@ public class Layer  {
 	 */
 	public Object[] getTableData() {
 		
+		this.tableData = new Object[] {isVisible, layerType, layerName, "", id};
 		return this.tableData;
 	}
 
