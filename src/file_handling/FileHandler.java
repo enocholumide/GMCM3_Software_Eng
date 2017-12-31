@@ -263,81 +263,81 @@ public class FileHandler {
 			
 		}
   
-	 /**s
-			  * Reading CSV
-			 * @param geomSelected 
-			  * @param file
-			  * @throws IOException
-			  */
-			 public static Feature readFromCSV(Layer newLayer, String geomSelected) throws IOException {
-				 
-		       	  
-				 Feature FeatureInfo = null;
-				 
-			     JFileChooser CSVFile = new JFileChooser ();
-			     int geoJsonReturnValu = CSVFile.showOpenDialog(MainFrame.panel);
-			     File file = CSVFile.getSelectedFile();
-		         JSONParser parser = new JSONParser();
-		     
-		         System.out.println("Reading");
-		       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
-		 
-				            
-			       FileReader filereader = null;
-			       BufferedReader bfreader = null;
-				      
-			       
-				       
-			        /**
-			         * Reading the  CSV file 
-			         */
-			          try {
-			        	  
-			        	  filereader = new FileReader(file);
-			        	 
-			        	  bfreader = new BufferedReader(filereader);
-				         
-				          String line;
-				          int count = 0;
-				          
-				          while((line = bfreader.readLine()) != null) {
-				        	  
-				        	// skip the first line
-				        	  if(count > 0) {
-				        		  
-					        	  String [] splitedline= line.split(";");
-					        	  if(splitedline.length > 6) {
-					        		  
-						        	  String layerType = splitedline[1];
-						        	  boolean isEllipse = Boolean.valueOf(splitedline[2].toLowerCase());
-						        	  Double aX[] = Tools.copyFromStringArray(splitedline[3].split(","));
-						   	   	      Double aY[] = Tools.copyFromStringArray(splitedline[4].split(","));
-						   	   	      double rx = Double.parseDouble(splitedline[5]);
-						   	   	      double ry = Double.parseDouble(splitedline[6]);
-						   	   	      
-						   	   	      
-							   	   	if(geomSelected.toUpperCase().equals(layerType.toUpperCase())) {
-							   	   		MainFrame.createFeatureFromResultSet(newLayer, layerType, isEllipse, aX, aY, rx, ry);
-							   	   	}
-					        	} 
-				        	  }
-				        	  
-				        	  count++;
-				          } // while close 
+	 	/**s
+		  * Reading CSV
+		 * @param geomSelected 
+		  * @param file
+		  * @throws IOException
+		  */
+		 public static Feature readFromCSV(Layer newLayer, String geomSelected) throws IOException {
 			 
-			       }catch(IOException e){
-			        	  e.printStackTrace();
-			        	  
-			        	  
-			      }finally {
-			        	  filereader.close();
-			          }
+	       	  
+			 Feature FeatureInfo = null;
+			 
+		     JFileChooser CSVFile = new JFileChooser ();
+		     int geoJsonReturnValu = CSVFile.showOpenDialog(MainFrame.panel);
+		     File file = CSVFile.getSelectedFile();
+	         JSONParser parser = new JSONParser();
+	     
+	         System.out.println("Reading");
+	       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
+	 
+			            
+		       FileReader filereader = null;
+		       BufferedReader bfreader = null;
+			      
+		       
+			       
+		        /**
+		         * Reading the  CSV file 
+		         */
+		          try {
+		        	  
+		        	  filereader = new FileReader(file);
+		        	 
+		        	  bfreader = new BufferedReader(filereader);
+			         
+			          String line;
+			          int count = 0;
 			          
-		       }        
-			          
-					return null;
-		               
-		   }
+			          while((line = bfreader.readLine()) != null) {
+			        	  
+			        	// skip the first line
+			        	  if(count > 0) {
+			        		  
+				        	  String [] splitedline= line.split(";");
+				        	  if(splitedline.length > 6) {
+				        		  
+					        	  String layerType = splitedline[1];
+					        	  boolean isEllipse = Boolean.valueOf(splitedline[2].toLowerCase());
+					        	  Double aX[] = Tools.copyFromStringArray(splitedline[3].split(","));
+					   	   	      Double aY[] = Tools.copyFromStringArray(splitedline[4].split(","));
+					   	   	      double rx = Double.parseDouble(splitedline[5]);
+					   	   	      double ry = Double.parseDouble(splitedline[6]);
+					   	   	      
+					   	   	      
+						   	   	if(geomSelected.toUpperCase().equals(layerType.toUpperCase())) {
+						   	   		MainFrame.createFeatureFromResultSet(newLayer, layerType, isEllipse, aX, aY, rx, ry);
+						   	   	}
+				        	} 
+			        	  }
+			        	  
+			        	  count++;
+			          } // while close 
+		 
+		       }catch(IOException e){
+		        	  e.printStackTrace();
+		        	  
+		        	  
+		      }finally {
+		        	  filereader.close();
+		          }
+		          
+	       }        
+		          
+				return null;
+	               
+	   }
 
 	/**
 	  * Writing to CSV 

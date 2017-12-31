@@ -53,8 +53,8 @@ import application_frames.SettingsFrame;
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
  * @modifications
- * a. Dec 29, 2017 - Added functionality for editing the vertices of a feature
- *
+ * a. Dec 29, 2017 : Added functionality for editing the vertices of a feature
+ * b. Dec 31, 2017 : Added functionality for dragging/ moving a point feature
  */
 public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseListener {
 
@@ -2266,8 +2266,10 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			repaint();
 		}
 		
+		System.out.println(this.lastDraggedFeature.getFeatureType());
+		
 		// a. For non ellipse shapes
-		if( !this.lastDraggedFeature.isEllipse() ) {
+		if( !this.lastDraggedFeature.isEllipse() && !this.lastDraggedFeature.getFeatureType().equals(SettingsFrame.POINT_GEOMETRY)) {
 
 			// 0. Clear existing vertix lists
 			this.vertexList.clear();
@@ -2416,6 +2418,17 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				// 6.5 Update the panel as the feature is moved
 				repaint();
 			}
+		}
+		
+		else if ( this.lastDraggedFeature.getFeatureType().equals(SettingsFrame.POINT_GEOMETRY) ) {
+			lastDraggedFeature.setShape(new Ellipse2D.Double(draggedPoint.getX() - SettingsFrame.POINT_SIZE/2,
+					draggedPoint.getY() - SettingsFrame.POINT_SIZE/2,
+					SettingsFrame.POINT_SIZE, SettingsFrame.POINT_SIZE));
+			lastDraggedFeature.getVertices().clear();
+			lastDraggedFeature.getVertices().add(new Rectangle2D.Double(draggedPoint.getX() - SettingsFrame.POINT_SIZE/2,
+					draggedPoint.getY() - SettingsFrame.POINT_SIZE/2,
+					SettingsFrame.POINT_SIZE, SettingsFrame.POINT_SIZE));
+			repaint();
 		}
 		// Prompt for save 
 		currentLayer.setNotSaved(true);
