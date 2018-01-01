@@ -75,11 +75,13 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 	private ToolIconButton delete; //addLayer;
 	/**Button adding selected layers to the drawing panel*/
 	private ToolIconButton addToPanel;
+	
 
 	/**
 	 * Creates the Frame for the Database Catalog
+	 * @param dbConnection the database connection object
 	 */
-	public DatabaseCatalog() {
+	public DatabaseCatalog(DatabaseConnection dbConnection) {
 		
 		super("Database");
 		
@@ -93,7 +95,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		addDatabaseContents();
+		addDatabaseContents(dbConnection);
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(SystemColor.inactiveCaption);
@@ -232,19 +234,11 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 		delete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				deleteSelectedLayers();	
+				deleteSelectedLayers(dbTree.getSelectionPaths());	
 			}
 		});
 	}
 	
-	private void expandAllRows() {
-		
-		for(int i=0;i<dbTree.getRowCount();i++)
-		{
-			dbTree.expandRow(i);
-		}
-	}
-
 	/**
 	 * @return the dbTree
 	 */
@@ -259,71 +253,6 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 		this.dbTree = dbTree;
 	}
 
-	/**
-	 * Deletes selected layers on the tree
-	 */
-	private void deleteSelectedLayers() {
-		
-		TreePath[] treePaths = (TreePath[]) dbTree.getSelectionPaths();
-		DefaultTreeModel model = (DefaultTreeModel) (dbTree.getModel());
-
-		for(TreePath tree : treePaths) {
-			
-			if(tree.getPath().length > 2) {
-
-				Object[] layerPath = tree.getPath();
-				
-				String tableName = String.valueOf(layerPath[2]);
-				
-				// On delete delete from database
-				try {
-					
-					MainFrame.dbConnection.dropTable(tableName);
-					model.removeNodeFromParent((DefaultMutableTreeNode) (tree.getLastPathComponent()));
-					
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Error", "Cannot delete table from Database", JOptionPane.OK_OPTION);
-				}
-				
-			} 
-		}
-	}
-
-	/**
-	 * Uses the database conection at the main frame to show the 
-	 * currently connected database, table and list of available layers
-	 */
-	private void addDatabaseContents() {
-	
-		DefaultMutableTreeNode db = null;
-		geoTable = null;
-		
-		if(MainFrame.dbConnection != null) {
-	
-			try {
-				
-				db = new DefaultMutableTreeNode(DatabaseConnection.dbName);
-				geoTable = new DefaultMutableTreeNode("geo_data");
-				
-				for(String[] table : MainFrame.dbConnection.getTables()){
-					
-					DefaultMutableTreeNode layers = new DefaultMutableTreeNode(table[0]);
-					layers.setUserObject(table[0]);
-					geoTable.add(layers);		
-				};
-	
-				db.add(geoTable);
-				dbTree = new JTree(db);
-				dbTree.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-			
-			} catch (SQLException e) {
-				
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	/**
 	 * Add new layer to the geo table node
 	 * @param layerName new layer name
@@ -342,10 +271,108 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 	}
 
 	/**
+	 * Expands the JTree.<br>
+	 * This is used when a new node is added to keep the entirely JTree open
+	 */
+	private void expandAllRows() {
+		
+		for(int i=0;i<dbTree.getRowCount();i++)
+		{
+			dbTree.expandRow(i);
+		}
+	}
+
+	/**
+	 * Deletes selected layers on the tree.<br>
+	 * Attempts to delete from the database first,
+	 * if layer have been successfully deleted from the database
+	 * then it removes the layer from the JTree.
+	 * @param treePaths the currently selected tree paths to delete
+	 */
+	private void deleteSelectedLayers(TreePath[] treePaths) {
+		
+		// Retrieve the JTree model
+		DefaultTreeModel model = (DefaultTreeModel) (dbTree.getModel());
+		
+		// Loop through the tree paths
+		for(TreePath tree : treePaths) {
+			// Ensure the the 3 level is selected i.e the layer
+			if(tree.getPath().length > 2) {
+				// Get the path
+				Object[] layerPath = tree.getPath();
+				// The table name is at the index of 2
+				String tableName = String.valueOf(layerPath[2]);
+				
+				// Try to delete from the database first
+				boolean deletedFromDB = false;
+				try {
+					
+					MainFrame.dbConnection.dropTable(tableName);
+					deletedFromDB = true;
+					
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					deletedFromDB = false;
+					JOptionPane.showMessageDialog(null, "Error", "Cannot delete table from Database", JOptionPane.OK_OPTION);
+				}
+				// If layer have been successfully deleted from the database
+				// Remove the layer form the JTree
+				if(deletedFromDB) {
+					model.removeNodeFromParent((DefaultMutableTreeNode) (tree.getLastPathComponent()));
+				}
+			} 
+		}
+	}
+
+	/**
+	 * Uses the database connection to show the currently connected database, table and list of available layers
+	 * @param dbConnection database connection object to use
+	 */
+	private void addDatabaseContents(DatabaseConnection dbConnection) {
+		
+		// 0. Empty the main node and the geo table
+		DefaultMutableTreeNode db = null;
+		geoTable = null;
+		
+		// 1. Only if the connection object is valid/ ok
+		if(dbConnection != null) {
+	
+			try {
+				// 1.1 Set up the names of the main node (db) and the geo table
+				db = new DefaultMutableTreeNode(DatabaseConnection.dbName);
+				geoTable = new DefaultMutableTreeNode("geo_data");
+				
+				// 1.2 Get all the names available in the database
+				for(String[] table : dbConnection.getTables()){
+					
+					// Create a node from the table name
+					DefaultMutableTreeNode layers = new DefaultMutableTreeNode(table[0]);
+					
+					// Embed the name as a property
+					layers.setUserObject(table[0]);
+					
+					// Add to the geo table
+					geoTable.add(layers);		
+				};
+				// 1.3 Add all to the main node
+				db.add(geoTable);
+				// 1.4 Create a new dbTree and add the main node
+				dbTree = new JTree(db);
+				dbTree.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+			
+			} catch (SQLException e) {
+				MainFrame.log("An error occured : " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
 	 * Adds the currently selected node to the drawing panel.<br>
-	 * Suports multiple layer selection as well
+	 * Supports multiple layer selection.
 	 */
 	private void addSelectedLayerToDrawingPanel() {
+		
 		TreePath[] treePaths = (TreePath[]) dbTree.getSelectionPaths();
 		try {
 			for(TreePath tree : treePaths) {
@@ -362,6 +389,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 			}
 		
 		} catch(SQLException e1) {
+			MainFrame.log("An error has occured: " + e1.getMessage());
 			e1.printStackTrace();
 		}
 	}

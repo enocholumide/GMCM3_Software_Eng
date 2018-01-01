@@ -884,6 +884,7 @@ public class SettingsFrame {
 	public static final Color FEATURE_CREATED_COLOR = new Color (16, 91, 26);
 	public static final int MONITOR_SCREEN = 1;
 	public static final Dimension MAINFRAME_SIZE = new Dimension(1366, 768);
+	public static final int FONT_SIZE = 15;
 
 	
 	public static JTextField txtNewlayer;
