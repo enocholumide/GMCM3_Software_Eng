@@ -16,8 +16,9 @@ import toolset.Tools;
  * Uses background image and can change background dynamically<br>
  * Responds to mouse over and mouse exited by changing the background of the button
  * 
- * @author OlumideEnoch
- *
+ * @author Olumide Igbiloba
+ * @since Dec 7, 2017
+ * 
  */
 public class ToolIconButton extends JButton {
 	

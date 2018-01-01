@@ -78,6 +78,8 @@ public class DrawIconButton extends JToggleButton {
 				
 			}
 		});
+		
+		MainFrame.drawButtonGroup.add(this);
 	}
 
 	/**

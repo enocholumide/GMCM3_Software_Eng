@@ -28,6 +28,7 @@ import core_components.TableOfContents;
 import features.PointItem;
 import features.PolygonItem;
 import features.PolylineItem;
+import toolset.RPoint;
 import toolset.Tools;
 
 
@@ -104,6 +105,8 @@ public class FileHandler {
 					JSONArray feature = (JSONArray) jsonObject.get("features");
 					String id = (String) jsonObject.get("type");
 					
+					List<RPoint> wcsPoints = new ArrayList<RPoint>();
+					
 					for(int i= 0; i<feature.size();i++) {
 									
 						int start = (feature.get(i).toString()).indexOf("[");
@@ -115,6 +118,8 @@ public class FileHandler {
 						String replacer2 = replacer1.replace("]", "");					
 						String[] coordsString = replacer2.split(",");
 						
+						
+						
 						for(int j = 0 ; j < coordsString.length - 1; j++) {
 											
 							double latitude = Double.parseDouble(coordsString[j]);
@@ -122,18 +127,25 @@ public class FileHandler {
 							
 							double latitudeInDegree = latitude * Math.PI / 180;
 							double longitudeInDegree = longitude * Math.PI / 180;
-							System.out.println(semiMajorAxisForCurvature);				
+							//System.out.println(semiMajorAxisForCurvature);				
 							radiusOfCurvature = (semiMajorAxisForCurvature)/(Math.sqrt(1-(eccentrycitysquare*Math.sin(latitudeInDegree))));
 							double xWordCoord =  (radiusOfCurvature + sllipsoidalHeight ) * Math.cos(latitudeInDegree)*Math.cos(longitudeInDegree);
 							double yWordCoord = (radiusOfCurvature + sllipsoidalHeight) * Math.cos(latitudeInDegree)*Math.sin(longitudeInDegree);
 						    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
 						    // world coordinates must be converted to image coordinates
 						    poinsList2d.add(point2d);
-							System.out.println(poinsList2d);	
+							//System.out.println(poinsList2d);
+							wcsPoints.add(new RPoint(point2d));
+						}
+						
+						Tools.wcsToImageCoords(wcsPoints, MainFrame.panel);
+						
+						for(RPoint point : wcsPoints) {
+							System.out.println("X: " + point.getImagePoint().getX() + " Y: " + point.getImagePoint().getY());
 						}
 						
 					}
-					
+					System.out.println(MainFrame.panel.getSize());
 					System.out.println( poinsList2d.size());
 					
 				}catch (Exception e) {

@@ -1,7 +1,5 @@
 package application_frames;
 
-import com.jtattoo.plaf.smart.SmartLookAndFeel;
-
 import java.awt.EventQueue;
 
 import javax.swing.*;
@@ -56,7 +54,7 @@ import javax.swing.border.LineBorder;
  * database connection and general drawing settings.<br>
  * <br>
  * It uses the Group layout primarily to arrange the components contained.<br>
- * The frame is splited into two, using the JSplit pane.<br>
+ * The frame is divided into two, using the JSplit pane.<br>
  * <br>
  * The initial bounds of the mainframe is 15inch (resolution 1366 x 768), which can be resized.<br>
  * The left side contains the current drawing description and the list of layers
@@ -64,21 +62,21 @@ import javax.swing.border.LineBorder;
  * <br>
  * The other (right) part is composed of the drawing panel (at the middle), 
  * the tool bar (top) and the message/ log area at the bottom.<br>
- * This other part is managed by using the Group layout and stretches to the left when window is resized.<br>
+ * This other part is managed by using the Group layout and stretches to the right when window is resized.<br>
  * <br>
  * Most of the activity (actions) happens at the DrawingJPanel class, the MainFrame handles common tasks such
- * as adding new layer to the table of contents, importing and exporting files and chosing the a shape to be drawn and 
+ * as adding new layer to the table of contents, importing and exporting files and choosing the a shape to be drawn and 
  * general interface to other application frames in the program e.g. DatabaseCatalog, Settings Frame etc.
  * 
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
  * @modifications
  * a. Dec 20, 2017 - Integrate database connection parameters from the settings frame.<br>
- * b. Dec 26, 2017 - Removed the overloaded constructor with a database connection and <br>
+ * b. Dec 26, 2017 - Removed the overloaded constructor with a database connection and
  * changed it to a private method within the class.<br>
  * c. Dec 27, 2017 - Integrate drawing settings from the settings frame.<br>
  * d. Dec 28, 2017 - Created separate (popup) frame for saving and opening drawing sessions.<br>
- * e. Dec 28, 2017 - Created separate (popup) frame for importing and exporting csv/ files.<br>
+ * e. Dec 28, 2017 - Created separate (popup) frame for importing and exporting CSV files.<br>
  * f. Dec 28, 2017 - Validate adding layer with same name on the table of contents<br>
  * g. Dec 29, 2017 - Implement look and feel<br>
  * i. Dec 31, 2017 - Integrate CSV loading and export to/from the drawing space;
@@ -108,13 +106,13 @@ public class MainFrame extends CustomJFrame {
 	}
 	
 	/**Current project/ document name*/
-	private JTextField projectName;
+	public static JTextField projectName;
 	
 	/**The drawing panel for drawing shapes*/
 	public static DrawingJPanel panel;
 	
 	/**List showing the available layers at the table of contents*/
-	public static JComboBox<String[]> layerListComboBox;
+	public static JComboBox<String[]> layerListComboBox = new JComboBox<String[]>();
 	
 	/**Model of the layer list combo box*/
 	public static DefaultComboBoxModel<String[]> model;
@@ -131,8 +129,8 @@ public class MainFrame extends CustomJFrame {
 	/**Tools button group*/
 	public static ButtonGroup toolsButtonGroup = new ButtonGroup();
 	
-	/**Log button*/
-	private static JButton logButton;
+	/**List of tools icon buttons*/
+	public static List<ToolIconButton> buttonsList = new ArrayList<ToolIconButton>();
 	
 	/**Button that toggles edit session*/
 	public static ToolIconButton btnDrawEdit;
@@ -149,16 +147,20 @@ public class MainFrame extends CustomJFrame {
 	/**Database catalog frame*/
 	public static DatabaseCatalog dbCatalog;
 	
+	/**Log button*/
+	private static JButton logButton;
+	
 	/**Settings frame*/
 	private SettingsFrame settingsFrame = new SettingsFrame(true, this);
 	
-	ImportExportFrame importExportFrame;
-	FilesFrame filesFrame;
+	/**Import frame*/
+	private ImportExportFrame importExportFrame;
 	
-	/**List of tools icon buttons*/
-	public static List<ToolIconButton> buttonsList = new ArrayList<ToolIconButton>();
-	
+	/**Session manager for saving and loading sessions*/
 	private SessionManager sessionManager = new SessionManager(tableOfContents);
+	
+	/**Files frame*/
+	private FilesFrame filesFrame;
 	
 
 	/**
@@ -170,7 +172,17 @@ public class MainFrame extends CustomJFrame {
 	}
 	
 	/**
-	 * Starts the mainframe with a database connnection.
+	 * Sets up the application by displaying the settings frame.<br>
+	 * This is needed to set up the database connection and other drawing preferences <br>
+	 */
+	private void setUp() {
+	
+		settingsFrame.getFrame().setVisible(true);
+	
+	}
+
+	/**
+	 * Starts the mainframe with a database connection
 	 * 
 	 * @param dbConnection database connection for storing/ retrieving drawn shapes
 	 */
@@ -179,20 +191,10 @@ public class MainFrame extends CustomJFrame {
 		MainFrame.dbConnection = dbConnection;
 		initialize();
 
-		log("Application started. GMCM3 Software Engineering HSKA Karlsruhe "
-				+ "https://github.com/enocholumide/GMCM3_Software_Eng.git "
+		log("Application started: " + getTitle()
+				+ " https://github.com/enocholumide/GMCM3_Software_Eng.git "
 				+ "\t Database connected");
 		
-	}
-
-	/**
-	 * Sets up the application by displaying the settings frame.<br>
-	 * This is needed to set up the database connection and other drawing preferences <br>
-	 */
-	private void setUp() {
-	
-		settingsFrame.getFrame().setVisible(true);
-	
 	}
 
 	/**
@@ -224,7 +226,7 @@ public class MainFrame extends CustomJFrame {
 		JPanel sidePanel = new JPanel();
 		sidePanel.setBackground(Color.WHITE);
 		
-		// Right panel, containing the tool bar, drawign area and the message area
+		// Right panel, containing the tool bar, drawing area and the message area
 		JPanel rightPanel = new JPanel();
 		rightPanel.setBackground(Color.WHITE);
 		
@@ -251,7 +253,7 @@ public class MainFrame extends CustomJFrame {
 		lblTableOfContents.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTableOfContents.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		
-		// Table of contents inside a Jscroll pane
+		// Table of contents inside a J scroll pane
 		tableOfContents = new TableOfContents();
 		JScrollPane scrollPane2 = new JScrollPane(tableOfContents);
 		GroupLayout gl_sidePanel = new GroupLayout(sidePanel);
@@ -316,7 +318,7 @@ public class MainFrame extends CustomJFrame {
 		logText.setEditable(false);
 		logText.setForeground(Color.WHITE);
 		logText.setBackground(Color.DARK_GRAY);
-		//logText
+		
 		DefaultCaret caret = (DefaultCaret) logText.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		
@@ -390,10 +392,6 @@ public class MainFrame extends CustomJFrame {
 		btnAddLayer.setToolTipText("Add more layers");
 		panel_6.add(btnAddLayer);
 		
-		layerListComboBox = new JComboBox<String[]>();
-		//layerListComboBox.setBackground(SettingsFrame.DEFAULT_STATE_COLOR);
-		//layerListComboBox.setForeground(Color.WHITE);
-		
 		ToolIconButton btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
 		btnSnap.setToolTipText("Turn of snap");
 		
@@ -435,18 +433,6 @@ public class MainFrame extends CustomJFrame {
 		ToolIconButton btnDelete = new ToolIconButton("Delete", "/images/delete.png", 60,60);
 		btnDelete.setToolTipText("Delete selected items");
 		panel_5.add(btnDelete);
-		
-		btnDelete.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(!panel.editModeIsOn) {
-					log("Attempted to delete feature, but edit mode is off");
-					panel.showAnimatedHint("Edit mode if off", SettingsFrame.DEFAULT_ERROR_COLOR);
-				} else
-					panel.deleteSelectedItem();
-			}
-		});
 		
 		btnDrawEdit = new ToolIconButton("Editing", "/images/edit.png", 60,60);
 		panel_5.add(btnDrawEdit);
@@ -578,30 +564,30 @@ public class MainFrame extends CustomJFrame {
 			}
 		});
 		
-		
-		/*buttonsList.add(filesBtn);
-		buttonsList.add(importBtn);
-		buttonsList.add(exportBtn);
-		buttonsList.add(selectionButton);
-		buttonsList.add(e)*/
-		
-		drawButtonGroup.add(geomRec);
-		drawButtonGroup.add(geomTriangle);
-		drawButtonGroup.add(geomCircle);
-		drawButtonGroup.add(geomFreeformPolygon);
-		drawButtonGroup.add(geomPoint);
-		drawButtonGroup.add(geomSingleLine);
-		drawButtonGroup.add(geomMultiLine);
-		drawButtonGroup.add(geomEllipse);
-		
 		// ---------------------------------------------------------------------------
 		// ACTION LISTENERS 
 		// ---------------------------------------------------------------------------
+		
+		btnDelete.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!panel.editModeIsOn) {
+					log("Attempted to delete feature, but edit mode is off");
+					panel.showAnimatedHint("Edit mode if off", SettingsFrame.DEFAULT_ERROR_COLOR);
+				} else
+					panel.deleteSelectedItem();
+			}
+		});
+		
 		
 		importBtn.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				panel.abandonEditSession();
+				
 				if(importExportFrame != null) {
 					importExportFrame.dispose();
 				}
@@ -612,60 +598,8 @@ public class MainFrame extends CustomJFrame {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						log("Musa, handle import from CSV");
-						Layer layer = new Layer(TableOfContents.getNewLayerID(), true, "", "");
-						try {
-							importExportFrame.setVisible(false);
-							
-							JPanel panel = new JPanel();
-							panel.setLayout(new GridLayout(3, 1));
-							ButtonGroup group = new ButtonGroup();
-							JRadioButton point = new JRadioButton(SettingsFrame.POINT_GEOMETRY);
-							point.setActionCommand(SettingsFrame.POINT_GEOMETRY);
-							JRadioButton polyline = new JRadioButton(SettingsFrame.POLYLINE_GEOMETRY);
-							polyline.setActionCommand(SettingsFrame.POLYLINE_GEOMETRY);
-							JRadioButton polygon = new JRadioButton(SettingsFrame.POLYGON_GEOMETRY);
-							polygon.setActionCommand(SettingsFrame.POLYGON_GEOMETRY);
-							
-							point.setSelected(true);
-							group.add(point);
-							group.add(polyline);
-							group.add(polygon);
-							
-							panel.add(point);
-							panel.add(polyline);
-							panel.add(polygon);
-							
-							
-							int response = JOptionPane.showConfirmDialog( MainFrame.this, panel , "Choose geometry type", JOptionPane.OK_CANCEL_OPTION);
-							
-							if(response == JOptionPane.OK_OPTION) {
-								
-								importExportFrame.dispose();
-								
-								String geomSelected = group.getSelection().getActionCommand();
-								
-								FileHandler.readFromCSV(layer, geomSelected);
-								String layerName = JOptionPane.showInputDialog(MainFrame.this, "Enter new layer name ");
-								if(layerName != null) {
-									System.out.println("Layer name " + layerName);
-									layer.setLayerName(layerName);
-									boolean added = tableOfContents.addRowLayer(layer);
-									if(added) {
-										System.out.println("Added");
-										layer.setNotSaved(false);
-										
-									}
-								}
-								
-							} else {
-								importExportFrame.setVisible(true);
-							}
-							
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+						
+						importLayerFromCSV();
 						
 					}
 				});
@@ -675,41 +609,7 @@ public class MainFrame extends CustomJFrame {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						
-						importExportFrame.setVisible(false);
-						
-						JPanel panel = new JPanel();
-						panel.setLayout(new GridLayout(3, 1));
-						ButtonGroup group = new ButtonGroup();
-						JRadioButton wgs84 = new JRadioButton("WGS 84");
-						wgs84.setActionCommand("WGS84");
-						JRadioButton gausKru = new JRadioButton("Gauss–Krüger");
-						gausKru.setActionCommand("GaussKrurger");
-						JRadioButton lambert = new JRadioButton("Lambert 2005");
-						lambert.setActionCommand("Lambert");
-						
-						wgs84.setSelected(true);
-						group.add(wgs84);
-						group.add(gausKru);
-						group.add(lambert);
-						
-						panel.add(wgs84);
-						panel.add(gausKru);
-						panel.add(lambert);
-						
-						
-						int response = JOptionPane.showConfirmDialog( MainFrame.this, panel , "Choose datum", JOptionPane.OK_CANCEL_OPTION);
-						
-						if(response == JOptionPane.OK_OPTION) {
-							importExportFrame.dispose();
-							
-							String datumSelected = group.getSelection().getActionCommand();
-							
-							System.out.println(datumSelected);
-							FileHandler.readFromGeoJson(datumSelected);
-							
-						} else {
-							importExportFrame.setVisible(true);
-						}
+						importLayerFromGeoJson();
 					}
 				});
 			}
@@ -719,6 +619,8 @@ public class MainFrame extends CustomJFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				panel.abandonEditSession();
 				
 				if(importExportFrame != null) {
 					importExportFrame.dispose();
@@ -731,7 +633,6 @@ public class MainFrame extends CustomJFrame {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						panel.abandonEditSession();
 						try {
 							FileHandler.writeToCSV(TableOfContents.layerList);
 							panel.showAnimatedHint("Sucessfully exported to CSV", SettingsFrame.DEFAULT_SUCCESS_COLOR);
@@ -746,7 +647,7 @@ public class MainFrame extends CustomJFrame {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						log("Musa, handle export to geoJson");
+						log("Musa, handle export to geoJson : work in progress");
 					}
 				});
 			}
@@ -954,7 +855,146 @@ public class MainFrame extends CustomJFrame {
 		
 	}
 	
-	
+	/**
+	 * Imports/ creates a new layer from CSV
+	 */
+	private void importLayerFromCSV() {
+		
+		// 0. Create a new layer
+		// ----------------------
+		Layer layer = new Layer(TableOfContents.getNewLayerID(), true, "", "");
+		
+		try {
+			
+			// 1. Hide the import frame for the JOption pane
+			// ----------------------------------------------
+			importExportFrame.setVisible(false);
+			
+			// 2. Create contents for the JOption pane
+			// ----------------------------------------
+			JPanel panel = new JPanel();
+			
+			// 3. With just 3 rows, Set up the options and put action commands to know what item was selected during evaluation
+			// ------------------------------------------------------------------------------------------------------------------
+			panel.setLayout(new GridLayout(3, 1));
+			
+			JRadioButton point = new JRadioButton(SettingsFrame.POINT_GEOMETRY);
+			point.setActionCommand(SettingsFrame.POINT_GEOMETRY);
+			
+			JRadioButton polyline = new JRadioButton(SettingsFrame.POLYLINE_GEOMETRY);
+			polyline.setActionCommand(SettingsFrame.POLYLINE_GEOMETRY);
+			
+			JRadioButton polygon = new JRadioButton(SettingsFrame.POLYGON_GEOMETRY);
+			polygon.setActionCommand(SettingsFrame.POLYGON_GEOMETRY);
+			
+			// 4. Make the first item selected
+			// --------------------------------
+			point.setSelected(true);
+			
+			// 5. Add the buttons to a button group
+			// ------------------------------------
+			ButtonGroup group = new ButtonGroup();
+			group.add(point);
+			group.add(polyline);
+			group.add(polygon);
+			
+			// 6. Add the buttons to the panel
+			// -------------------------------
+			panel.add(point);
+			panel.add(polyline);
+			panel.add(polygon);
+			
+			// 7. Embed inside a JOption pane and get the response
+			// ---------------------------------------------------
+			int response = JOptionPane.showConfirmDialog( MainFrame.this, panel , "Choose geometry type", JOptionPane.OK_CANCEL_OPTION);
+			
+			// 8. If the response is an OK option
+			// ----------------------------------
+			if(response == JOptionPane.OK_OPTION) {
+				
+				// 8.1 Dispose the earlier created frame
+				importExportFrame.dispose();
+				
+				// 8.2 Get the selected option from the action commands in (3)
+				String geomSelected = group.getSelection().getActionCommand();
+				
+				// 8.3 Use the file handler to create features into the layer created at (0) using the geometry selected
+				FileHandler.readFromCSV(layer, geomSelected);
+				
+				// 8.4 Prompt the user to enter a layer name
+				String layerName = JOptionPane.showInputDialog(MainFrame.this, "Enter new layer name ");
+				
+				// 8.5 Finally create a new layer if there is a name input
+				if(layerName != null) {
+					layer.setLayerName(layerName);
+					boolean added = tableOfContents.addRowLayer(layer);
+					if(added) {
+						layer.setNotSaved(false);
+					}
+				} else {
+					log("Layer creation aborted");
+				}
+			
+			// 9. If cancel option was selected from the JOption pane, make the initial frame visible until it is 
+			//    properly disposed by the user
+			// --------------------------------
+			} else {
+				importExportFrame.setVisible(true);
+			}
+		
+		// 10. Catch errors during CSV file reading
+		// ----------------------------------------
+		} catch (IOException e1) {
+			log(e1.getMessage());
+			e1.printStackTrace();
+		}
+	}
+
+	/**
+	 * Imports layer from geoJson
+	 * 
+	 * WORK IN PROGRESS
+	 */
+	private void importLayerFromGeoJson() {
+		
+		importExportFrame.setVisible(false);
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(3, 1));
+		ButtonGroup group = new ButtonGroup();
+		JRadioButton wgs84 = new JRadioButton("WGS 84");
+		wgs84.setActionCommand("WGS84");
+		JRadioButton gausKru = new JRadioButton("Gauss–Krüger");
+		gausKru.setActionCommand("GaussKrurger");
+		JRadioButton lambert = new JRadioButton("Lambert 2005");
+		lambert.setActionCommand("Lambert");
+		
+		wgs84.setSelected(true);
+		group.add(wgs84);
+		group.add(gausKru);
+		group.add(lambert);
+		
+		panel.add(wgs84);
+		panel.add(gausKru);
+		panel.add(lambert);
+		
+		
+		int response = JOptionPane.showConfirmDialog( MainFrame.this, panel , "Choose datum", JOptionPane.OK_CANCEL_OPTION);
+		
+		if(response == JOptionPane.OK_OPTION) {
+			importExportFrame.dispose();
+			
+			String datumSelected = group.getSelection().getActionCommand();
+			
+			System.out.println(datumSelected);
+			FileHandler.readFromGeoJson(datumSelected);
+			
+		} else {
+			importExportFrame.setVisible(true);
+		}
+		
+	}
+
 	/**
 	 * Handles when the user clicks the add new layer button
 	 */
@@ -971,8 +1011,7 @@ public class MainFrame extends CustomJFrame {
 		// ------------------------------
 		JComboBox<String> geomList = new JComboBox<String>(geom);
 		
-	    // a. Create a Jpanel and set the layout
-		
+	    // a. Create a J panel and set the layout
 	    JPanel layerPanel = new JPanel();
 	    layerPanel.setLayout(new GridLayout(4,1));
 	  
@@ -980,7 +1019,7 @@ public class MainFrame extends CustomJFrame {
 	    String autoGeneratedLayerName = SettingsFrame.txtNewlayer.getText().toString() + TableOfContents.getNewLayerID();
 	    JTextField layerNameTextField = new JTextField(autoGeneratedLayerName);
 	   
-	    // c. Add componets to panel
+	    // c. Add the components to panel
 	    layerPanel.add(new JLabel("Add a new layer"));
 	    layerPanel.add(new JSeparator());
 	    layerPanel.add(geomList);
@@ -1002,7 +1041,7 @@ public class MainFrame extends CustomJFrame {
 
 				// 4.2 Gets the layer name from the text field
 				String layerName = layerNameTextField.getText().toString();
-				// 4.3 If no name was inputed, use the autogenerated layer name
+				// 4.3 If no name was inputed, use the auto-generated layer name
 				if(layerName.length() < 1) { layerName = autoGeneratedLayerName; }
 				
 				// 4.3 Create a new layer
@@ -1501,15 +1540,6 @@ public class MainFrame extends CustomJFrame {
 	}
 
 	/**
-	 * Closes the application appropriately
-	 * @param e Window Event
-	 */
-	protected void handleWindowClosingEvent(WindowEvent e) {
-		dispose();
-		System.exit(0);
-	}
-	
-	/**
 	 * Renames a layer in the database by dropping the old layer's table and writing a new one.<br>
 	 * The layer combo list is also updated.
 	 * @param oldName old layer name
@@ -1538,6 +1568,15 @@ public class MainFrame extends CustomJFrame {
 			log("Can not rename layer, an error occured : " + e.getMessage());
 			panel.showAnimatedHint("Error", SettingsFrame.DEFAULT_ERROR_COLOR);
 		}
+	}
+
+	/**
+	 * Closes the application appropriately
+	 * @param e Window Event
+	 */
+	protected void handleWindowClosingEvent(WindowEvent e) {
+		dispose();
+		System.exit(0);
 	}
 
 }
