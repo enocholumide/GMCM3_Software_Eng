@@ -35,12 +35,12 @@ import java.awt.event.ActionListener;
  * where all the drawn items grouped in layers are found, the last node is for the
  * list of all the layer names stored in the database table.<br>
  * <br>
- * <<database name>> 			// -- node level 1
- * 		<<table name>>			// -- node level 2
- * 			<<layer 1>>			// -- node level 3
- * 			<<layer 2>>			// -- node level 3
- * 			<<layer n>>			// -- node level 3
- * 
+ * <<database name>> 			// -- node level 1 <br>
+ * 		<<table name>>			// -- node level 2 <br>
+ * 			<<layer 1>>			// -- node level 3 <br>
+ * 			<<layer 2>>			// -- node level 3 <br>
+ * 			<<layer n>>			// -- node level 3 <br>
+ * <br>
  * At each launch, it uses the database connection at the mainframe and retrives all the
  * data needed to display the required information as described earlier.<br>
  * <br>
@@ -57,7 +57,7 @@ import java.awt.event.ActionListener;
  * @created Dec 14, 2017
  * @modifications
  * a. Dec 17, 2017 - Commented the functionality to create a new empty layer from the catalog due to 
- * inability if the database to store empty layer without features.
+ * inability if the database to store empty layer without features.<br>
  * b. Dec 28, 2017 - Auto-refresh node tree when new layer have been added to the database
  *
  */

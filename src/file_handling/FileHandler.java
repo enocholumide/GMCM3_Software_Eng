@@ -28,6 +28,7 @@ import core_components.TableOfContents;
 import features.PointItem;
 import features.PolygonItem;
 import features.PolylineItem;
+import toolset.RPoint;
 import toolset.Tools;
 
 
@@ -104,6 +105,8 @@ public class FileHandler {
 					JSONArray feature = (JSONArray) jsonObject.get("features");
 					String id = (String) jsonObject.get("type");
 					
+					List<RPoint> wcsPoints = new ArrayList<RPoint>();
+					
 					for(int i= 0; i<feature.size();i++) {
 									
 						int start = (feature.get(i).toString()).indexOf("[");
@@ -115,6 +118,8 @@ public class FileHandler {
 						String replacer2 = replacer1.replace("]", "");					
 						String[] coordsString = replacer2.split(",");
 						
+						
+						
 						for(int j = 0 ; j < coordsString.length - 1; j++) {
 											
 							double latitude = Double.parseDouble(coordsString[j]);
@@ -122,18 +127,25 @@ public class FileHandler {
 							
 							double latitudeInDegree = latitude * Math.PI / 180;
 							double longitudeInDegree = longitude * Math.PI / 180;
-							System.out.println(semiMajorAxisForCurvature);				
+							//System.out.println(semiMajorAxisForCurvature);				
 							radiusOfCurvature = (semiMajorAxisForCurvature)/(Math.sqrt(1-(eccentrycitysquare*Math.sin(latitudeInDegree))));
 							double xWordCoord =  (radiusOfCurvature + sllipsoidalHeight ) * Math.cos(latitudeInDegree)*Math.cos(longitudeInDegree);
 							double yWordCoord = (radiusOfCurvature + sllipsoidalHeight) * Math.cos(latitudeInDegree)*Math.sin(longitudeInDegree);
 						    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
 						    // world coordinates must be converted to image coordinates
 						    poinsList2d.add(point2d);
-							System.out.println(poinsList2d);	
+							//System.out.println(poinsList2d);
+							wcsPoints.add(new RPoint(point2d));
+						}
+						
+						Tools.wcsToImageCoords(wcsPoints, MainFrame.panel);
+						
+						for(RPoint point : wcsPoints) {
+							System.out.println("X: " + point.getImagePoint().getX() + " Y: " + point.getImagePoint().getY());
 						}
 						
 					}
-					
+					System.out.println(MainFrame.panel.getSize());
 					System.out.println( poinsList2d.size());
 					
 				}catch (Exception e) {
@@ -263,81 +275,81 @@ public class FileHandler {
 			
 		}
   
-	 /**s
-			  * Reading CSV
-			 * @param geomSelected 
-			  * @param file
-			  * @throws IOException
-			  */
-			 public static Feature readFromCSV(Layer newLayer, String geomSelected) throws IOException {
-				 
-		       	  
-				 Feature FeatureInfo = null;
-				 
-			     JFileChooser CSVFile = new JFileChooser ();
-			     int geoJsonReturnValu = CSVFile.showOpenDialog(MainFrame.panel);
-			     File file = CSVFile.getSelectedFile();
-		         JSONParser parser = new JSONParser();
-		     
-		         System.out.println("Reading");
-		       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
-		 
-				            
-			       FileReader filereader = null;
-			       BufferedReader bfreader = null;
-				      
-			       
-				       
-			        /**
-			         * Reading the  CSV file 
-			         */
-			          try {
-			        	  
-			        	  filereader = new FileReader(file);
-			        	 
-			        	  bfreader = new BufferedReader(filereader);
-				         
-				          String line;
-				          int count = 0;
-				          
-				          while((line = bfreader.readLine()) != null) {
-				        	  
-				        	// skip the first line
-				        	  if(count > 0) {
-				        		  
-					        	  String [] splitedline= line.split(";");
-					        	  if(splitedline.length > 6) {
-					        		  
-						        	  String layerType = splitedline[1];
-						        	  boolean isEllipse = Boolean.valueOf(splitedline[2].toLowerCase());
-						        	  Double aX[] = Tools.copyFromStringArray(splitedline[3].split(","));
-						   	   	      Double aY[] = Tools.copyFromStringArray(splitedline[4].split(","));
-						   	   	      double rx = Double.parseDouble(splitedline[5]);
-						   	   	      double ry = Double.parseDouble(splitedline[6]);
-						   	   	      
-						   	   	      
-							   	   	if(geomSelected.toUpperCase().equals(layerType.toUpperCase())) {
-							   	   		MainFrame.createFeatureFromResultSet(newLayer, layerType, isEllipse, aX, aY, rx, ry);
-							   	   	}
-					        	} 
-				        	  }
-				        	  
-				        	  count++;
-				          } // while close 
+	 	/**s
+		  * Reading CSV
+		 * @param geomSelected 
+		  * @param file
+		  * @throws IOException
+		  */
+		 public static Feature readFromCSV(Layer newLayer, String geomSelected) throws IOException {
 			 
-			       }catch(IOException e){
-			        	  e.printStackTrace();
-			        	  
-			        	  
-			      }finally {
-			        	  filereader.close();
-			          }
+	       	  
+			 Feature FeatureInfo = null;
+			 
+		     JFileChooser CSVFile = new JFileChooser ();
+		     int geoJsonReturnValu = CSVFile.showOpenDialog(MainFrame.panel);
+		     File file = CSVFile.getSelectedFile();
+	         JSONParser parser = new JSONParser();
+	     
+	         System.out.println("Reading");
+	       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
+	 
+			            
+		       FileReader filereader = null;
+		       BufferedReader bfreader = null;
+			      
+		       
+			       
+		        /**
+		         * Reading the  CSV file 
+		         */
+		          try {
+		        	  
+		        	  filereader = new FileReader(file);
+		        	 
+		        	  bfreader = new BufferedReader(filereader);
+			         
+			          String line;
+			          int count = 0;
 			          
-		       }        
-			          
-					return null;
-		               
-		   }
+			          while((line = bfreader.readLine()) != null) {
+			        	  
+			        	// skip the first line
+			        	  if(count > 0) {
+			        		  
+				        	  String [] splitedline= line.split(";");
+				        	  if(splitedline.length > 6) {
+				        		  
+					        	  String layerType = splitedline[1];
+					        	  boolean isEllipse = Boolean.valueOf(splitedline[2].toLowerCase());
+					        	  Double aX[] = Tools.copyFromStringArray(splitedline[3].split(","));
+					   	   	      Double aY[] = Tools.copyFromStringArray(splitedline[4].split(","));
+					   	   	      double rx = Double.parseDouble(splitedline[5]);
+					   	   	      double ry = Double.parseDouble(splitedline[6]);
+					   	   	      
+					   	   	      
+						   	   	if(geomSelected.toUpperCase().equals(layerType.toUpperCase())) {
+						   	   		MainFrame.createFeatureFromResultSet(newLayer, layerType, isEllipse, aX, aY, rx, ry);
+						   	   	}
+				        	} 
+			        	  }
+			        	  
+			        	  count++;
+			          } // while close 
+		 
+		       }catch(IOException e){
+		        	  e.printStackTrace();
+		        	  
+		        	  
+		      }finally {
+		        	  filereader.close();
+		          }
+		          
+	       }        
+		          
+				return null;
+	               
+	   }
 
 	/**
 	  * Writing to CSV 

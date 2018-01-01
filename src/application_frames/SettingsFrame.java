@@ -51,7 +51,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 /**
- * Class contains the general settings for the application
+ * Class contains the general settings for the application<br>
  * In this class the general settings of the application are defined.
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
