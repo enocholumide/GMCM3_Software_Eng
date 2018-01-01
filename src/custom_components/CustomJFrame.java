@@ -4,16 +4,17 @@ import java.awt.*;
 
 import javax.swing.JFrame;
 
-import application_frames.SettingsFrame;
 import toolset.Tools;
 
 /**
  * Class for the creation of a CustomJFrame
+ * 
+ * @author Olumide Igbiloba
+ * @since Dec 7, 2017
  */
 public class CustomJFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private int[] windowSize;
 	
 	/**
 	 * Creates a CustomJFrame

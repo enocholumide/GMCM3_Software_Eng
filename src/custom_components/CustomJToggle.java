@@ -16,7 +16,9 @@ import application_frames.SettingsFrame;
 
 /**
  * Class for the creation of a CustomJButton
- * @author OlumideEnoch
+ * 
+ * @author Olumide Igbiloba
+ * @since Dec 12, 2017
  *
  */
 public class CustomJToggle extends JButton {
@@ -89,7 +91,6 @@ public class CustomJToggle extends JButton {
 	 */
 	public CustomJToggle(Icon arg0) {
 		super(arg0);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -98,7 +99,6 @@ public class CustomJToggle extends JButton {
 	 */
 	public CustomJToggle(String arg0) {
 		super(arg0);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -107,7 +107,6 @@ public class CustomJToggle extends JButton {
 	 */
 	public CustomJToggle(Action arg0) {
 		super(arg0);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -117,7 +116,6 @@ public class CustomJToggle extends JButton {
 	 */
 	public CustomJToggle(String arg0, Icon arg1) {
 		super(arg0, arg1);
-		// TODO Auto-generated constructor stub
 	}
 
 }

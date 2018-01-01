@@ -3,8 +3,9 @@ package effects;
 import java.awt.geom.Line2D;
 
 /**
- * Class for the creation of a GridLine
- *
+ * Class for the creation of a GridLine used in the drawing panel
+ * @author Olumide Igbiloba
+ * @since Dec 7, 2017
  */
 public class GridLine {
 	private int weight = 0;
@@ -15,7 +16,7 @@ public class GridLine {
 	 * @param weight the weight to set
 	 * @param line the line to set
 	 */
-	public GridLine(int weight, Line2D line) {
+	public GridLine(int weight, Line2D line, int i) {
 		this.weight = weight;
 		this.line = line;
 	}

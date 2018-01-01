@@ -8,6 +8,8 @@ import javax.swing.GroupLayout.Alignment;
 import java.awt.Color;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.metal.MetalButtonUI;
+import javax.swing.plaf.metal.MetalToggleButtonUI;
 import javax.swing.text.DefaultCaret;
 
 import core_classes.Feature;
@@ -71,15 +73,15 @@ import javax.swing.border.LineBorder;
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
  * @modifications
- * a. Dec 20, 2017 - Integrate database connection parameters from the settings frame.<br>
- * b. Dec 26, 2017 - Removed the overloaded constructor with a database connection and
+ * a. Dec 20, 2017 : Integrate database connection parameters from the settings frame.<br>
+ * b. Dec 26, 2017 : Removed the overloaded constructor with a database connection and
  * changed it to a private method within the class.<br>
- * c. Dec 27, 2017 - Integrate drawing settings from the settings frame.<br>
- * d. Dec 28, 2017 - Created separate (popup) frame for saving and opening drawing sessions.<br>
- * e. Dec 28, 2017 - Created separate (popup) frame for importing and exporting CSV files.<br>
- * f. Dec 28, 2017 - Validate adding layer with same name on the table of contents<br>
- * g. Dec 29, 2017 - Implement look and feel<br>
- * i. Dec 31, 2017 - Integrate CSV loading and export to/from the drawing space;
+ * c. Dec 27, 2017 : Integrate drawing settings from the settings frame.<br>
+ * d. Dec 28, 2017 : Created separate (popup) frame for saving and opening drawing sessions.<br>
+ * e. Dec 28, 2017 : Created separate (popup) frame for importing and exporting CSV files.<br>
+ * f. Dec 28, 2017 : Validate adding layer with same name on the table of contents<br>
+ * g. Dec 29, 2017 : Implement look and feel<br>
+ * i. Dec 31, 2017 : Integrate CSV loading and export to/from the drawing space;
  */
 public class MainFrame extends CustomJFrame {
 
@@ -112,7 +114,7 @@ public class MainFrame extends CustomJFrame {
 	public static DrawingJPanel panel;
 	
 	/**List showing the available layers at the table of contents*/
-	public static JComboBox<String[]> layerListComboBox = new JComboBox<String[]>();
+	public static JComboBox<String[]> layerListComboBox;
 	
 	/**Model of the layer list combo box*/
 	public static DefaultComboBoxModel<String[]> model;
@@ -191,7 +193,7 @@ public class MainFrame extends CustomJFrame {
 		MainFrame.dbConnection = dbConnection;
 		initialize();
 
-		log("Application started: " + getTitle()
+		log("Application started: GMCM3 Software Engineering (Group 1)"
 				+ " https://github.com/enocholumide/GMCM3_Software_Eng.git "
 				+ "\t Database connected");
 		
@@ -252,6 +254,8 @@ public class MainFrame extends CustomJFrame {
 		JLabel lblTableOfContents = new JLabel("Table of contents");
 		lblTableOfContents.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTableOfContents.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		
+		layerListComboBox = new JComboBox<String[]>();
 		
 		// Table of contents inside a J scroll pane
 		tableOfContents = new TableOfContents();
@@ -767,7 +771,7 @@ public class MainFrame extends CustomJFrame {
 					dbCatalog.dispose();
 				} 
 
-				dbCatalog = new DatabaseCatalog();
+				dbCatalog = new DatabaseCatalog(dbConnection);
 				dbCatalog.setVisible(true);
 				
 				
@@ -1464,10 +1468,7 @@ public class MainFrame extends CustomJFrame {
 				for (Enumeration<AbstractButton> buttons = drawButtonGroup.getElements(); buttons.hasMoreElements();) {
 		            
 					DrawIconButton button = (DrawIconButton) buttons.nextElement();
-					
-					// Get the layer type of the button
-					// TODO validate constructing a draw button later!
-					
+
 					// Check if the draw button can be drawn on the current layer type
 					if(!(layerType.equals(button.getGeometryFamily()))) {
 						

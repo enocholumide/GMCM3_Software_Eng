@@ -6,7 +6,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * Class for the creation of a TextItem
+ * Class for the creation of a TextItem used in the drawing panel for rendering mouse hints
+ * 
+ * @author Olumide Igbiloba
+ * @since Dec 7, 2017
  */
 public class TextItem {
 	

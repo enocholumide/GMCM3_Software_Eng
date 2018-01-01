@@ -6,15 +6,17 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import core_classes.Layer;
-import core_components.GeometryTableIcon;
+import core_components.GeometryIcon;
 import core_components.TableOfContents;
 
 /**
  * Class to render the geometry icon on the table cell
- * @author OlumideEnoch
+ * 
+ * @author Olumide Igbiloba
+ * @since Dec 9, 2017
  *
  */
-public class GeometryTableIconRenderer extends GeometryTableIcon implements TableCellRenderer{
+public class GeometryTableIconRenderer extends GeometryIcon implements TableCellRenderer{
 	
 	private static final long serialVersionUID = 1L;
 	

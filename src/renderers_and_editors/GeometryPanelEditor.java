@@ -4,24 +4,29 @@ import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import core_classes.Layer;
-import core_components.GeometryTableIcon;
+import core_components.GeometryIcon;
 import core_components.TableOfContents;
 
 /**
- * Class for creating the GeometryPanel
+ * Table cell editor for the geometry panel inside the table of contents.<br>
+ * Opens color chooser for changing the color of the layer
+ * 
+ * @author Olumide Igbiloba
+ * @since Dec 9, 2017
  */
 public class GeometryPanelEditor extends DefaultCellEditor {
 
 	private static final long serialVersionUID = 1L;
-	protected JButton btn;
-	protected GeometryTableIcon panel;
-	private Layer layer;
+	
+	/**
+	 * Panel rendering the geometry type of the current table row
+	 */
+	private GeometryIcon panel;
 	
 	
 	/**
@@ -30,10 +35,9 @@ public class GeometryPanelEditor extends DefaultCellEditor {
 	 */
 	public GeometryPanelEditor(JTextField text) {
 		super(text);
-		panel = new GeometryTableIcon();
+		panel = new GeometryIcon();
 	}
 	
-	// Override some default methods
 	/**
 	 * Returns the TableCellEditorComponent
 	 * @param table the table to set
@@ -48,7 +52,7 @@ public class GeometryPanelEditor extends DefaultCellEditor {
 
 
 		int id = (int) table.getModel().getValueAt(row, 4);
-		layer = TableOfContents.findLayerWithID(id);
+		Layer layer = TableOfContents.findLayerWithID(id);
 		
 		Color color = JColorChooser.showDialog(null, "Set Layer Color",layer.getLayerColor());
 		if(color != null) {

@@ -15,7 +15,9 @@ import application_frames.MainFrame;
 
 /**
  * Class for the creation of a CustomJPanel
- * @author OlumideEnoch
+ * 
+ * @author Olumide Igbiloba
+ * @since Dec 21, 2017
  *
  */
 public class CustomColorPicker extends JPanel  {
@@ -31,7 +33,6 @@ public class CustomColorPicker extends JPanel  {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
 				super.mouseClicked(e);
 				Color color = JColorChooser.showDialog(null, "Change color", getBackground());
 				if(color != null) {
