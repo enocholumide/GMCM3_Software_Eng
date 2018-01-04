@@ -41,8 +41,8 @@ public class LayerNameEditor extends DefaultCellEditor implements CellEditorList
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * Class constructuor
-	 * @param editable textField layer name textfield
+	 * Class constructor
+	 * @param textField
 	 */
 	public LayerNameEditor(JTextField textField) {
 		super(textField);

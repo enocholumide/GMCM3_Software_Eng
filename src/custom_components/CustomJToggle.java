@@ -36,6 +36,7 @@ public class CustomJToggle extends JButton {
 	
 	/**
 	 * Creates the Custom JButton
+	 * @param state
 	 */
 	public CustomJToggle(boolean state) {
 		// TODO Auto-generated constructor stub

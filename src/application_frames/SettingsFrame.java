@@ -55,7 +55,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  * In this class the general settings of the application are defined.
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
- * @modifications
+ * @version
  * a. Dec 29, 2017 - Implement look and feel<br>
  * b. Dec 30, 2017 - Added support for changing application theme<br>
  */
@@ -106,7 +106,7 @@ public class SettingsFrame {
 	/**
 	 * Create the frame.
 	 * @param openMainFrame the openMainFrame to be set
-	 * @param mainFrame 
+	 * @param mainFrame the application mainframe
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SettingsFrame(boolean openMainFrame, MainFrame mainFrame) {
@@ -116,10 +116,7 @@ public class SettingsFrame {
 		frame = new CustomJFrame();
 		frame.setResizable(false);
 		frame.setTitle("Settings");
-		
-		
-		setUpLookAndFeel();
-		
+
 		frame.addWindowListener(new WindowAdapter() {
 			@Override 
 			public void windowClosing(WindowEvent e) { 
@@ -516,9 +513,9 @@ public class SettingsFrame {
 		HINT.setBounds(1016, 89, 60, 28);
 		drawingSettingsSubPanel.add(HINT);
 		
-		CustomJToggle autosaveToggle = new CustomJToggle(true);
-		autosaveToggle.setBounds(1016, 128, 60, 28);
-		drawingSettingsSubPanel.add(autosaveToggle);
+		AUTOSAVE_TOGGLE = new CustomJToggle(true);
+		AUTOSAVE_TOGGLE.setBounds(1016, 128, 60, 28);
+		drawingSettingsSubPanel.add(AUTOSAVE_TOGGLE);
 	
 		monitorSpinner.setBounds(1021, 50, 55, 28);
 		drawingSettingsSubPanel.add(monitorSpinner);
@@ -543,7 +540,9 @@ public class SettingsFrame {
 			public void stateChanged(ChangeEvent e) {
 
 				SettingsFrame.SNAP_SIZE = (int) snapSizeSpinner.getValue();
-				MainFrame.panel.repaint();
+				if (MainFrame.panel != null) {
+					MainFrame.panel.repaint();
+				}
 			}
 		});
 		
@@ -568,45 +567,17 @@ public class SettingsFrame {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
+
+
 				String lnfName = "com.jtattoo.plaf.smart.SmartLookAndFeel";
 				if(themeCmbBox.getSelectedIndex() == 1) {
 					lnfName = "com.jtattoo.plaf.hifi.HiFiLookAndFeel";
 				} else {
 					
 				}
-					
-				
-				try {
-					UIManager.setLookAndFeel(lnfName);
-					
-					
-					SettingsFrame.DEFAULT_STATE_COLOR = new JButton().getBackground();
-					if(themeCmbBox.getSelectedItem().toString().toUpperCase().equals("LIGHT")) {
-						DEFAULT_STATE_COLOR = new Color(31, 105, 224);
-						SettingsFrame.DRAFTING_BACKGROUND.setBackground(Color.WHITE);
-						SettingsFrame.GRID_COLOR.setBackground(Color.LIGHT_GRAY);
-					} else {
-						SettingsFrame.DRAFTING_BACKGROUND.setBackground(Color.BLACK);
-						SettingsFrame.GRID_COLOR.setBackground(Color.DARK_GRAY);
-					}
-					updateCustomButtonsLookAndFeel(SettingsFrame.DEFAULT_STATE_COLOR);
-					SwingUtilities.updateComponentTreeUI(frame);
-					SwingUtilities.updateComponentTreeUI(mainFrame);
-					
-					//frame.pack();
-					frame.repaint();
-					frame.revalidate();
-					
-					//mainFrame.pack();
-					mainFrame.repaint();
-					mainFrame.revalidate();
-					
-				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-						| UnsupportedLookAndFeelException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
+
+				updateTheme(lnfName);
+
 			}
 		});
 		
@@ -697,6 +668,42 @@ public class SettingsFrame {
 			}
 		});
 	}
+
+	/**
+	 * Changes the theme from light to dark or vice versa.
+	 * @param lnfName Name of the theme to be applied.
+	 */
+	public void updateTheme(String lnfName) {
+		try {
+			UIManager.setLookAndFeel(lnfName);
+
+
+			SettingsFrame.DEFAULT_STATE_COLOR = new JButton().getBackground();
+			if(themeCmbBox.getSelectedItem().toString().toUpperCase().equals("LIGHT")) {
+				DEFAULT_STATE_COLOR = new Color(31, 105, 224);
+				SettingsFrame.DRAFTING_BACKGROUND.setBackground(Color.WHITE);
+				SettingsFrame.GRID_COLOR.setBackground(Color.LIGHT_GRAY);
+			} else {
+				SettingsFrame.DRAFTING_BACKGROUND.setBackground(Color.BLACK);
+				SettingsFrame.GRID_COLOR.setBackground(Color.DARK_GRAY);
+			}
+			updateCustomButtonsLookAndFeel(SettingsFrame.DEFAULT_STATE_COLOR);
+
+			SwingUtilities.updateComponentTreeUI(frame);
+			SwingUtilities.updateComponentTreeUI(mainFrame);
+
+			frame.repaint();
+			frame.revalidate();
+
+			mainFrame.repaint();
+			mainFrame.revalidate();
+
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	};
 	
 	/**
 	 * 
@@ -714,13 +721,6 @@ public class SettingsFrame {
 				button.setBackground(newColor);
 			}
 		}
-	}
-
-	private void setUpLookAndFeel() {
-		
-		JButton testButton = new JButton();
-		//SettingsFrame.DEFAULT_STATE_COLOR = testButton.getBackground();
-		
 	}
 
 	private static Rectangle getWindow() {
@@ -874,7 +874,7 @@ public class SettingsFrame {
 	public static CustomColorPicker GRID_COLOR;
 	public static CustomColorPicker FEATURE_HIGHLIGHTED_STATE_COLOR;
 	public static CustomColorPicker SELECTION_COLOR;
-	public static CustomJToggle HINT;
+	public static CustomJToggle HINT, AUTOSAVE_TOGGLE;
 	
 	public static final Color ICON_COLOR = new Color(31, 105, 224);
 	public static final Color DEFAULT_LAYER_COLOR = Color.LIGHT_GRAY;

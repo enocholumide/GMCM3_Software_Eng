@@ -61,10 +61,10 @@ public class FileHandler {
 	 static Point point = null;
 	 private static ArrayList<Point> pointlist = new ArrayList<Point>();
 	 
-	 /** 
+	/**
 	 * Readin GeoJson File
-	 * @param layer
-	 * @param file
+	 * @param SelectedDatum
+	 * @return
 	 */
 	 public static Feature readFromGeoJson(String SelectedDatum) {
 		 String slectedDatum = SelectedDatum;
@@ -156,9 +156,11 @@ public class FileHandler {
 		        }
 			return FeatureInfo; 
     }
-	 /*
-	     * seting transformation parameter
-	     */
+	 /**
+	  * seting transformation parameter
+	  * @param semiMajorAxis
+	  * @param semiMinorAxis
+	  */
 	    public static void setParametr(Double semiMajorAxis , Double semiMinorAxis) {
 	    	double SemiMajorAxis = semiMajorAxis;
 	    	double SemiMinorAxis = semiMinorAxis ;
@@ -275,12 +277,13 @@ public class FileHandler {
 			
 		}
   
-	 	/**s
-		  * Reading CSV
-		 * @param geomSelected 
-		  * @param file
-		  * @throws IOException
-		  */
+	 	/**
+	 	 * Reading CSV
+	 	 * @param newLayer
+	 	 * @param geomSelected
+	 	 * @return
+	 	 * @throws IOException
+	 	 */
 		 public static Feature readFromCSV(Layer newLayer, String geomSelected) throws IOException {
 			 
 	       	  
@@ -352,10 +355,10 @@ public class FileHandler {
 	   }
 
 	/**
-	  * Writing to CSV 
-	  * @param file
-	  * @throws IOException
-	  */	 
+	 * Writing to CSV 	 
+	 * @param listOfLayers
+	 * @return
+	 */
 	 public static boolean writeToCSV(List<Layer> listOfLayers) {
 		 
 		 JFileChooser saveSessionFileChooser = new JFileChooser();

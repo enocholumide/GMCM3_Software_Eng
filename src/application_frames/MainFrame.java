@@ -54,25 +54,25 @@ import javax.swing.border.LineBorder;
  * Main frame of the application.<br>
  * At the initial start of the application, the settings frame is first displayed to set the
  * database connection and general drawing settings.<br>
- * <br>
+ * <p>
  * It uses the Group layout primarily to arrange the components contained.<br>
  * The frame is divided into two, using the JSplit pane.<br>
- * <br>
+ * <p>
  * The initial bounds of the mainframe is 15inch (resolution 1366 x 768), which can be resized.<br>
  * The left side contains the current drawing description and the list of layers
  * arranged in table of contents. The width can also be resized during runtime<br>
- * <br>
+ * <p>
  * The other (right) part is composed of the drawing panel (at the middle), 
  * the tool bar (top) and the message/ log area at the bottom.<br>
  * This other part is managed by using the Group layout and stretches to the right when window is resized.<br>
- * <br>
+ * <p>
  * Most of the activity (actions) happens at the DrawingJPanel class, the MainFrame handles common tasks such
  * as adding new layer to the table of contents, importing and exporting files and choosing the a shape to be drawn and 
  * general interface to other application frames in the program e.g. DatabaseCatalog, Settings Frame etc.
  * 
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
- * @modifications
+ * @version
  * a. Dec 20, 2017 : Integrate database connection parameters from the settings frame.<br>
  * b. Dec 26, 2017 : Removed the overloaded constructor with a database connection and
  * changed it to a private method within the class.<br>
@@ -93,6 +93,7 @@ public class MainFrame extends CustomJFrame {
 
 	/**
 	 * Launch the application.
+	 * @param args argument
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -163,7 +164,9 @@ public class MainFrame extends CustomJFrame {
 	
 	/**Files frame*/
 	private FilesFrame filesFrame;
-	
+
+	public static ToolIconButton btnSnap, btnGrid;
+
 
 	/**
 	 * Starts the application
@@ -208,7 +211,7 @@ public class MainFrame extends CustomJFrame {
 		setVisible(true);
 		
 		// Set title
-		setTitle("GMCM3 Software Engineering (Group 1), Geomatics – Hochschule Karlsruhe – Technik und Wirtschaft (HsKA)");
+		setTitle("GMCM3 Software Engineering (Group 1), Geomatics ï¿½ Hochschule Karlsruhe ï¿½ Technik und Wirtschaft (HsKA)");
 		
 		// Position at the middle of the screen
 		setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - SettingsFrame.MAINFRAME_SIZE.width) / 2, 
@@ -396,10 +399,10 @@ public class MainFrame extends CustomJFrame {
 		btnAddLayer.setToolTipText("Add more layers");
 		panel_6.add(btnAddLayer);
 		
-		ToolIconButton btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
+		btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
 		btnSnap.setToolTipText("Turn of snap");
 		
-		ToolIconButton btnGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
+		btnGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
 		btnGrid.setToolTipText("Turn on grid");
 		
 		GroupLayout gl_editorRibbon = new GroupLayout(editorRibbon);
@@ -673,7 +676,7 @@ public class MainFrame extends CustomJFrame {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						sessionManager.onSaveSessionIntent();
-						
+						filesFrame.dispose();
 					}
 				});
 				
@@ -682,6 +685,7 @@ public class MainFrame extends CustomJFrame {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						sessionManager.onOpenSessionIntent();
+						filesFrame.dispose();
 					}
 				}); 
 			}
@@ -968,7 +972,7 @@ public class MainFrame extends CustomJFrame {
 		ButtonGroup group = new ButtonGroup();
 		JRadioButton wgs84 = new JRadioButton("WGS 84");
 		wgs84.setActionCommand("WGS84");
-		JRadioButton gausKru = new JRadioButton("Gauss–Krüger");
+		JRadioButton gausKru = new JRadioButton("Gaussï¿½Krï¿½ger");
 		gausKru.setActionCommand("GaussKrurger");
 		JRadioButton lambert = new JRadioButton("Lambert 2005");
 		lambert.setActionCommand("Lambert");
@@ -1241,7 +1245,7 @@ public class MainFrame extends CustomJFrame {
 	 * @param resultSet result set from database query
 	 * @param layerName the new layer name to store the features contained in the result set
 	 */
-	public static void createLayerFromResultSet(ResultSet resultSet, String layerName) {
+	public static Layer createLayerFromResultSet(ResultSet resultSet, String layerName) {
 	
 		try {
 			
@@ -1266,21 +1270,26 @@ public class MainFrame extends CustomJFrame {
 			newLayer.setLayerName(layerName);
 			newLayer.setNotSaved(false);
 			tableOfContents.addRowLayer(newLayer);
+
+			return newLayer;
 			
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
 		}
+
+		return null;
+
 	}
 	/**
-	 * 
-	 * @param newLayer
-	 * @param layerType
-	 * @param isEllipse
-	 * @param aX
-	 * @param aY
-	 * @param rx
-	 * @param ry
+	 * Creates a feature from a result set
+	 * @param newLayer the layer to add the feature into
+	 * @param layerType the layer geometry type e.g Polygon
+	 * @param isEllipse if the feature is an ellipse
+	 * @param aX array of X coordinates
+	 * @param aY array of Y coordinates
+	 * @param rx radius at X
+	 * @param ry radius at Y
 	 */
 	public static void createFeatureFromResultSet(Layer newLayer, String layerType, boolean isEllipse, Double[] aX,
 			Double[] aY, double rx, double ry) {
@@ -1366,7 +1375,7 @@ public class MainFrame extends CustomJFrame {
 
 	/**
 	 * Gets the current feature type selected on the drawButtonGroup
-	 * @return
+	 * @return the selected feature type
 	 */
 	public static String getCurrentFeatureType() {
 		
@@ -1516,7 +1525,7 @@ public class MainFrame extends CustomJFrame {
 	/**
 	 * Releases all draw buttons that cannot be drawn on a specific geometry type.<br>
 	 * The buttons are identified from their corresponding action commands.
-	 * @param geometry
+	 * @param geometry the geometry type to ignore
 	 */
 	public static void releaseAllOtherToolsButton(String geometry) {
 		
