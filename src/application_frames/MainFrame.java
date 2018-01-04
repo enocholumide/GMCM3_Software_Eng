@@ -164,7 +164,9 @@ public class MainFrame extends CustomJFrame {
 	
 	/**Files frame*/
 	private FilesFrame filesFrame;
-	
+
+	public static ToolIconButton btnSnap, btnGrid;
+
 
 	/**
 	 * Starts the application
@@ -209,7 +211,7 @@ public class MainFrame extends CustomJFrame {
 		setVisible(true);
 		
 		// Set title
-		setTitle("GMCM3 Software Engineering (Group 1), Geomatics – Hochschule Karlsruhe – Technik und Wirtschaft (HsKA)");
+		setTitle("GMCM3 Software Engineering (Group 1), Geomatics ï¿½ Hochschule Karlsruhe ï¿½ Technik und Wirtschaft (HsKA)");
 		
 		// Position at the middle of the screen
 		setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - SettingsFrame.MAINFRAME_SIZE.width) / 2, 
@@ -397,10 +399,10 @@ public class MainFrame extends CustomJFrame {
 		btnAddLayer.setToolTipText("Add more layers");
 		panel_6.add(btnAddLayer);
 		
-		ToolIconButton btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
+		btnSnap = new ToolIconButton("Snap", "/images/snap.png", 35,35);
 		btnSnap.setToolTipText("Turn of snap");
 		
-		ToolIconButton btnGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
+		btnGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
 		btnGrid.setToolTipText("Turn on grid");
 		
 		GroupLayout gl_editorRibbon = new GroupLayout(editorRibbon);
@@ -674,7 +676,7 @@ public class MainFrame extends CustomJFrame {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						sessionManager.onSaveSessionIntent();
-						
+						filesFrame.dispose();
 					}
 				});
 				
@@ -683,6 +685,7 @@ public class MainFrame extends CustomJFrame {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						sessionManager.onOpenSessionIntent();
+						filesFrame.dispose();
 					}
 				}); 
 			}
@@ -969,7 +972,7 @@ public class MainFrame extends CustomJFrame {
 		ButtonGroup group = new ButtonGroup();
 		JRadioButton wgs84 = new JRadioButton("WGS 84");
 		wgs84.setActionCommand("WGS84");
-		JRadioButton gausKru = new JRadioButton("Gauss–Krüger");
+		JRadioButton gausKru = new JRadioButton("Gaussï¿½Krï¿½ger");
 		gausKru.setActionCommand("GaussKrurger");
 		JRadioButton lambert = new JRadioButton("Lambert 2005");
 		lambert.setActionCommand("Lambert");
@@ -1242,7 +1245,7 @@ public class MainFrame extends CustomJFrame {
 	 * @param resultSet result set from database query
 	 * @param layerName the new layer name to store the features contained in the result set
 	 */
-	public static void createLayerFromResultSet(ResultSet resultSet, String layerName) {
+	public static Layer createLayerFromResultSet(ResultSet resultSet, String layerName) {
 	
 		try {
 			
@@ -1267,11 +1270,16 @@ public class MainFrame extends CustomJFrame {
 			newLayer.setLayerName(layerName);
 			newLayer.setNotSaved(false);
 			tableOfContents.addRowLayer(newLayer);
+
+			return newLayer;
 			
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
 		}
+
+		return null;
+
 	}
 	/**
 	 * Creates a feature from a result set

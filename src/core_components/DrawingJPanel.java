@@ -1492,7 +1492,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		}
 		
 		// a. For non ellipse shapes
-		if( !this.lastDraggedFeature.isEllipse() && !this.lastDraggedFeature.getFeatureType().equals(SettingsFrame.POINT_GEOMETRY)) {
+		if( !this.lastDraggedFeature.isEllipse() ) {
 	
 			// 0. Clear existing vertix lists
 			this.vertexList.clear();

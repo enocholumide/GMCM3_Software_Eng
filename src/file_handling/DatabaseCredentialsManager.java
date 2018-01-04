@@ -3,10 +3,6 @@ package file_handling;
 import java.io.*;
 
 /**
- * Created by isaac on 16/12/17.
- */
-
-/**
  * A class for managing the database credentials in an external file so that they may be retrieved easily.  Stores
  * credentials in dbconfig.cfg in separate lines in the following order:
  *     <ul>
@@ -15,6 +11,8 @@ import java.io.*;
  *     <li>database</li>
  *     <li>user</li>
  *     </ul>
+ *     @author isaac
+ *     @since 16/12/17
  */
 public class DatabaseCredentialsManager {
 
