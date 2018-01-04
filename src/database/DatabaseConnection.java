@@ -8,14 +8,12 @@ import core_classes.Feature;
 import core_classes.Layer;
 
 /**
- * Created by isaac on 22/11/17.
- */
-
-/**
  * An object representing a connection to a PostgreSQL database.  All data will be stored in a table called "geo_data".
  * This is to prevent SQL injection.  Individual "tables" are actually just groups of features identified by the value
  * in the "table_name_ attribute.  If the "geo_data" table does not exist, it will be created upon initialization of
  * this object.
+ * @author isaac
+ * @since 22/11/17
  */
 public class DatabaseConnection {
 

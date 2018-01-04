@@ -58,7 +58,7 @@ public class TableOfContents extends JTable {
 	private static int layerID = 0;
 	
 	/**The table model that organizes the layer arrangement */
-	private static DefaultTableModel tableModel;
+	public static DefaultTableModel tableModel;
 	
 	/**The index of the layer id at the table model*/
 	public static final int LAYER_VISIBILTY_COL_INDEX = 0;
