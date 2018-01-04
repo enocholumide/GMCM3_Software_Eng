@@ -16,7 +16,7 @@ public class GridLine {
 	 * @param weight the weight to set
 	 * @param line the line to set
 	 */
-	public GridLine(int weight, Line2D line, int i) {
+	public GridLine(int weight, Line2D line) {
 		this.weight = weight;
 		this.line = line;
 	}

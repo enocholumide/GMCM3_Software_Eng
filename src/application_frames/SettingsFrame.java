@@ -55,7 +55,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  * In this class the general settings of the application are defined.
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
- * @modifications
+ * @version
  * a. Dec 29, 2017 - Implement look and feel<br>
  * b. Dec 30, 2017 - Added support for changing application theme<br>
  */
@@ -106,7 +106,7 @@ public class SettingsFrame {
 	/**
 	 * Create the frame.
 	 * @param openMainFrame the openMainFrame to be set
-	 * @param mainFrame 
+	 * @param mainFrame the application mainframe
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SettingsFrame(boolean openMainFrame, MainFrame mainFrame) {

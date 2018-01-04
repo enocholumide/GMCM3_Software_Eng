@@ -45,8 +45,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
  * 
  * @author Olumide Igbiloba
  * @since Dec 10, 2017
- * @modifications
- * -
+ * @version
+ * 
  *
  */
 public class AttributeTableFrame extends CustomJFrame implements ActionListener {

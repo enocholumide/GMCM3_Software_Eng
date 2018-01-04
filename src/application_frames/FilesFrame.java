@@ -21,7 +21,7 @@ import custom_components.CustomJFrame;
  * it is available throughout the drawing session once it has been initialized.<br>
  * 
  * @author Olumide Igbiloba
- * @created Dec 28, 2017
+ * @since Dec 28, 2017
  *
  */
 public class FilesFrame extends CustomJFrame {

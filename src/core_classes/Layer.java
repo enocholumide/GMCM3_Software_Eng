@@ -26,8 +26,8 @@ import application_frames.SettingsFrame;
  * even if the features visibility status is true.<br>
  * 
  * @author Olumide Igbiloba
- * @created Dec 7, 2017
- * @modifications
+ * @since Dec 7, 2017
+ * @version
  * a. Dec 9, 2017 - Added the tabledata variable to the layer 
  * b. Dec 12, 2017 - Change the layer ID of all the features of a layer when the layer ID is changed 
  *

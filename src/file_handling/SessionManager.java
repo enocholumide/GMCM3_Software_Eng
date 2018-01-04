@@ -18,7 +18,7 @@ import core_classes.Layer;
 
 /**
  * Created by isaac on 19/12/17.
- * An object used to save & load sessions. Sessions are groups of active layers. A session file should end in ".gmcm"
+ * An object used to save & load sessions. Sessions are groups of active layers. A session file should end in "\.gmcm"
  * and store a layer name on each line.
  */
 public class SessionManager {

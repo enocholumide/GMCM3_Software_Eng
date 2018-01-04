@@ -45,9 +45,9 @@ import renderers_and_editors.LayerRemoveButtonRenderer;
  * 
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
- * @modifications
- * a. Dec 28, 2017 Added functionality for changing layer name
- * b. Dec 28, 2017 Validate adding layer with same name on the table of contents
+ * @version
+ * a. Dec 28, 2017 : Added functionality for changing layer name
+ * b. Dec 28, 2017 : Validate adding layer with same name on the table of contents
  *
  */
 public class TableOfContents extends JTable {
@@ -277,7 +277,7 @@ public class TableOfContents extends JTable {
 	/**
 	 * Add a new layer to table of contents
 	 * @param layer the layer to set
-	 * @return 
+	 * @return true if operation successful
 	 */
 	public boolean addRowLayer(Layer layer) {
 		
@@ -307,9 +307,9 @@ public class TableOfContents extends JTable {
 	}
 	
 	/**
-	 * 
+	 * Validates adding a new layer
 	 * @param layer
-	 * @return
+	 * @return false is layer name already exist
 	 */
 	public boolean validateLayer(Layer layer) {
 

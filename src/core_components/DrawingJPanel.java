@@ -50,7 +50,7 @@ import application_frames.SettingsFrame;
  * 
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
- * @modifications
+ * @version
  * a. Dec 29, 2017 : Added functionality for editing the vertices of a feature
  * b. Dec 31, 2017 : Added functionality for dragging/ moving a point feature
  */
@@ -155,7 +155,6 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	
 	/**
 	 * Constructs a new drawing panel
-	 * @param rectangle Bounds of the panel
 	 */
 	public DrawingJPanel() {
 		
@@ -172,7 +171,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	
 	/**
 	 * Paints the drawn component
-	 * @param g the graphics object to set
+	 * @param g the graphics object
 	 */
 	@Override 
 	public void paintComponent(Graphics g) {

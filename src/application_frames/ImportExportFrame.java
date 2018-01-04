@@ -14,7 +14,7 @@ import custom_components.CustomJFrame;
 
 /**
  * Frame for importing and exporting files such as csv files and geojson<br>
- * <br>
+ * <p>
  * It served both the export and the import commands from the Mainframe and the command
  * be set when it is initialised.
  * This command simply changes the display text and the title of the frame,
@@ -24,7 +24,7 @@ import custom_components.CustomJFrame;
  * The frame is not resizeable and it can be disposed.<br>
  * 
  * @author Olumide Igbiloba
- * @created Dec 28, 2017
+ * @since Dec 28, 2017
  *
  */
 

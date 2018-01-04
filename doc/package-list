@@ -8,6 +8,6 @@ features
 file_handling
 images
 models
-renderers
+renderers_and_editors
 tester
 toolset

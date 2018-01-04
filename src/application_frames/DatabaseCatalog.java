@@ -29,35 +29,35 @@ import java.awt.event.ActionListener;
  * Displays the connected databases, tables and the layers.<br>
  * Layers can also be added to the drawing panel directly 
  * and can be deleted from the database as well.<br>
- * <br>
+ * <p>
  * Realised using the JTree, it composed of three major nodes (steps).<br>
  * The top node is the connected database name, the next node is the table name<br>
  * where all the drawn items grouped in layers are found, the last node is for the
  * list of all the layer names stored in the database table.<br>
- * <br>
- * <<database name>> 			// -- node level 1 <br>
- * 		<<table name>>			// -- node level 2 <br>
- * 			<<layer 1>>			// -- node level 3 <br>
- * 			<<layer 2>>			// -- node level 3 <br>
- * 			<<layer n>>			// -- node level 3 <br>
- * <br>
+ * <p>
+ * database name			// : node level 1 <br>
+ * 		table name			// : node level 2 <br>
+ * 			layer 1			// : node level 3 <br>
+ * 			layer 2			// : node level 3 <br>
+ * 			layer n			// : node level 3 <br>
+ * <p>
  * At each launch, it uses the database connection at the mainframe and retrives all the
  * data needed to display the required information as described earlier.<br>
- * <br>
+ * <p>
  * It implements tree selection listener which turns  the "add" and "delete" button off 
  * and on based on the positon of the currently selected node.<br>
- * <br>
+ * <p>
  * Because the database and the geotaable cannot be deleted during the session, the add and 
  * delete buttons are only available when a layer (lowest node) is selected.<br>
- * <br>
+ * <p>
  * It does not support drag and drop.
  * 
  * @author Olumide Igbiloba
  * 
- * @created Dec 14, 2017
- * @modifications
+ * @since Dec 14, 2017
+ * @version
  * a. Dec 17, 2017 - Commented the functionality to create a new empty layer from the catalog due to 
- * inability if the database to store empty layer without features.<br>
+ * inability if the database to store empty layer without features.
  * b. Dec 28, 2017 - Auto-refresh node tree when new layer have been added to the database
  *
  */

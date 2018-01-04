@@ -32,8 +32,8 @@ import toolset.Tools;
  * is set to true automatically<br>
  * 
  * @author Olumide Igbiloba
- * @created Dec 7, 2017
- * @modifications
+ * @since Dec 7, 2017
+ * @version
  * a. Dec 8, 2017 - Added a parameter to return the coordinates array in double for the database <br>
  * b. Dec 12, 2017 - Added the parameter to store the center of the feature if it is an ellipse <br>
  */
@@ -81,6 +81,7 @@ public class Feature {
     
     /**
      * Sets the ID of a Feature
+     * @param id unique id of the feature
      */
     public void setId(int id) {
        this.id = id;
