@@ -25,6 +25,16 @@ import features.PointItem;
 import features.PolygonItem;
 import features.PolylineItem;
 
+/**
+ * FileHandler class is concerning about importing and exporting protocols.
+ * there are two file format are supported first the CSV file format with a particular schema and second
+ * the GeoJson format.
+ * @author Musa Fadul
+ * @since Nov 20, 2017
+ * @modifications
+ * 
+ */
+
 
 
 public class FileHandler {
