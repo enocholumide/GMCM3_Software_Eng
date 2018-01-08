@@ -310,7 +310,7 @@ public static void wcsToImageCoords(List<RPoint> list, DrawingJPanel panel){
 		}
 		
 		Point2D centroid = new Point2D.Double(xSum/list.size(), ySum/list.size());
-		
+		System.out.print(centroid.getX() + " " + centroid.getY());
 		return centroid;
 	}
 	

@@ -7,26 +7,17 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableModel;
-
 import application_frames.AttributeTableFrame;
 import application_frames.MainFrame;
 import core_classes.Layer;
@@ -204,16 +195,13 @@ public class TableOfContents extends JTable {
         getColumnModel().getColumn(3).setCellRenderer(new LayerRemoveButtonRenderer());
         getColumnModel().getColumn(3).setCellEditor(new LayerRemoveButtonEditor(new JTextField()));
         
-        // Make the 5th column invisible
-        // This contains the layer id of the layer initial row
-        getColumnModel().getColumn(4).setMinWidth(0);
-        getColumnModel().getColumn(4).setMaxWidth(0);
+        
 	}
 	
 	/**
 	 * Change the size of the table columns
 	 */
-	private void setTablePreferredSizes() {
+	public void setTablePreferredSizes() {
 		
 		// On/off column
 		getColumnModel().getColumn(0).setPreferredWidth(40);
@@ -222,6 +210,11 @@ public class TableOfContents extends JTable {
 		
 		// General row height
         setRowHeight(50);
+        
+     // Make the 5th column invisible
+        // This contains the layer id of the layer initial row
+        getColumnModel().getColumn(4).setMinWidth(0);
+        getColumnModel().getColumn(4).setMaxWidth(0);
 		
 	}
 	

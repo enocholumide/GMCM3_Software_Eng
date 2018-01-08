@@ -65,6 +65,8 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	/**Snapping mode*/
 	public boolean snappingModeIsOn = false;
 	
+	public boolean displayVertices = true;
+	
 	/**Grid state*/
 	public boolean gridIsOn = false;
 	
@@ -243,10 +245,12 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 									c = SettingsFrame.HIGHLIGHTED_STATE_COLOR;
 								}
 								// Render the shape vertices on top
-								//if(!feature.isEllipse()) {
-								for(Rectangle2D shape : feature.getVertices()) {
-									g2d.setColor(c);
-									g2d.fill(getCurrentVertixSize(shape));
+								if(displayVertices) {
+									//if(!feature.isEllipse()) {
+									for(Rectangle2D shape : feature.getVertices()) {
+										g2d.setColor(c);
+										g2d.fill(getCurrentVertixSize(shape));
+									}
 								}
 								//}
 							} else {
@@ -476,6 +480,8 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		// Change the current editing layer and feature type
 		changeCurrentLayerAndFeatureType(layerIndex, featureType);
 		
+		System.out.println(featureType);
+		
 		if(signal == null) {
 			signal = "";
 		}
@@ -674,7 +680,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		
 		int layerID = (int) MainFrame.tableOfContents.getModel().getValueAt(layerIndex, TableOfContents.LAYER_ID_COL_INDEX);
 		currentLayer = TableOfContents.findLayerWithID(layerID);
-		currentFeatureType = featureType;
+		currentFeatureType = MainFrame.getCurrentFeatureType();
 	}
 	
 	/**
@@ -1073,11 +1079,15 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		
 		if(MainFrame.getCurrentFeatureType() != null ) {
 			
-			// i. Get current point of the mouse 
+			// i. Set current feature type
+			// ----------------------------------
+			currentFeatureType = MainFrame.getCurrentFeatureType();
+			
+			// ii. Get current point of the mouse 
 			// ----------------------------------
 			Point2D clickedPoint = e.getPoint();
 			
-			// ii. Replace the point with the snapped point in case snapping is on
+			// iii. Replace the point with the snapped point in case snapping is on
 			// -------------------------------------------------------------------
 			if(this.snapPoint != null) {
 				
@@ -1406,6 +1416,16 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 							Point2D end = new Point2D.Double(vertex.getCenterX(), vertex.getCenterY());
 							
 							this.tempLine.add(new Line2D.Double(start, end));
+							
+							if(currentFeatureType.equals("Line")) {
+								
+								//  Finish up the line and create a new feature
+								finishPath(this.vertexList, currentLayer);
+								
+								//  Log some message and update
+								onFeatureCreated("Line feature created");
+							}
+							
 						}
 						
 						repaint();
@@ -1446,7 +1466,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 						finishPath(this.vertexList, currentLayer);
 						
 						// 4.3 Log some message and update
-						onFeatureCreated("Polyline feature created");
+						onFeatureCreated("Multi line feature created");
 						
 					}
 					
@@ -1492,7 +1512,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		}
 		
 		// a. For non ellipse shapes
-		if( !this.lastDraggedFeature.isEllipse() ) {
+		if( !this.lastDraggedFeature.isEllipse() && !this.lastDraggedFeature.getFeatureType().equals(SettingsFrame.POINT_GEOMETRY) ) {
 	
 			// 0. Clear existing vertix lists
 			this.vertexList.clear();
@@ -1972,17 +1992,19 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 					}	
 				}
 		     
-		     for(Feature feature : currentLayer.getListOfFeatures()) {
-				for(Rectangle2D vertix : feature.getVertices()) {
-					if(vertix.contains(e.getPoint())) {
-						setCursor(handCursor);
-						movingMouseTip = new TextItem(e.getPoint(), "Drag to edit vertix");
-						setCurrentMouseGuide(movingMouseTip, SettingsFrame.DEFAULT_LAYER_COLOR);
-						repaint();
-						break;
-					} 
-				}	
-			}
+		     if(displayVertices) {
+			     for(Feature feature : currentLayer.getListOfFeatures()) {
+					for(Rectangle2D vertix : feature.getVertices()) {
+						if(vertix.contains(e.getPoint())) {
+							setCursor(handCursor);
+							movingMouseTip = new TextItem(e.getPoint(), "Drag to edit vertix");
+							setCurrentMouseGuide(movingMouseTip, SettingsFrame.DEFAULT_LAYER_COLOR);
+							repaint();
+							break;
+						} 
+					}	
+				}
+		    }
 		}
 		
 		repaint();
@@ -2473,11 +2495,13 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		
 		// Mouse drag during editing mode
 		if( editModeIsOn ) {
-			// For non-right clicks
-			if(!SwingUtilities.isRightMouseButton(e)) {
-				// Dragging/ editing vertices
-				if(this.lastDraggedFeature != null ) {
-					handleVertixDragging(draggedPoint);
+			if(displayVertices) {
+				// For non-right clicks
+				if(!SwingUtilities.isRightMouseButton(e)) {
+					// Dragging/ editing vertices
+					if(this.lastDraggedFeature != null ) {
+						handleVertixDragging(draggedPoint);
+					}
 				}
 			}
 		}
@@ -2498,5 +2522,20 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Display vertices or not
+	 */
+	public void toggleDisplayVertices() {
+	
+		if(displayVertices) {
+			displayVertices = false;
+		} else {
+			displayVertices = true;
+		}
+		
+		repaint();
+		
 	}
 }

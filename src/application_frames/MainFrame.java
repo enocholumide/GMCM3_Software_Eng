@@ -8,8 +8,6 @@ import javax.swing.GroupLayout.Alignment;
 import java.awt.Color;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.plaf.metal.MetalButtonUI;
-import javax.swing.plaf.metal.MetalToggleButtonUI;
 import javax.swing.text.DefaultCaret;
 
 import core_classes.Feature;
@@ -33,6 +31,8 @@ import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -142,7 +142,7 @@ public class MainFrame extends CustomJFrame {
 	public static ToolIconButton queryButton;
 	
 	/**Button that toggles selection mode*/
-	public static ToolIconButton selectionButton;
+	public static ToolIconButton selectionButton, btnVertices;
 	
 	/**Database connection object*/
 	public static DatabaseConnection dbConnection;
@@ -352,7 +352,7 @@ public class MainFrame extends CustomJFrame {
 		
 		JPanel fileRibbon = new JPanel();
 		fileRibbon.setBackground(Color.WHITE);
-		fileRibbon.setBorder(new CompoundBorder(new TitledBorder(null, "File", TitledBorder.LEFT, TitledBorder.TOP), new EmptyBorder(5,5,5,5)));
+		fileRibbon.setBorder(new CompoundBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "File", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
 		fileRibbon.setLayout(new GridLayout(1, 2, 5, 5));
 		
 		ToolIconButton filesBtn = new ToolIconButton("Files", "/images/file.png", 60, 60);
@@ -405,6 +405,11 @@ public class MainFrame extends CustomJFrame {
 		btnGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
 		btnGrid.setToolTipText("Turn on grid");
 		
+		btnVertices = new ToolIconButton("Grid", "/images/help.png", 35, 35);
+		btnVertices.setToolTipText("Toggle vertices");
+		btnVertices.doClick();
+		btnVertices.setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
+		
 		GroupLayout gl_editorRibbon = new GroupLayout(editorRibbon);
 		gl_editorRibbon.setHorizontalGroup(
 			gl_editorRibbon.createParallelGroup(Alignment.LEADING)
@@ -416,7 +421,9 @@ public class MainFrame extends CustomJFrame {
 						.addGroup(gl_editorRibbon.createSequentialGroup()
 							.addComponent(btnSnap, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnGrid, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(btnGrid, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnVertices, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panel_6, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE))
 		);
@@ -427,9 +434,11 @@ public class MainFrame extends CustomJFrame {
 						.addGroup(gl_editorRibbon.createSequentialGroup()
 							.addComponent(layerListComboBox, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_editorRibbon.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(btnSnap, 0, 0, Short.MAX_VALUE)
-								.addComponent(btnGrid, GroupLayout.PREFERRED_SIZE, 30, Short.MAX_VALUE))
+							.addGroup(gl_editorRibbon.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_editorRibbon.createParallelGroup(Alignment.LEADING, false)
+									.addComponent(btnSnap, 0, 0, Short.MAX_VALUE)
+									.addComponent(btnGrid, GroupLayout.PREFERRED_SIZE, 30, Short.MAX_VALUE))
+								.addComponent(btnVertices, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
 							.addPreferredGap(ComponentPlacement.RELATED, 5, Short.MAX_VALUE))
 						.addComponent(panel_5, GroupLayout.PREFERRED_SIZE, 72, Short.MAX_VALUE)
 						.addComponent(panel_6, GroupLayout.PREFERRED_SIZE, 72, Short.MAX_VALUE))
@@ -479,7 +488,7 @@ public class MainFrame extends CustomJFrame {
 		geomMultiLine.setToolTipText("Multi line");
 		drawRibbon.add(geomMultiLine);
 		
-		DrawIconButton geomEllipse = new DrawIconButton("Ellipse", "Polygon", "/images/ellipse.png", 30, 30);
+		DrawIconButton geomEllipse = new DrawIconButton("Ellipse", SettingsFrame.POLYGON_GEOMETRY, "/images/ellipse.png", 30, 30);
 		geomEllipse.setToolTipText("Ellipse");
 		drawRibbon.add(geomEllipse);
 		
@@ -568,6 +577,15 @@ public class MainFrame extends CustomJFrame {
 			public void componentShown(ComponentEvent arg0) {
 				// TODO Auto-generated method stub
 				
+			}
+		});
+		
+		splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				panel.renderGrid(SettingsFrame.GRID_MM);
+				panel.repaint();
 			}
 		});
 		
@@ -857,6 +875,15 @@ public class MainFrame extends CustomJFrame {
 				handleEditingSession("new");
 			}
 			
+		});
+		
+		btnVertices.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				panel.toggleDisplayVertices();
+				
+			}
 		});
 		
 		// ---------------------------------------------------------------------------
@@ -1369,7 +1396,36 @@ public class MainFrame extends CustomJFrame {
 			newLayer.setLayerType(layerType); // ! important
 			
 			panel.finishPath(vertices, newLayer);
-
+			String currentFeatureType = "";
+			if(layerType.equals(SettingsFrame.POLYGON_GEOMETRY)) {
+				if(vertices.size() > 4) {
+					currentFeatureType = "Freeform Polygon";
+				} 
+				else if (vertices.size() == 3) {
+					currentFeatureType = "Triangle";
+				}
+				else if (vertices.size() == 4) {
+					if(	(vertices.get(0).getCenterX() == vertices.get(2).getCenterX()) &&
+						(vertices.get(0).getCenterY() == vertices.get(1).getCenterY()) &&
+						
+						(vertices.get(1).getCenterX() == vertices.get(3).getCenterX()) &&
+						(vertices.get(2).getCenterY() == vertices.get(3).getCenterY())) {
+						
+						currentFeatureType = "Rectangle";
+					}
+				}
+			} 
+			
+			else if (layerType.equals(SettingsFrame.POLYLINE_GEOMETRY)) {
+				currentFeatureType = "Single line";
+				if(vertices.size() > 2) {
+					currentFeatureType = "Multi line";
+				}
+			}
+			
+			// Get last added feature and set the current feature type
+			newLayer.getListOfFeatures().get(newLayer.getListOfFeatures().size()-1).setFeatureType(currentFeatureType);
+			
 		}
 	}
 
@@ -1380,13 +1436,20 @@ public class MainFrame extends CustomJFrame {
 	public static String getCurrentFeatureType() {
 		
 		if(drawButtonGroup.getSelection() != null) {
-			
-			String selectedFeatureType = drawButtonGroup.getSelection().getActionCommand();
 		
-			return selectedFeatureType;
-		} else
-			
-			return null;
+			for (Enumeration<AbstractButton> buttons = drawButtonGroup.getElements(); buttons.hasMoreElements();) {
+				
+				DrawIconButton button = (DrawIconButton) buttons.nextElement();
+					
+				if(button.isSelected()) {
+					
+					return button.getFeatureType();
+				}
+	        }
+		} 
+		
+		return null;
+		
 	}
 
 	/**
@@ -1588,5 +1651,4 @@ public class MainFrame extends CustomJFrame {
 		dispose();
 		System.exit(0);
 	}
-
 }
