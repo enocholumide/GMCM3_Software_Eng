@@ -155,7 +155,7 @@ public class SessionManager {
 	public void onSaveSessionIntent() {
 		
 		JFileChooser saveSessionFileChooser = new JFileChooser();
-		saveSessionFileChooser.addChoosableFileFilter(sessionFileFilter);
+		saveSessionFileChooser.setFileFilter(sessionFileFilter);
 
 		// Once the user selects a file name, write the session to it.
 		int saveSessionReturnVal = saveSessionFileChooser.showSaveDialog(null);
@@ -182,7 +182,7 @@ public class SessionManager {
 	public void onOpenSessionIntent() {
 		
 		JFileChooser openSessionFileChooser = new JFileChooser();
-		openSessionFileChooser.addChoosableFileFilter(sessionFileFilter);
+		openSessionFileChooser.setFileFilter(sessionFileFilter);
 
 		// When the user selects a file, read it with the SessionManager and try to add the layers from the database, if they exist.
 		int openSessionReturnVal = openSessionFileChooser.showOpenDialog(null);

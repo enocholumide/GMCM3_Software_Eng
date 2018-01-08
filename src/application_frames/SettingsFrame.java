@@ -531,7 +531,7 @@ public class SettingsFrame {
 		lblGI.setBounds(10, 89, 131, 28);
 		drawingSettingsSubPanel.add(lblGI);
 		
-		snapSizeSpinner = new JSpinner(new SpinnerNumberModel(15, 10, 20, 1));
+		snapSizeSpinner = new JSpinner(new SpinnerNumberModel(10, 10, 20, 1));
 		snapSizeSpinner.setBounds(140, 89, 36, 28);
 		drawingSettingsSubPanel.add(snapSizeSpinner);
 		
@@ -571,12 +571,11 @@ public class SettingsFrame {
 
 
 				String lnfName = "com.jtattoo.plaf.smart.SmartLookAndFeel";
+				
 				if(themeCmbBox.getSelectedIndex() == 1) {
 					lnfName = "com.jtattoo.plaf.hifi.HiFiLookAndFeel";
-				} else {
-					
 				}
-
+				
 				updateTheme(lnfName);
 
 			}
@@ -610,6 +609,7 @@ public class SettingsFrame {
 						String user = SettingsFrame.dbUsername.getText();
 						String password = String.valueOf(SettingsFrame.dbPassword.getPassword());
 						
+						SettingsFrame.window = getWindow();
 						if(!initialized){
 							mainFrame.start(new DatabaseConnection(host, port, database, user, password));
 							initialized = true;
@@ -698,10 +698,15 @@ public class SettingsFrame {
 
 			mainFrame.repaint();
 			mainFrame.revalidate();
+			
+			if(MainFrame.tableOfContents != null) {
+				MainFrame.tableOfContents.setTablePreferredSizes();
+			}
+				
+			
 
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	};

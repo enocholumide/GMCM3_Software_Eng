@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -28,6 +30,7 @@ import core_components.TableOfContents;
 import features.PointItem;
 import features.PolygonItem;
 import features.PolylineItem;
+import sun.nio.cs.ext.MSISO2022JP;
 import toolset.RPoint;
 import toolset.Tools;
 
@@ -64,6 +67,8 @@ public class FileHandler {
 	
 	 static Point point = null;
 	 private static ArrayList<Point> pointlist = new ArrayList<Point>();
+	 private static FileNameExtensionFilter csvFileFilter = new FileNameExtensionFilter("CSV Files only", "csv");
+
 	 
 	/**
 	 * Read  GeoJson File
@@ -108,10 +113,18 @@ public class FileHandler {
 					JSONArray feature = (JSONArray) jsonObject.get("features");
 					String id = (String) jsonObject.get("type");
 					
+					System.out.println(feature);
+					
 					List<RPoint> wcsPoints = new ArrayList<RPoint>();
 					
 					for(int i= 0; i<feature.size();i++) {
-									
+						
+						JSONObject object = (JSONObject) feature.get(i);
+						JSONObject object3 = (JSONObject) object.get("geometry");
+						String featureType = String.valueOf((object3.get("type")));
+						
+						System.out.print(featureType);
+						
 						int start = (feature.get(i).toString()).indexOf("[");
 						int end = (feature.get(i).toString()).lastIndexOf("]");
 						
@@ -124,6 +137,7 @@ public class FileHandler {
 						
 						
 						for(int j = 0 ; j < coordsString.length - 1; j++) {
+							
 											
 							double latitude = Double.parseDouble(coordsString[j]);
 							double longitude = Double.parseDouble(coordsString[j+1]);
@@ -142,14 +156,25 @@ public class FileHandler {
 						}
 						
 						Tools.wcsToImageCoords(wcsPoints, MainFrame.panel);
-						
+						Layer newLayer = new Layer(TableOfContents.getNewLayerID(), true, featureType, "layer" + i);
+						Double[] aX = new Double [wcsPoints.size()];
+						Double[] aY = new Double [wcsPoints.size()];
+						int j = 0;
 						for(RPoint point : wcsPoints) {
-							System.out.println("X: " + point.getImagePoint().getX() + " Y: " + point.getImagePoint().getY());
+							//System.out.println("X: " + point.getImagePoint().getX() + " Y: " + point.getImagePoint().getY());
+							aX[j] = Double.valueOf(point.getImagePoint().getX());
+							aY[j] = Double.valueOf(point.getImagePoint().getY());
+							
+							j++;
 						}
+						MainFrame.createFeatureFromResultSet(newLayer, featureType, false, aX, aY, 0, 0);
+						//TableOfContents.a
+						newLayer.setNotSaved(false);
+						MainFrame.tableOfContents.addRowLayer(newLayer);
 						
 					}
-					System.out.println(MainFrame.panel.getSize());
-					System.out.println( poinsList2d.size());
+					//System.out.println(MainFrame.panel.getSize());
+					//System.out.println( poinsList2d.size());
 					
 				}catch (Exception e) {
 						e.printStackTrace();
@@ -296,6 +321,7 @@ public class FileHandler {
 			 Feature FeatureInfo = null;
 			 
 		     JFileChooser CSVFile = new JFileChooser ();
+		     CSVFile.setFileFilter(csvFileFilter);
 		     int geoJsonReturnValu = CSVFile.showOpenDialog(MainFrame.panel);
 		     File file = CSVFile.getSelectedFile();
 	         JSONParser parser = new JSONParser();
@@ -368,6 +394,7 @@ public class FileHandler {
 	 public static boolean writeToCSV(List<Layer> listOfLayers) {
 		 
 		 JFileChooser saveSessionFileChooser = new JFileChooser();
+		 saveSessionFileChooser.setFileFilter(csvFileFilter);
 		 int saveSessionReturnVal = saveSessionFileChooser.showSaveDialog(MainFrame.panel);
 		 
 		 if (saveSessionReturnVal == JFileChooser.APPROVE_OPTION) {

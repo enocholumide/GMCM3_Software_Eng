@@ -323,7 +323,7 @@ public class Tools {
 		}
 		
 		Point2D centroid = new Point2D.Double(xSum/list.size(), ySum/list.size());
-		
+		System.out.print(centroid.getX() + " " + centroid.getY());
 		return centroid;
 	}
 	
