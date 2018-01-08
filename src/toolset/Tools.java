@@ -15,6 +15,9 @@ import core_components.DrawingJPanel;
 
 /**
  * Class which contains miscellaneous utilities used throughout the application.
+ * @author 
+ * @since
+ * @version 1
  */
 public class Tools {
 	
@@ -202,7 +205,12 @@ public class Tools {
 		return doubleArray;
 	}
 	
-public static void wcsToImageCoords(List<RPoint> list, DrawingJPanel panel){
+	/**
+	 * Transforms the World Coordinates to Image Coordinate System
+	 * @param list the RPointList to set
+	 * @param panel the DrawinPanel to set
+	 */
+	public static void wcsToImageCoords(List<RPoint> list, DrawingJPanel panel){
 		
 		Random rand = new Random();
 		
@@ -274,6 +282,11 @@ public static void wcsToImageCoords(List<RPoint> list, DrawingJPanel panel){
 		
 	}
 	
+	/**
+	 * Searches the centroid of a RPoint list
+	 * @param list the RPoint list to set
+	 * @return the centroid
+	 */
 	public static Point2D findCentroid(List<RPoint> list) {
 		
 		double xSum = 0.0;
@@ -314,6 +327,11 @@ public static void wcsToImageCoords(List<RPoint> list, DrawingJPanel panel){
 		return centroid;
 	}
 	
+	/**
+	 * Searches for the minimum of a List of the type double
+	 * @param list the list to set
+	 * @return the minimum
+	 */
 	public static double findMinOfArray(double[] list) {
 		
 		double min = 0;
@@ -334,6 +352,11 @@ public static void wcsToImageCoords(List<RPoint> list, DrawingJPanel panel){
 		
 	}
 	
+	/**
+	 * Searches for the maximum of a List of the type double
+	 * @param list the list to set
+	 * @return the maximum
+	 */
 	public static double findMaxOfArray(double[] list) {
 		
 		double max = 0;

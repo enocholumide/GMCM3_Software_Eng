@@ -62,7 +62,7 @@ public class GeometryIcon extends JPanel {
 	}
 	
 	/**
-	 * Sets the color
+	 * Sets the color 
 	 * @param color the color to set
 	 */
 	public void setColor(Color color) {

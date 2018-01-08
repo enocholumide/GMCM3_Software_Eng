@@ -25,7 +25,7 @@ public class CustomColorPicker extends JPanel  {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Creates a CustomJPanel
+	 * Creates a CustomJPanel s
 	 */
 	public CustomColorPicker() {
 		super();

@@ -6,6 +6,8 @@ import java.awt.geom.Point2D;
 /**
  * Class for representing points in the system.  Inherits from Feature.
  * @author Isaac
+ * @since Dec 7, 2017
+ * @version 1
  */
 public class PointItem extends Feature {
     

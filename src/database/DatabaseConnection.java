@@ -42,7 +42,7 @@ public class DatabaseConnection {
      * @param host String representing the host address where the database is hosted.
      * @param port Integer representing the port number on which the database listens.
      * @param database String representing the name of the database to which to connect.
-     * @param user String representing the username with which to connect to the database.
+     * @param user String representing the user name with which to connect to the database.
      * @param password String representing the password with which to connect to the database.
      * @throws SQLException Throws an SQLException
      * @throws ClassNotFoundException Throws a ClassNotFoundException
@@ -186,7 +186,8 @@ public class DatabaseConnection {
 
     }
 
-    /** Drops a table from the database
+    /** 
+     * Drops a table from the database
      * @param tableName String representing the name of the table to be deleted.
      * @throws SQLException Throws a SQLEXception
      */

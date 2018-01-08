@@ -17,7 +17,7 @@ import custom_components.CustomJFrame;
  * <br>
  * Has two major buttons, open and save which can be accessed and an action listener can be 
  * attached to it where it is needed.<br>
- * The frame is not resizeable and it is never closed when the close button is pressed, but hidden,
+ * The frame is not resizable and it is never closed when the close button is pressed, but hidden,
  * it is available throughout the drawing session once it has been initialized.<br>
  * 
  * @author Olumide Igbiloba
@@ -37,7 +37,7 @@ public class FilesFrame extends CustomJFrame {
 	private ToolIconButton openFileButton;
 	
 	/**
-	 * Class construtor
+	 * Class constructor
 	 */
 	public FilesFrame() {
 
@@ -65,6 +65,7 @@ public class FilesFrame extends CustomJFrame {
 
 
 	/**
+	 * Returns the saveButton
 	 * @return the saveButton
 	 */
 	public ToolIconButton getSaveButton() {
@@ -73,6 +74,7 @@ public class FilesFrame extends CustomJFrame {
 
 
 	/**
+	 * Returns the opebButton
 	 * @return the openButton
 	 */
 	public ToolIconButton getOpenButton() {
