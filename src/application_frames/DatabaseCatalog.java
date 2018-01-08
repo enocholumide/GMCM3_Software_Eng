@@ -240,6 +240,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 	}
 	
 	/**
+	 * Returns the dbTree
 	 * @return the dbTree
 	 */
 	public JTree getDbTree() {
@@ -247,6 +248,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 	}
 
 	/**
+	 * Sets the dbTree
 	 * @param dbTree the dbTree to set
 	 */
 	public void setDbTree(JTree dbTree) {

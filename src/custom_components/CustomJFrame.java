@@ -35,7 +35,7 @@ public class CustomJFrame extends JFrame {
 	}
 
 	/**
-	 * Creates a CustomJFrame
+	 * Creates a CustomJFrame 
 	 * @param arg0 the String arg0 to set
 	 * @throws HeadlessException Throws an HeadlessException
 	 */

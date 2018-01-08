@@ -68,8 +68,6 @@ public class TableOfContents extends JTable {
 	
 	/**The index of the layer id at the table model*/
 	public static final int LAYER_ID_COL_INDEX = 4;
-	
-
 
 	/**The list of layers on the table*/
 	public static List <Layer> layerList = new ArrayList<Layer>();
@@ -242,7 +240,7 @@ public class TableOfContents extends JTable {
 	
 	/**
 	 * Sets the class of the table columns.
-	 * @param columnIndex the columnIndext to set
+	 * @param columnIndex the columnIndex to set
 	 */
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
@@ -308,7 +306,7 @@ public class TableOfContents extends JTable {
 	
 	/**
 	 * Validates adding a new layer
-	 * @param layer
+	 * @param layer the layer to set
 	 * @return false is layer name already exist
 	 */
 	public boolean validateLayer(Layer layer) {

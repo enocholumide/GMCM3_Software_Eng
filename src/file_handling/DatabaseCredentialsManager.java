@@ -11,8 +11,9 @@ import java.io.*;
  *     <li>database</li>
  *     <li>user</li>
  *     </ul>
- *     @author isaac
+ *     @author Isaac
  *     @since 16/12/17
+ *     @version 1
  */
 public class DatabaseCredentialsManager {
 

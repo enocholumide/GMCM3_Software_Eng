@@ -17,6 +17,8 @@ import core_components.TableOfContents;
  * Button for removing layer at the table of contents.
  * Embedded inside the table cell.
  * @author OlumideEnoch
+ * @since
+ * @version 1
  *
  */
 public class LayerRemoveButtonEditor extends DefaultCellEditor {

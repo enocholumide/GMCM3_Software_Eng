@@ -85,10 +85,6 @@ import javax.swing.border.LineBorder;
  */
 public class MainFrame extends CustomJFrame {
 
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7752427807628614402L;
 
 	/**
@@ -188,7 +184,6 @@ public class MainFrame extends CustomJFrame {
 
 	/**
 	 * Starts the mainframe with a database connection
-	 * 
 	 * @param dbConnection database connection for storing/ retrieving drawn shapes
 	 */
 	public void start(DatabaseConnection dbConnection) {
@@ -203,7 +198,7 @@ public class MainFrame extends CustomJFrame {
 	}
 
 	/**
-	 * Initialize the contents of the frame.
+	 * Initializes the contents of the frame.
 	 */
 	private void initialize() {
 		
@@ -1244,6 +1239,7 @@ public class MainFrame extends CustomJFrame {
 	 * Creates a new layer from a database result set
 	 * @param resultSet result set from database query
 	 * @param layerName the new layer name to store the features contained in the result set
+	 * @return null
 	 */
 	public static Layer createLayerFromResultSet(ResultSet resultSet, String layerName) {
 	
@@ -1511,7 +1507,7 @@ public class MainFrame extends CustomJFrame {
 	}
 	
 	/**
-	 * Disable all draw buttons.
+	 * Disables all draw buttons.
 	 * 
 	 */
 	public static void disableAllDrawButtons() {

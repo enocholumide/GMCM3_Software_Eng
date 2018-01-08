@@ -20,7 +20,7 @@ import toolset.Tools;
  * A feature is unique with its ID, this ID is stored in the database. 
  * The layer class manages this ID and assigns ID to the feature, based on the time of creation.<br>
  * <p>
- * A feature is representated by its shape on the drawing panel.<br>
+ * A feature is represented by its shape on the drawing panel.<br>
  * This shape contains vertices (for non ellipse shapes), the vertices are rectangle and 
  * its size is determined based on the current size of the snap @see Settings class.<br>
  * So, to save these vertices in the database, the center of the vertices is used.<br>
@@ -39,7 +39,7 @@ import toolset.Tools;
  */
 public class Feature {
 	
-	/** The uniqure id a feature. This ID is stored in the database */
+	/** The unique id a feature. This ID is stored in the database */
     private int id;
     /** The layer id where the feature belongs to */
 	private int layerID;
@@ -73,7 +73,7 @@ public class Feature {
 
     /**
      * Returns the ID of a Feature
-     * @return id
+     * @return id 
      */
     public int getId() {
         return this.id;
@@ -258,6 +258,7 @@ public class Feature {
 	}
 
 	/**
+	 * Sets the RadiusX of an Ellipse
 	 * @param radiusX the radiusX to set
 	 */
 	public void setRadiusX(double radiusX) {
@@ -265,6 +266,7 @@ public class Feature {
 	}
 
 	/**
+	 * Sets the RadiusX of an Ellipse
 	 * @param radiusY the radiusY to set
 	 */
 	public void setRadiusY(double radiusY) {

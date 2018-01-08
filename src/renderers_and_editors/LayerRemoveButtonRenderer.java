@@ -11,6 +11,8 @@ import application_frames.SettingsFrame;
 /**
  * Class which renders the remove icon on the table cell
  * @author OlumideEnoch
+ * @since
+ * @version 1
  *
  */
 public class LayerRemoveButtonRenderer extends JButton implements TableCellRenderer {

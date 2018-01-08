@@ -19,6 +19,7 @@ import core_components.TableOfContents;
  * Class handles the changing of layer names from the table of contents.
  * @author Olumide Igbiloba
  * @since Dec 28, 2017
+ * @version 1
  *
  */
 public class LayerNameEditor extends DefaultCellEditor implements CellEditorListener  {
@@ -35,14 +36,11 @@ public class LayerNameEditor extends DefaultCellEditor implements CellEditorList
 	/**Old value of the cell just edited*/
 	private String oldValue = "";
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * Class constructor
-	 * @param textField
+	 * Creates the LayerNameEditor
+	 * @param textField the textField to set
 	 */
 	public LayerNameEditor(JTextField textField) {
 		super(textField);

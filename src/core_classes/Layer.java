@@ -106,7 +106,7 @@ public class Layer  {
 	}
 
 	/**
-	 * Returns the name of tayer
+	 * Returns the name of Layer
 	 * @return the layerName
 	 */
 	public String getLayerName() {
@@ -186,6 +186,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Returns whether a Layer is saved in the Database
 	 * @return the inDatabase
 	 */
 	public boolean isInDatabase() {
@@ -193,6 +194,7 @@ public class Layer  {
 	}
 
 	/**
+	 * Saves a Layer into the Database
 	 * @param inDatabase the inDatabase to set
 	 */
 	public void setInDatabase(boolean inDatabase) {
@@ -200,7 +202,7 @@ public class Layer  {
 	}
 
 	/**
-	 * Returns the feature list of a Layer
+	 * Returns the Feature list of a Layer
 	 * @return the listOfFeatures
 	 */
 	public List<Feature> getListOfFeatures() {
@@ -208,7 +210,7 @@ public class Layer  {
 	}
 
 	/**
-	 * Sets the feature list of a Layer
+	 * Sets the Feature list of a Layer
 	 * @param listOfFeatures the listOfFeatures to set
 	 */
 	public void setListOfFeatures(List<Feature> listOfFeatures) {

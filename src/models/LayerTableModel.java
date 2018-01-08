@@ -8,6 +8,9 @@ import core_classes.Layer;
 
 /**
  * Class for the creation of a LayerTableModel
+ * @author 
+ * @since
+ * @version 1
  */
 public class LayerTableModel extends AbstractTableModel {
 
@@ -32,7 +35,7 @@ public class LayerTableModel extends AbstractTableModel {
 	}
 	
 	/**
-	 * fires deleted table rows
+	 * Fires deleted table rows
 	 * @param firstRow the firstRow to set
 	 * @param lastRow the lastRow to set
 	 */

@@ -31,8 +31,12 @@ import features.PolylineItem;
 import toolset.RPoint;
 import toolset.Tools;
 
-
-
+/**
+ * Class for Import and Export Handling of CSV and GEOJson Files
+ * @author Musa Fadul
+ * @since
+ * @version 1
+ */
 public class FileHandler {
 	
 	// First  Datum WGS84 ellipsoid parameter
@@ -40,7 +44,7 @@ public class FileHandler {
 		public static final double  semiMajorAxisWGS84 = 6378137.0; 
 		public static final double  semiMinorAxisWGS84 = 6356752.314245179;
 		
-		//second datum Gausskruger ellipsoid parameter
+		//second datum Gausskrueger ellipsoid parameter
 		public static final double  semiMajorAxisGausskruger = 6377397.155; 
 		public static final double  semiMinorAxisGaussKruger = 6356078.962818189;
 		
@@ -62,9 +66,9 @@ public class FileHandler {
 	 private static ArrayList<Point> pointlist = new ArrayList<Point>();
 	 
 	/**
-	 * Readin GeoJson File
-	 * @param SelectedDatum
-	 * @return
+	 * Read  GeoJson File
+	 * @param SelectedDatum First Datum WGS84 ellipsoid parameter to set
+	 * @return the Feature Info 
 	 */
 	 public static Feature readFromGeoJson(String SelectedDatum) {
 		 String slectedDatum = SelectedDatum;
@@ -86,7 +90,6 @@ public class FileHandler {
 		
 		   }
     	
-
     	
 		     Feature FeatureInfo = null; 
 		     JFileChooser geoJsonFile = new JFileChooser ();
@@ -157,15 +160,15 @@ public class FileHandler {
 			return FeatureInfo; 
     }
 	 /**
-	  * seting transformation parameter
-	  * @param semiMajorAxis
-	  * @param semiMinorAxis
+	  * Sets the transformation parameters
+	  * @param semiMajorAxis the semiMajorAxis to set
+	  * @param semiMinorAxis the semiMinorAxis to set
 	  */
 	    public static void setParametr(Double semiMajorAxis , Double semiMinorAxis) {
 	    	double SemiMajorAxis = semiMajorAxis;
 	    	double SemiMinorAxis = semiMinorAxis ;
 	    	
-	    	 semiMajorAxisForCurvature = semiMajorAxis;
+	    	semiMajorAxisForCurvature = semiMajorAxis;
 	    	eccentrycitysquare = ((SemiMajorAxis * SemiMajorAxis ) - ( SemiMinorAxis * SemiMinorAxis))/(SemiMajorAxis * SemiMajorAxis );
 	    	eccentrycityPrimesquare = ((SemiMajorAxis * SemiMajorAxis ) - ( SemiMinorAxis * SemiMinorAxis))/( SemiMinorAxis * SemiMinorAxis);
 	    	flattening = (SemiMajorAxis - SemiMinorAxis)/SemiMajorAxis ;
@@ -176,8 +179,9 @@ public class FileHandler {
 		 
 	 
 		 /**
-		  * Reading PolylineFeatire  from CSV file.
-		  * @param spliter
+		  * Reads PolylineFeatures from a CSV file.
+		  * @param spliter the split character so set
+		  * @return the PolylineInfo PolylineItem
 		  */
 		 private static PolylineItem readPolylineFeature(String[] spliter) {
 			   PolylineItem  PolylineInfo = null;
@@ -209,8 +213,9 @@ public class FileHandler {
 		}
 		 
 		 /**
-		  * * Reading PolygoneFeatire from CSV file.
-		  * @param spliter
+		  * Reads PolygonFeatures from a CSV file.
+		  * @param spliter the split character so set
+		  * @return the PolygonInfo PolygonItem
 		  */
 		private static PolygonItem readPolygonFeature(String[] spliter) {
 			PolygonItem PolygonInfor = null;
@@ -244,8 +249,9 @@ public class FileHandler {
 		}
 	 	 
 		/**
-		  * Reading (x,y) PointFeatire coordinates from CSV file.
-		  * @param spliter
+		  * Reads (x,y) PointFeature coordinates from a CSV file.
+		  * @param spliter the split character so set
+		  * @return the PointInfo PointItem
 		  */
 		 public static PointItem readPointFeature(String[] spliter) {
 			 PointItem PointInfo = null;
@@ -278,11 +284,11 @@ public class FileHandler {
 		}
   
 	 	/**
-	 	 * Reading CSV
-	 	 * @param newLayer
-	 	 * @param geomSelected
-	 	 * @return
-	 	 * @throws IOException
+	 	 * Reads a CSV File
+	 	 * @param newLayer the newLayer to set
+	 	 * @param geomSelected the geomSelected to set
+	 	 * @return null
+	 	 * @throws IOException throws an IOException
 	 	 */
 		 public static Feature readFromCSV(Layer newLayer, String geomSelected) throws IOException {
 			 
@@ -303,9 +309,9 @@ public class FileHandler {
 			      
 		       
 			       
-		        /**
-		         * Reading the  CSV file 
-		         */
+
+		         // Reading the  CSV file 
+
 		          try {
 		        	  
 		        	  filereader = new FileReader(file);
@@ -355,9 +361,9 @@ public class FileHandler {
 	   }
 
 	/**
-	 * Writing to CSV 	 
-	 * @param listOfLayers
-	 * @return
+	 * Writs Layers to a CSV File 	 
+	 * @param listOfLayers the List of Layers to set
+	 * @return true if writing was successful
 	 */
 	 public static boolean writeToCSV(List<Layer> listOfLayers) {
 		 

@@ -143,7 +143,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	/** Text of the mouse tip*/
 	private String currentMouseTipText = SettingsFrame.DEFAULT_MOUSE_TIP;
 
-	/** Last feature that its vertix was dragged during edit mode*/
+	/** Last feature that its vertex was dragged during edit mode*/
 	private Feature lastDraggedFeature;
 	
 	/** The vertex of the last dragged feature*/
@@ -589,8 +589,8 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	}
 	/**
 	 * Assists the paint component by creating vertexes based on the current settings snap size.
-	 * @param vertix
-	 * @return
+	 * @param vertix the vertex to set
+	 * @return the vertex
 	 */
 	private Shape getCurrentVertixSize(Rectangle2D  vertix) {
 		int size = SettingsFrame.SNAP_SIZE;
@@ -937,7 +937,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				}
 			}
 			
-			// 2. For polylines
+			// 2. For Polylines
 			/// ------------------------------------------------
 			if(currentLayer.getLayerType() == SettingsFrame.POLYLINE_GEOMETRY) {
 	
@@ -1481,7 +1481,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 * Handles dragging of feature vertices during edit mode.
 	 * 
-	 * @param draggedPoint dragged point comming from the mouse dragged event
+	 * @param draggedPoint dragged point coming from the mouse dragged event
 	 */
 	private void handleVertixDragging(Point2D draggedPoint) {
 		
@@ -1930,7 +1930,6 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 * Sets the drawing cursor based on the current session
 	 * @param e the MouseEvent originating from the mouse moved to set
-	 * 
 	 */
 	private void setDrawingCursor(MouseEvent e) {
 		
