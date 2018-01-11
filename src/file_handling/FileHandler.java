@@ -31,11 +31,16 @@ import features.PolylineItem;
 import toolset.RPoint;
 import toolset.Tools;
 
-
+/**
+ * the class handels files importing and exporting protocols
+ * there are two file formats are supported the CSV and GeoJson formats
+ * @author Musa Fadul
+ * @since Dec 17, 2017
+ */
 
 public class FileHandler {
 	
-	// First  Datum WGS84 ellipsoid parameter
+	    // First  Datum WGS84 ellipsoid parameter
 		public static final double  sllipsoidalHeight = 160; // Common average ellipsoidal hight 
 		public static final double  semiMajorAxisWGS84 = 6378137.0; 
 		public static final double  semiMinorAxisWGS84 = 6356752.314245179;
@@ -62,22 +67,20 @@ public class FileHandler {
 	 private static ArrayList<Point> pointlist = new ArrayList<Point>();
 	 
 	/**
-	 * Readin GeoJson File
+	 * Reading GeoJson File
 	 * @param SelectedDatum
 	 * @return
 	 */
 	 public static Feature readFromGeoJson(String SelectedDatum) {
 		 String slectedDatum = SelectedDatum;
-		
-	 
-		
+		 
+		// tesing the sected datum 
 	     if(slectedDatum.equals("WGS84")) {
 	    	 
 			setParametr(semiMajorAxisWGS84, semiMinorAxisWGS84); 
 			
 		   }else if(slectedDatum.equals("GaussKrurger")) {
-			   
-			   
+			      
 			setParametr(semiMajorAxisGausskruger, semiMinorAxisGaussKruger); 
 			
 		   } else if(slectedDatum.equals("Lambert")){
@@ -85,29 +88,26 @@ public class FileHandler {
 		      setParametr(semiMajorAxisLambert, semiMinorAxisLamberet); 
 		
 		   }
-    	
-
-    	
+    
 		     Feature FeatureInfo = null; 
 		     JFileChooser geoJsonFile = new JFileChooser ();
 		     int geoJsonReturnValu = geoJsonFile.showSaveDialog(MainFrame.panel);
 		     File saveSession = geoJsonFile.getSelectedFile();
 	         JSONParser parser = new JSONParser();
 	     
-	     
 	       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
 	 
 				try {
 					 FileReader readfile = new FileReader (saveSession);
 					
-					Object obj = parser.parse(readfile);
-					JSONObject jsonObject = (JSONObject) obj;
-					JSONArray feature = (JSONArray) jsonObject.get("features");
-					String id = (String) jsonObject.get("type");
+					 Object obj = parser.parse(readfile);
+					 JSONObject jsonObject = (JSONObject) obj;
+					 JSONArray feature = (JSONArray) jsonObject.get("features");
+					 String id = (String) jsonObject.get("type");
 					
-					List<RPoint> wcsPoints = new ArrayList<RPoint>();
+					 List<RPoint> wcsPoints = new ArrayList<RPoint>();
 					
-					for(int i= 0; i<feature.size();i++) {
+					 for(int i= 0; i<feature.size();i++) {
 									
 						int start = (feature.get(i).toString()).indexOf("[");
 						int end = (feature.get(i).toString()).lastIndexOf("]");
@@ -120,26 +120,24 @@ public class FileHandler {
 						
 						
 						
-						for(int j = 0 ; j < coordsString.length - 1; j++) {
+					    for(int j = 0 ; j < coordsString.length - 1; j++) {
 											
 							double latitude = Double.parseDouble(coordsString[j]);
 							double longitude = Double.parseDouble(coordsString[j+1]);
 							
 							double latitudeInDegree = latitude * Math.PI / 180;
 							double longitudeInDegree = longitude * Math.PI / 180;
-							//System.out.println(semiMajorAxisForCurvature);				
+											
 							radiusOfCurvature = (semiMajorAxisForCurvature)/(Math.sqrt(1-(eccentrycitysquare*Math.sin(latitudeInDegree))));
 							double xWordCoord =  (radiusOfCurvature + sllipsoidalHeight ) * Math.cos(latitudeInDegree)*Math.cos(longitudeInDegree);
 							double yWordCoord = (radiusOfCurvature + sllipsoidalHeight) * Math.cos(latitudeInDegree)*Math.sin(longitudeInDegree);
 						    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
 						    // world coordinates must be converted to image coordinates
 						    poinsList2d.add(point2d);
-							//System.out.println(poinsList2d);
 							wcsPoints.add(new RPoint(point2d));
 						}
 						
-						Tools.wcsToImageCoords(wcsPoints, MainFrame.panel);
-						
+						Tools.wcsToImageCoords(wcsPoints, MainFrame.panel);					
 						for(RPoint point : wcsPoints) {
 							System.out.println("X: " + point.getImagePoint().getX() + " Y: " + point.getImagePoint().getY());
 						}
@@ -157,7 +155,7 @@ public class FileHandler {
 			return FeatureInfo; 
     }
 	 /**
-	  * seting transformation parameter
+	  * setting transformation parameter
 	  * @param semiMajorAxis
 	  * @param semiMinorAxis
 	  */
@@ -165,7 +163,7 @@ public class FileHandler {
 	    	double SemiMajorAxis = semiMajorAxis;
 	    	double SemiMinorAxis = semiMinorAxis ;
 	    	
-	    	 semiMajorAxisForCurvature = semiMajorAxis;
+	    	semiMajorAxisForCurvature = semiMajorAxis;
 	    	eccentrycitysquare = ((SemiMajorAxis * SemiMajorAxis ) - ( SemiMinorAxis * SemiMinorAxis))/(SemiMajorAxis * SemiMajorAxis );
 	    	eccentrycityPrimesquare = ((SemiMajorAxis * SemiMajorAxis ) - ( SemiMinorAxis * SemiMinorAxis))/( SemiMinorAxis * SemiMinorAxis);
 	    	flattening = (SemiMajorAxis - SemiMinorAxis)/SemiMajorAxis ;
@@ -176,7 +174,7 @@ public class FileHandler {
 		 
 	 
 		 /**
-		  * Reading PolylineFeatire  from CSV file.
+		  * Reading PolylineFeature  from CSV file.
 		  * @param spliter
 		  */
 		 private static PolylineItem readPolylineFeature(String[] spliter) {
@@ -209,7 +207,7 @@ public class FileHandler {
 		}
 		 
 		 /**
-		  * * Reading PolygoneFeatire from CSV file.
+		  * * Reading PolygoneFeature from CSV file.
 		  * @param spliter
 		  */
 		private static PolygonItem readPolygonFeature(String[] spliter) {
@@ -244,7 +242,7 @@ public class FileHandler {
 		}
 	 	 
 		/**
-		  * Reading (x,y) PointFeatire coordinates from CSV file.
+		  * Reading (x,y) PointFeature coordinates from CSV file.
 		  * @param spliter
 		  */
 		 public static PointItem readPointFeature(String[] spliter) {
@@ -262,7 +260,6 @@ public class FileHandler {
 		         int ycoord = (int) b;
 		         point = new Point(xcoord,ycoord);
 			    Ellipse2D ellipse = new Ellipse2D.Double(xcoord, ycoord, 10, 10);
-			    //DrawingPanel.ellipses.add(ellipse);
 			    System.out.println(ellipse);
 			    pointlist.add(point);
 			    
@@ -272,8 +269,7 @@ public class FileHandler {
 				 e.printStackTrace();
 			 }
 			 PointInfo = new PointItem (id , point);
-			 System.out.println(PointInfo);
-			return PointInfo;
+			 return PointInfo;
 			
 		}
   
@@ -294,22 +290,14 @@ public class FileHandler {
 		     File file = CSVFile.getSelectedFile();
 	         JSONParser parser = new JSONParser();
 	     
-	         System.out.println("Reading");
 	       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
-	 
-			            
+	            
 		       FileReader filereader = null;
-		       BufferedReader bfreader = null;
-			      
-		       
-			       
-		        /**
-		         * Reading the  CSV file 
-		         */
-		          try {
+		       BufferedReader bfreader = null;    
+		              
+		          try {	  
 		        	  
 		        	  filereader = new FileReader(file);
-		        	 
 		        	  bfreader = new BufferedReader(filereader);
 			         
 			          String line;
