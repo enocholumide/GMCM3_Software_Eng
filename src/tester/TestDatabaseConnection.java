@@ -2,6 +2,8 @@ package tester;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +11,7 @@ import java.util.List;
 
 import core_classes.Layer;
 import database.DatabaseConnection;
+import features.PointItem;
 import features.PolygonItem;
 import features.PolylineItem;
 
@@ -43,7 +46,8 @@ public class TestDatabaseConnection {
 
         PolygonItem poly0 = new PolygonItem(0, new Polygon(new int[] {0,1,1,0}, new int[] {0,0,1,0}, 4));
         PolygonItem poly1 = new PolygonItem(1, new Polygon(new int[] {0,2,2,0}, new int[] {0,0,2,0}, 4));
-        PolygonItem poly2 = new PolygonItem(2, new Polygon(new int[] {0,3,3,0}, new int[] {0,0,3,0}, 4));
+        PolygonItem poly2 = new PolygonItem(2, new Polygon());
+        poly2.setEllipse(true, new Point2D.Double(1, 1), 1,1);
 
         Layer myPolygonLayer = new Layer(0,true,"Polygon","myPolygonLayer");
         myPolygonLayer.getListOfFeatures().add(poly0);
@@ -56,47 +60,42 @@ public class TestDatabaseConnection {
         // TEST POLYLINES
         // =============================================================================================================
 
-        Line2D.Double lineSeg0_0 = new Line2D.Double(0,0,1,1);
-        Line2D.Double lineSeg0_1 = new Line2D.Double(1,1,2,2);
-        Line2D.Double lineSeg0_2 = new Line2D.Double(2,2,3,4);
-        PolylineItem line0 = new PolylineItem(0, new ArrayList<Line2D.Double>(Arrays.asList(lineSeg0_0, lineSeg0_1, lineSeg0_2)));
+        // TODO polyline test not working
 
-        Line2D.Double lineSeg1_0 = new Line2D.Double(5,6,7,8);
-        Line2D.Double lineSeg1_1 = new Line2D.Double(7,8,2,2);
-        Line2D.Double lineSeg1_2 = new Line2D.Double(2,2,9,9);
-        PolylineItem line1 = new PolylineItem(1, new ArrayList<Line2D.Double>(Arrays.asList(lineSeg1_0, lineSeg1_1, lineSeg1_2)));
+        Path2D path0 = new Path2D.Double();
+        path0.moveTo(0,0);
+        path0.lineTo(1,1);
+        path0.lineTo(2,2);
+        PolylineItem polyline0 = new PolylineItem(0, path0);
+        polyline0.setShape(path0);
 
-        Line2D.Double lineSeg2_0 = new Line2D.Double(3,2,1,0);
-        Line2D.Double lineSeg2_1 = new Line2D.Double(1,0,10,10);
-        Line2D.Double lineSeg2_2 = new Line2D.Double(10,10,100,100);
-        PolylineItem line2 = new PolylineItem(2, new ArrayList<Line2D.Double>(Arrays.asList(lineSeg2_0, lineSeg2_1, lineSeg2_2)));
+        Layer myPolylineLayer = new Layer(1, true, "Polyline", "myPolylineLayer");
 
-        Layer myPolylineLayer = new Layer(0,true,"Polyline", "myPolyLineLayer");
-        myPolylineLayer.getListOfFeatures().add(line0);
-        myPolylineLayer.getListOfFeatures().add(line1);
-        myPolylineLayer.getListOfFeatures().add(line2);
+        myPolylineLayer.getListOfFeatures().add(polyline0);
 
         databaseConnection.writeTable("polyline_table", myPolylineLayer);
 
         // =============================================================================================================
-        // TEST APPENDING TABLES
+        // TEST POINTS
         // =============================================================================================================
 
-        PolygonItem polyNew = new PolygonItem(3, new Polygon(new int[] {10,15,15,10}, new int[] {10,10,15,10}, 4));
-        Layer myNewPolygonLayer = new Layer(0,true,"Polygon","new_polygon_layer");
-        myNewPolygonLayer.getListOfFeatures().add(polyNew);
+        // TODO polygon test not working
 
-        databaseConnection.appendToTable("polygon_table", myNewPolygonLayer);
+        PointItem point0 = new PointItem(0, new Point2D.Double(0,0));
+        PointItem point1 = new PointItem(1, new Point2D.Double(1,1));
+        PointItem point2 = new PointItem(2, new Point2D.Double(2,2));
 
-        Line2D.Double lineSegNew_0 = new Line2D.Double(0,0,10,10);
-        Line2D.Double lineSegNew_1 = new Line2D.Double(10,10,20,20);
-        Line2D.Double lineSegNew_2 = new Line2D.Double(20,20,30,40);
-        PolylineItem lineNew = new PolylineItem(3, new ArrayList<Line2D.Double>(Arrays.asList(lineSegNew_0, lineSegNew_1, lineSegNew_2)));
+        point0.setGeometry(new Point2D.Double(0,0));
+        point1.setGeometry(new Point2D.Double(1,1));
+        point0.setGeometry(new Point2D.Double(2,2));
 
-        Layer myNewPolylineLayer = new Layer(0,true,"Polyline", "new_polyline_layer");
-        myNewPolylineLayer.getListOfFeatures().add(lineNew);
+        Layer myPointLayer = new Layer(2, true, "Point", "myPointLayer");
 
-        databaseConnection.appendToTable("polyline_table", myNewPolylineLayer);
+        myPointLayer.getListOfFeatures().add(point0);
+        myPointLayer.getListOfFeatures().add(point1);
+        myPointLayer.getListOfFeatures().add(point2);
+
+        databaseConnection.writeTable("point_table", myPointLayer);
 
         // =============================================================================================================
         // TEST DROPPING TABLES (uncomment to test dropping)

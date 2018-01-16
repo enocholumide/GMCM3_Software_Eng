@@ -110,21 +110,11 @@ public class DatabaseConnection {
      */
     public void writeTable(String tableName, Layer layer) throws SQLException {
 
-            PreparedStatement dropStatement = conn.prepareStatement("DELETE FROM geo_data WHERE table_name = ?;");
-            dropStatement.setString(1, tableName);
-            dropStatement.executeUpdate();
+        PreparedStatement dropStatement = conn.prepareStatement("DELETE FROM geo_data WHERE table_name = ?;");
+        dropStatement.setString(1, tableName);
+        dropStatement.executeUpdate();
 
-            this.appendToTable(tableName, layer);
-
-    }
-
-    /**
-     * Adds new features to an existing table.
-     * @param tableName String representing the name of the table to which to save the features.
-     * @param layer Layer object to be appended to the existing table in the database
-     * @throws SQLException Throws a SQLEXception
-     */
-    public void appendToTable(String tableName, Layer layer) throws SQLException {
+            //this.appendToTable(tableName, layer);
 
         List<Feature> featureList = layer.getListOfFeatures();
         Feature feature;
@@ -136,7 +126,7 @@ public class DatabaseConnection {
 
         // Iterate through feature list & write each to the database
         for (int i=0; i<featureList.size(); i++) {
-        	
+
             feature = featureList.get(i);
 
             featureId = feature.getId();
@@ -146,7 +136,7 @@ public class DatabaseConnection {
             yCoords = feature.getCoordinatesArrayXY()[1];
             Object[] xCoordsObject = new Object[xCoords.length];
             Object[] yCoordsObject = new Object[yCoords.length];
-            for (int j=0; j<xCoords.length; j++) {
+            for (int j = 0; j < xCoords.length; j++) {
                 xCoordsObject[j] = Double.toString(xCoords[j]);
                 yCoordsObject[j] = Double.toString(yCoords[j]);
             }
@@ -154,23 +144,23 @@ public class DatabaseConnection {
             xRadius = 0;
             yRadius = 0;
             if (isEllipse) {
-            	
+
                 xRadius = feature.getRadiusX();
                 yRadius = feature.getRadiusY();
-                
+
                 xCoordsObject = new Object[1];
                 xCoordsObject[0] = feature.getCenter().getX();
-                
+
                 yCoordsObject = new Object[1];
                 yCoordsObject[0] = feature.getCenter().getY();
-                
+
             }
 
             Array myX = conn.createArrayOf("float4", xCoordsObject);
             Array myY = conn.createArrayOf("float4", yCoordsObject);
 
             PreparedStatement insertFeatureStatement = conn.prepareStatement("INSERT INTO geo_data (table_name, id, type, is_ellipse, x, y, rx, ry) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            
+
             insertFeatureStatement.setString(1, tableName);
             insertFeatureStatement.setInt(2, featureId);
             insertFeatureStatement.setString(3, layerType);
@@ -185,6 +175,74 @@ public class DatabaseConnection {
         }
 
     }
+
+    /**
+     * Adds new features to an existing table.
+     * @param tableName String representing the name of the table to which to save the features.
+     * @param layer Layer object to be appended to the existing table in the database
+     * @throws SQLException Throws a SQLEXception
+     */
+//    public void appendToTable(String tableName, Layer layer) throws SQLException {
+//
+//        List<Feature> featureList = layer.getListOfFeatures();
+//        Feature feature;
+//        int featureId;
+//        String layerType = layer.getLayerType();
+//        boolean isEllipse;
+//        double xCoords[], yCoords[];
+//        double xRadius, yRadius;
+//
+//        // Iterate through feature list & write each to the database
+//        for (int i=0; i<featureList.size(); i++) {
+//
+//            feature = featureList.get(i);
+//
+//            featureId = feature.getId();
+//            isEllipse = feature.isEllipse();
+//
+//            xCoords = feature.getCoordinatesArrayXY()[0];
+//            yCoords = feature.getCoordinatesArrayXY()[1];
+//            Object[] xCoordsObject = new Object[xCoords.length];
+//            Object[] yCoordsObject = new Object[yCoords.length];
+//            for (int j=0; j<xCoords.length; j++) {
+//                xCoordsObject[j] = Double.toString(xCoords[j]);
+//                yCoordsObject[j] = Double.toString(yCoords[j]);
+//            }
+//
+//            xRadius = 0;
+//            yRadius = 0;
+//            if (isEllipse) {
+//
+//                xRadius = feature.getRadiusX();
+//                yRadius = feature.getRadiusY();
+//
+//                xCoordsObject = new Object[1];
+//                xCoordsObject[0] = feature.getCenter().getX();
+//
+//                yCoordsObject = new Object[1];
+//                yCoordsObject[0] = feature.getCenter().getY();
+//
+//            }
+//
+//            Array myX = conn.createArrayOf("float4", xCoordsObject);
+//            Array myY = conn.createArrayOf("float4", yCoordsObject);
+//
+//            PreparedStatement insertFeatureStatement = conn.prepareStatement("INSERT INTO geo_data (table_name, id, type, is_ellipse, x, y, rx, ry) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+//
+//            insertFeatureStatement.setString(1, tableName);
+//            insertFeatureStatement.setInt(2, featureId);
+//            insertFeatureStatement.setString(3, layerType);
+//            insertFeatureStatement.setBoolean(4, isEllipse);
+//            insertFeatureStatement.setArray(5, myX);
+//            insertFeatureStatement.setArray(6, myY);
+//            insertFeatureStatement.setDouble(7, xRadius);
+//            insertFeatureStatement.setDouble(8, yRadius);
+//
+//            insertFeatureStatement.executeUpdate();
+//
+//        }
+//
+//    }
 
     /** 
      * Drops a table from the database
