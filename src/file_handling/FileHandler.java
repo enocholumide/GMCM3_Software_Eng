@@ -60,6 +60,7 @@ public class FileHandler {
 		static double inverseFlattening;
 		static double semiMajorAxisForCurvature ;
 	    static double radiusOfCurvature ;
+	    static final double scalingFactor = 0.0029;
     
     
     static List<Point2D> poinsList2d = new ArrayList<Point2D>();
@@ -142,16 +143,16 @@ public class FileHandler {
 						    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
 						    // world coordinates must be converted to image coordinates
 						    poinsList2d.add(point2d);
-						    double xImageCoords = (findMaxOfArray(poinsList2d).getX()- point2d.getX())*0.0029;
-						    double yImageCoords = (findMaxOfArray(poinsList2d).getY()- point2d.getY())*0.0029;
+						    double xImageCoords = (findMaxOfArray(poinsList2d).getX()- point2d.getX())*scalingFactor;
+						    double yImageCoords = (findMaxOfArray(poinsList2d).getY()- point2d.getY())*scalingFactor;
 					        Point2D ImagePoint = new Point2D.Double(xImageCoords,yImageCoords);
-							wcsPoints.add(new RPoint(ImagePoint));
+							//wcsPoints.add(new RPoint(ImagePoint));
 						}
 						
-						Tools.wcsToImageCoords(wcsPoints, MainFrame.panel);					
+						/*Tools.wcsToImageCoords(wcsPoints, MainFrame.panel);					
 						for(RPoint point : wcsPoints) {
 							System.out.println("X: " + point.getImagePoint().getX() + " Y: " + point.getImagePoint().getY());
-						}
+						}*/
 						
 					}
 					System.out.println(MainFrame.panel.getSize());
