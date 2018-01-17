@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -34,14 +32,16 @@ import toolset.RPoint;
 import toolset.Tools;
 
 /**
+
  * Class for Import and Export Handling of CSV and GEOJson Files
  * @author Musa Fadul
  * @since
  * @version 1
  */
+
 public class FileHandler {
 	
-	// First  Datum WGS84 ellipsoid parameter
+	    // First  Datum WGS84 ellipsoid parameter
 		public static final double  sllipsoidalHeight = 160; // Common average ellipsoidal hight 
 		public static final double  semiMajorAxisWGS84 = 6378137.0; 
 		public static final double  semiMinorAxisWGS84 = 6356752.314245179;
@@ -66,26 +66,28 @@ public class FileHandler {
 	
 	 static Point point = null;
 	 private static ArrayList<Point> pointlist = new ArrayList<Point>();
-	 private static FileNameExtensionFilter csvFileFilter = new FileNameExtensionFilter("CSV Files only", "csv");
-
 	 
 	/**
+
 	 * Read  GeoJson File
 	 * @param SelectedDatum First Datum WGS84 ellipsoid parameter to set
 	 * @return the Feature Info 
+
+	 * Reading GeoJson File
+	 * @param SelectedDatum
+	 * @return
+
 	 */
 	 public static Feature readFromGeoJson(String SelectedDatum) {
 		 String slectedDatum = SelectedDatum;
-		
-	 
-		
+		 
+		// tesing the sected datum 
 	     if(slectedDatum.equals("WGS84")) {
 	    	 
 			setParametr(semiMajorAxisWGS84, semiMinorAxisWGS84); 
 			
 		   }else if(slectedDatum.equals("GaussKrurger")) {
-			   
-			   
+			      
 			setParametr(semiMajorAxisGausskruger, semiMinorAxisGaussKruger); 
 			
 		   } else if(slectedDatum.equals("Lambert")){
@@ -93,37 +95,27 @@ public class FileHandler {
 		      setParametr(semiMajorAxisLambert, semiMinorAxisLamberet); 
 		
 		   }
-    	
-    	
+
 		     Feature FeatureInfo = null; 
 		     JFileChooser geoJsonFile = new JFileChooser ();
 		     int geoJsonReturnValu = geoJsonFile.showSaveDialog(MainFrame.panel);
 		     File saveSession = geoJsonFile.getSelectedFile();
 	         JSONParser parser = new JSONParser();
 	     
-	     
 	       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
 	 
 				try {
 					 FileReader readfile = new FileReader (saveSession);
 					
-					Object obj = parser.parse(readfile);
-					JSONObject jsonObject = (JSONObject) obj;
-					JSONArray feature = (JSONArray) jsonObject.get("features");
-					String id = (String) jsonObject.get("type");
+					 Object obj = parser.parse(readfile);
+					 JSONObject jsonObject = (JSONObject) obj;
+					 JSONArray feature = (JSONArray) jsonObject.get("features");
+					 String id = (String) jsonObject.get("type");
 					
-					System.out.println(feature);
+					 List<RPoint> wcsPoints = new ArrayList<RPoint>();
 					
-					List<RPoint> wcsPoints = new ArrayList<RPoint>();
-					
-					for(int i= 0; i<feature.size();i++) {
-						
-						JSONObject object = (JSONObject) feature.get(i);
-						JSONObject object3 = (JSONObject) object.get("geometry");
-						String featureType = String.valueOf((object3.get("type")));
-						
-						System.out.print(featureType);
-						
+					 for(int i= 0; i<feature.size();i++) {
+									
 						int start = (feature.get(i).toString()).indexOf("[");
 						int end = (feature.get(i).toString()).lastIndexOf("]");
 						
@@ -135,45 +127,35 @@ public class FileHandler {
 						
 						
 						
-						for(int j = 0 ; j < coordsString.length - 1; j++) {
-							
+					    for(int j = 0 ; j < coordsString.length - 1; j++) {
 											
 							double latitude = Double.parseDouble(coordsString[j]);
 							double longitude = Double.parseDouble(coordsString[j+1]);
 							
 							double latitudeInDegree = latitude * Math.PI / 180;
 							double longitudeInDegree = longitude * Math.PI / 180;
-							//System.out.println(semiMajorAxisForCurvature);				
+											
 							radiusOfCurvature = (semiMajorAxisForCurvature)/(Math.sqrt(1-(eccentrycitysquare*Math.sin(latitudeInDegree))));
 							double xWordCoord =  (radiusOfCurvature + sllipsoidalHeight ) * Math.cos(latitudeInDegree)*Math.cos(longitudeInDegree);
 							double yWordCoord = (radiusOfCurvature + sllipsoidalHeight) * Math.cos(latitudeInDegree)*Math.sin(longitudeInDegree);
+							
 						    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
 						    // world coordinates must be converted to image coordinates
 						    poinsList2d.add(point2d);
-							//System.out.println(poinsList2d);
-							wcsPoints.add(new RPoint(point2d));
+						    double xImageCoords = (findMaxOfArray(poinsList2d).getX()- point2d.getX())*0.0029;
+						    double yImageCoords = (findMaxOfArray(poinsList2d).getY()- point2d.getY())*0.0029;
+					        Point2D ImagePoint = new Point2D.Double(xImageCoords,yImageCoords);
+							wcsPoints.add(new RPoint(ImagePoint));
 						}
 						
-						Tools.wcsToImageCoords(wcsPoints, MainFrame.panel);
-						Layer newLayer = new Layer(TableOfContents.getNewLayerID(), true, featureType, "layer" + i);
-						Double[] aX = new Double [wcsPoints.size()];
-						Double[] aY = new Double [wcsPoints.size()];
-						int j = 0;
+						Tools.wcsToImageCoords(wcsPoints, MainFrame.panel);					
 						for(RPoint point : wcsPoints) {
-							//System.out.println("X: " + point.getImagePoint().getX() + " Y: " + point.getImagePoint().getY());
-							aX[j] = Double.valueOf(point.getImagePoint().getX());
-							aY[j] = Double.valueOf(point.getImagePoint().getY());
-							
-							j++;
+							System.out.println("X: " + point.getImagePoint().getX() + " Y: " + point.getImagePoint().getY());
 						}
-						MainFrame.createFeatureFromResultSet(newLayer, featureType, false, aX, aY, 0, 0);
-						//TableOfContents.a
-						newLayer.setNotSaved(false);
-						MainFrame.tableOfContents.addRowLayer(newLayer);
 						
 					}
-					//System.out.println(MainFrame.panel.getSize());
-					//System.out.println( poinsList2d.size());
+					System.out.println(MainFrame.panel.getSize());
+					System.out.println( poinsList2d.size());
 					
 				}catch (Exception e) {
 						e.printStackTrace();
@@ -183,10 +165,65 @@ public class FileHandler {
 		        }
 			return FeatureInfo; 
     }
+	 
+	 public static Point2D findMaxOfArray(List<Point2D> list) {
+			Point2D MaxPoint2d = null;
+				double MaxX = 0;
+				double MaxY = 0;
+				
+				if(list != null) {
+					
+					for(Point2D item : list) {
+						if(MaxX < item.getX()) {
+							MaxX =  item.getX();
+						}
+						if(MaxY < item.getY()) {
+							MaxY =  item.getY();
+						}
+					}
+				
+					MaxPoint2d = new Point2D.Double(MaxX,MaxY);
+					
+					return MaxPoint2d;
+					
+				}
+				return MaxPoint2d;
+			}
 	 /**
+
 	  * Sets the transformation parameters
 	  * @param semiMajorAxis the semiMajorAxis to set
 	  * @param semiMinorAxis the semiMinorAxis to set
+
+	  * the method the Image Coordinates
+	  * @param MaxPoint2d
+	  * @param worldCoord
+	  * @return
+	  */
+	  public static Point2D imageCoor(Point MaxPoint2d, List<Point2D> worldCoord) {
+		  Point2D point ;
+	    	   double XimageCor = 0;
+	    	   double Yimagecor = 0;
+	    	if(worldCoord !=null) {
+	    		 for(Point2D point1:worldCoord) {
+	    			 
+	    			  XimageCor =  (MaxPoint2d.getX()-point1.getX());
+	    			 Yimagecor  =  (MaxPoint2d.getY()-point1.getY());
+	    			 point = new Point2D.Double(XimageCor, Yimagecor);
+	     	   
+	    	     }
+	    	
+	    		   
+	    	 }
+	    	
+	    	
+			return MaxPoint2d;
+	    
+	    }
+	 /**
+	  * setting transformation parameter
+	  * @param semiMajorAxis
+	  * @param semiMinorAxis
 	  */
 	    public static void setParametr(Double semiMajorAxis , Double semiMinorAxis) {
 	    	double SemiMajorAxis = semiMajorAxis;
@@ -201,11 +238,12 @@ public class FileHandler {
 	    }
 		 
 		 
-	 
+	     
 		 /**
 		  * Reads PolylineFeatures from a CSV file.
 		  * @param spliter the split character so set
 		  * @return the PolylineInfo PolylineItem
+
 		  */
 		 private static PolylineItem readPolylineFeature(String[] spliter) {
 			   PolylineItem  PolylineInfo = null;
@@ -276,6 +314,7 @@ public class FileHandler {
 		  * Reads (x,y) PointFeature coordinates from a CSV file.
 		  * @param spliter the split character so set
 		  * @return the PointInfo PointItem
+
 		  */
 		 public static PointItem readPointFeature(String[] spliter) {
 			 PointItem PointInfo = null;
@@ -291,10 +330,9 @@ public class FileHandler {
 		       	 int xcoord= (int) a;
 		         int ycoord = (int) b;
 		         point = new Point(xcoord,ycoord);
-			    Ellipse2D ellipse = new Ellipse2D.Double(xcoord, ycoord, 10, 10);
-			    //DrawingPanel.ellipses.add(ellipse);
-			    System.out.println(ellipse);
-			    pointlist.add(point);
+			     Ellipse2D ellipse = new Ellipse2D.Double(xcoord, ycoord, 10, 10);
+			     System.out.println(ellipse);
+			     pointlist.add(point);
 			    
 				
 				 
@@ -302,8 +340,7 @@ public class FileHandler {
 				 e.printStackTrace();
 			 }
 			 PointInfo = new PointItem (id , point);
-			 System.out.println(PointInfo);
-			return PointInfo;
+			 return PointInfo;
 			
 		}
   
@@ -320,16 +357,14 @@ public class FileHandler {
 			 Feature FeatureInfo = null;
 			 
 		     JFileChooser CSVFile = new JFileChooser ();
-		     CSVFile.setFileFilter(csvFileFilter);
 		     int geoJsonReturnValu = CSVFile.showOpenDialog(MainFrame.panel);
 		     File file = CSVFile.getSelectedFile();
 	         JSONParser parser = new JSONParser();
 	     
-	         System.out.println("Reading");
 	       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
-	 
-			            
+	            
 		       FileReader filereader = null;
+
 		       BufferedReader bfreader = null;
 			      
 		       
@@ -337,10 +372,11 @@ public class FileHandler {
 
 		         // Reading the  CSV file 
 
-		          try {
+    
+		          try {	  
+
 		        	  
 		        	  filereader = new FileReader(file);
-		        	 
 		        	  bfreader = new BufferedReader(filereader);
 			         
 			          String line;
@@ -393,7 +429,6 @@ public class FileHandler {
 	 public static boolean writeToCSV(List<Layer> listOfLayers) {
 		 
 		 JFileChooser saveSessionFileChooser = new JFileChooser();
-		 saveSessionFileChooser.setFileFilter(csvFileFilter);
 		 int saveSessionReturnVal = saveSessionFileChooser.showSaveDialog(MainFrame.panel);
 		 
 		 if (saveSessionReturnVal == JFileChooser.APPROVE_OPTION) {
