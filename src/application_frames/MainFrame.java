@@ -206,7 +206,7 @@ public class MainFrame extends CustomJFrame {
 		setVisible(true);
 		
 		// Set title
-		setTitle("GMCM3 Software Engineering (Group 1), Geomatics � Hochschule Karlsruhe � Technik und Wirtschaft (HsKA)");
+		setTitle("GMCM3 Software Engineering (Group 1), Geomatics, Karlsruhe University of Applied Sciences (HsKA)");
 		
 		// Position at the middle of the screen
 		setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - SettingsFrame.MAINFRAME_SIZE.width) / 2, 
@@ -238,7 +238,7 @@ public class MainFrame extends CustomJFrame {
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setBackground(Color.LIGHT_GRAY);
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setIcon(Tools.getIconImage("/images/Images-icon.png", 60, 60));
+		lblNewLabel.setIcon(Tools.getIconImage("/images/logo.png", 60, 60));
 		
 		JLabel label = new JLabel("");
 		
@@ -400,7 +400,7 @@ public class MainFrame extends CustomJFrame {
 		btnGrid = new ToolIconButton("Grid", "/images/grid.png", 35, 35);
 		btnGrid.setToolTipText("Turn on grid");
 		
-		btnVertices = new ToolIconButton("Grid", "/images/help.png", 35, 35);
+		btnVertices = new ToolIconButton("Grid", "/images/vertex.png", 35, 35);
 		btnVertices.setToolTipText("Toggle vertices");
 		btnVertices.doClick();
 		btnVertices.setBackground(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
