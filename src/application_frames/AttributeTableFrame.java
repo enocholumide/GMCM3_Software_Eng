@@ -45,7 +45,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
  * 
  * @author Olumide Igbiloba
  * @since Dec 10, 2017
- * @version
+ * @version 1
  * 
  *
  */
@@ -155,7 +155,7 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 	
 	/**
 	 * Sets the table model with all the features of the layer
-	 * @param layer 
+	 * @param layer The Layer the table model should be set for
 	 */
 	private void setTableModel(Layer layer) {
 		
@@ -205,7 +205,7 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 	}
 	
 	/**
-	 * Sets table column prefered widths
+	 * Sets table column preferred widths
 	 */
 	private void setColumnPreferedWidth() {
 		

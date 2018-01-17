@@ -65,6 +65,7 @@ public class SettingsFrame {
 	private CustomJFrame frame;
 	
 	/**
+	 * Returns the Frame
 	 * @return the frame
 	 */
 	public CustomJFrame getFrame() {
@@ -104,7 +105,7 @@ public class SettingsFrame {
 	
 
 	/**
-	 * Create the frame.
+	 * Creates the frame.
 	 * @param openMainFrame the openMainFrame to be set
 	 * @param mainFrame the application mainframe
 	 */
@@ -711,8 +712,8 @@ public class SettingsFrame {
 	};
 	
 	/**
-	 * 
-	 * @param newColor
+	 * Updates the customs Buttons Look and Feel color
+	 * @param newColor the Color to set
 	 */
 	private void updateCustomButtonsLookAndFeel(Color newColor) {
 		for(ToolIconButton button : MainFrame.buttonsList) {
@@ -728,6 +729,10 @@ public class SettingsFrame {
 		}
 	}
 
+	/**
+	 * Returns the Window
+	 * @return the window
+	 */
 	private static Rectangle getWindow() {
 		
 		int screen = 0;
@@ -738,10 +743,6 @@ public class SettingsFrame {
 		return gs[screen].getDefaultConfiguration().getBounds();
 		
 	}
-	
-	/**
-	 * Saves all changes of the settings
-	 */
 
 	/**
 	 * Computes the width and height of the application.  If there are multiple displays attached, for some reason it

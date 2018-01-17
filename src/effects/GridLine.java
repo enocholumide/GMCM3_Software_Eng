@@ -46,7 +46,7 @@ public class GridLine {
 	}
 	
 	/**
-	 * Returns the line
+	 * Returns the line 
 	 * @return the line
 	 */
 	public Line2D getLine() {

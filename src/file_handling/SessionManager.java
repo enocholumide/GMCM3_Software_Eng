@@ -19,10 +19,11 @@ import application_frames.MainFrame;
 import core_classes.Layer;
 
 /**
- * An object used to save & load sessions. Sessions are groups of active layers. A session file should end in '.gmcm'
+ * An object used to save and load sessions. Sessions are groups of active layers. A session file should end in '.gmcm'
  * and store a layer name on each line.
- * @author isaac
+ * @author Isaac
  * @since 19/12/17
+ * @version 1
  */
 public class SessionManager {
 

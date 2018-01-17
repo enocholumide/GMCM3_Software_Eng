@@ -93,9 +93,9 @@ public class TextItem {
 	}
 	
 	/**
-	 * Checks if there is an intersection on another rectangle (from a text item)
+	 * Checks whether there is an intersection on another rectangle (from a text item)
 	 * @param rectangle the rectangle to set
-	 * @return true if there is an intersection on another rectangle
+	 * @return true if there is an intersection on another rectangle 
 	 */
 	public boolean borderIntersectsAnotherRectangle(Rectangle2D rectangle) {
 		

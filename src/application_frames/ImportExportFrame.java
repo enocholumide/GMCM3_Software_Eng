@@ -30,9 +30,6 @@ import custom_components.CustomJFrame;
 
 public class ImportExportFrame extends CustomJFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private ToolIconButton csvLoader;
@@ -66,6 +63,7 @@ public class ImportExportFrame extends CustomJFrame {
 	}
 	
 	/**
+	 * Sets the Operation
 	 * @param operation the operation to set
 	 */
 	public void setOperation(String operation) {
@@ -73,6 +71,7 @@ public class ImportExportFrame extends CustomJFrame {
 	}
 
 	/**
+	 * Returns the operation
 	 * @return the operation
 	 */
 	public String getOperation() {
@@ -80,6 +79,7 @@ public class ImportExportFrame extends CustomJFrame {
 	}
 
 	/**
+	 * Returns the csvLoader
 	 * @return the csvLoader
 	 */
 	public ToolIconButton getCsvLoader() {
@@ -87,6 +87,7 @@ public class ImportExportFrame extends CustomJFrame {
 	}
 
 	/**
+	 * Returns the geoJsonLoader
 	 * @return the geoJsonLoader
 	 */
 	public ToolIconButton getGeoJsonLoader() {

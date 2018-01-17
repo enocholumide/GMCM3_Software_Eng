@@ -14,6 +14,7 @@ import core_components.TableOfContents;
  * 
  * @author Olumide Igbiloba
  * @since Dec 9, 2017
+ * @version 1
  *
  */
 public class GeometryTableIconRenderer extends GeometryIcon implements TableCellRenderer{

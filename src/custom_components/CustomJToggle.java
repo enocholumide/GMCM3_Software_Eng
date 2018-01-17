@@ -36,7 +36,7 @@ public class CustomJToggle extends JButton {
 	
 	/**
 	 * Creates the Custom JButton
-	 * @param state
+	 * @param state the state to set
 	 */
 	public CustomJToggle(boolean state) {
 		// TODO Auto-generated constructor stub
@@ -60,6 +60,9 @@ public class CustomJToggle extends JButton {
 		});
 	}
 
+	/**
+	 * Sets the state if the CustomJToggle
+	 */
 	protected void setState() {
 		if(state) {
 			state = false;
@@ -73,6 +76,7 @@ public class CustomJToggle extends JButton {
 	}
 	
 	/**
+	 * Returns the state if the CustomJToggle
 	 * @return the state
 	 */
 	public boolean getState() {
@@ -80,6 +84,7 @@ public class CustomJToggle extends JButton {
 	}
 
 	/**
+	 * Sets the state if the CustomJToggle
 	 * @param state the state to set
 	 */
 	public void setState(boolean state) {

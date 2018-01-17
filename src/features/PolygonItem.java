@@ -13,6 +13,8 @@ import java.awt.Polygon;
 /**
  * Class for representing polygons in the system.  Inherits from Feature.
  * @author Isaac
+ * @since Dec 7, 2017
+ * @version 1
  */
 public class PolygonItem extends Feature {
 	

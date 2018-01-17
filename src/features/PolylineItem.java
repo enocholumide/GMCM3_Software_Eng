@@ -14,6 +14,8 @@ import java.util.ArrayList;
 /**
  * Class for representing Polylines in the system.  Inherits from Feature.
  * @author Isaac
+ * @since Dec 7, 2017
+ * @version 1
  */
 public class PolylineItem extends Feature {
 	
