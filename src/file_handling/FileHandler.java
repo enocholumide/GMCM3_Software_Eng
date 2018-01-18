@@ -65,7 +65,7 @@ public class FileHandler {
 		static double semiMajorAxisForCurvature ;
 	    static double radiusOfCurvature ;
 	    static final double scalingFactor = 0.029;
-    
+        static  final double center = 200.00;
     
        static List<Point2D> poinsList2d = new ArrayList<Point2D>();
 	 
@@ -160,8 +160,8 @@ public class FileHandler {
 							    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
 							    // world coordinates must be converted to image coordinates
 							    poinsList2d.add(point2d);
-							    double xImageCoords = (findMaxOfArray(poinsList2d).getX()- point2d.getX())*scalingFactor;
-							    double yImageCoords = (findMaxOfArray(poinsList2d).getY()- point2d.getY())*scalingFactor;
+							    double xImageCoords = ((findMaxOfArray(poinsList2d).getX()- point2d.getX())*scalingFactor)+center;
+							    double yImageCoords = ((findMaxOfArray(poinsList2d).getY()- point2d.getY())*scalingFactor)+center;
 						        Point2D ImagePoint = new Point2D.Double(xImageCoords,yImageCoords);
 						        System.out.println(ImagePoint);
 			
