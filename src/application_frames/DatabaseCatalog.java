@@ -132,7 +132,7 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				addSelectedLayerToDrawingPanel();
+				addSelectedLayerToDrawingPanel((TreePath[]) dbTree.getSelectionPaths());
 			}
 		});
 		
@@ -372,10 +372,11 @@ public class DatabaseCatalog extends CustomJFrame implements TreeSelectionListen
 	/**
 	 * Adds the currently selected node to the drawing panel.<br>
 	 * Supports multiple layer selection.
+	 * @param treePaths current db selection path
 	 */
-	private void addSelectedLayerToDrawingPanel() {
+	private void addSelectedLayerToDrawingPanel(TreePath[] treePaths) {
 		
-		TreePath[] treePaths = (TreePath[]) dbTree.getSelectionPaths();
+		//TreePath[] treePaths = (TreePath[]) dbTree.getSelectionPaths();
 		try {
 			for(TreePath tree : treePaths) {
 				

@@ -1579,9 +1579,10 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			int AXIS_X = 1; // <-- Axis x
 			int AXIS_Y = 2; // <-- Axis y
 			
-			// 3. Retrieve the radiusX and radiusY of the ellipse shape
+			// 3. Retrieve the radiusX and radiusY of the ellipse shape and the initial size of the vertixes
 			double radiusX = this.lastDraggedFeature.getRadiusX();
 			double radiusY = this.lastDraggedFeature.getRadiusY();
+			int previousSize = this.lastDraggedFeature.getVertices().size();
 			
 			// 4. If the vertex dragged is the center point, the shape will be moved/ translated
 			if( vertex.equals(lastDraggedFeature.getVertices().get(CENTER)) ) {
@@ -1595,19 +1596,20 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 				// 4.4 Make a new center rectangle vertix for the shape for rendering purposes and further selection/ dragging
 				Rectangle2D newCenterVertix = new Rectangle2D.Double(draggedPoint.getX() - (snapSize/2), draggedPoint.getY() - (snapSize/2), snapSize, snapSize);
 				// 4.4 Replace rectangle of the center using the indexes specified at 2.
-				lastDraggedFeature.getVertices().get(CENTER).setRect(newCenterVertix);
+				lastDraggedFeature.getVertices().clear();
+				lastDraggedFeature.getVertices().add(newCenterVertix);
 				// 4.5 For circle: Replace the rectangle of the X axis by using the new center of the feature 
 				//     the initial radius X will still be used
-				lastDraggedFeature.getVertices().get(AXIS_X).setRect(
-						(lastDraggedFeature.getCenter().getX() + radiusX) - (snapSize/2),
+				Rectangle2D axisX = new Rectangle2D.Double((lastDraggedFeature.getCenter().getX() + radiusX) - (snapSize/2),
 						(lastDraggedFeature.getCenter().getY() - (snapSize/2)), (snapSize), (snapSize));
+				lastDraggedFeature.getVertices().add(axisX);
 				// 4.6 For real ellipse : Replace the rectangle of the Y axis by using the new center of the feature 
 				//     the initial radius Y will still be used.
-				//     This can be distingused because the size of the vertix list will be exactly 3 or greater than 2
-				if(lastDraggedFeature.getVertices().size() > 2) {
-					lastDraggedFeature.getVertices().get(AXIS_Y).setRect(
-							(lastDraggedFeature.getCenter().getX()) - (snapSize/2),
+				//	   The previous size of the vertix list will be more than 2 if it is not a cirlce
+				if(previousSize > 2) {
+					Rectangle2D axisY = new Rectangle2D.Double((lastDraggedFeature.getCenter().getX()) - (snapSize/2),
 							(lastDraggedFeature.getCenter().getY() - radiusY) - (snapSize/2), (snapSize), (snapSize));
+					lastDraggedFeature.getVertices().add(axisY);
 					
 				}
 				// 4.7 Update the panel as the feature is moved

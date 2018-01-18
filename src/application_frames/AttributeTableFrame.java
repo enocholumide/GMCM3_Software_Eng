@@ -65,6 +65,8 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 	/**Current layer of the attribute table*/
 	private Layer layer;
 	
+	private JMenu selectionMenu;
+	
 
 	/**
 	 * Creates the Attribute Table Frame
@@ -120,12 +122,12 @@ public class AttributeTableFrame extends CustomJFrame implements ActionListener 
 		contentPane.setLayout(gl_contentPane);
 		
 
-		JMenu selectionMenu = new JMenu("Selection");
+		selectionMenu = new JMenu("Selection");
 		selectionMenu.addSeparator();
 		
 		JMenuItem showAll = new JMenuItem("Show all features");
 		JMenuItem showSel = new JMenuItem("Show only selected features");
-		JMenuItem delete= new JMenuItem("Deleted selected features");
+		JMenuItem delete= new JMenuItem("Delete selected features");
 		JMenuItem clear = new JMenuItem("Clear selection");
 		
 		showAll.setActionCommand("showAll");
