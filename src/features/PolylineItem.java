@@ -19,7 +19,13 @@ import java.util.ArrayList;
  */
 public class PolylineItem extends Feature {
 	
+	/**
+	 * Shape representing the polyline item
+	 */
 	private Path2D shape;
+	/**
+	 * Array list of lines contained in the polyline
+	 */
 	private ArrayList<Line2D.Double> polyline = new ArrayList<Line2D.Double>();
 	
 	/**

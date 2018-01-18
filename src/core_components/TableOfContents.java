@@ -63,6 +63,7 @@ public class TableOfContents extends JTable {
 	/**The list of layers on the table*/
 	public static List <Layer> layerList = new ArrayList<Layer>();
 	
+	/**Popup menu invoked on right click on a row for more functions e.g. opening attribute table*/
 	public static JPopupMenu menu = new JPopupMenu();
 	
 	/**

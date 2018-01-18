@@ -6,13 +6,11 @@ import java.awt.Point;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.List;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
 
 import application_frames.MainFrame;
-import core_components.DrawingJPanel;
 
 /**
  * Class which contains miscellaneous utilities used throughout the application.
@@ -219,127 +217,7 @@ public class Tools {
 		return doubleArray;
 	}
 	
-	/**
-	 * Transforms the World Coordinates to Image Coordinate System
-	 * @param list the RPointList to set
-	 * @param panel the DrawinPanel to set
-	 */
-	public static void wcsToImageCoords(List<RPoint> list, DrawingJPanel panel){
-		
-		Random rand = new Random();
-		
-		Point2D centroid = findCentroid(list);
-		Point2D panelCenter = new Point2D.Double(panel.getWidth()/2, panel.getHeight()/2);
-		
-		
-		for(int i = 0; i < list.size(); i++) {
-			
-			Point2D wcsPoint = list.get(i).getRealPoint();
-			
-			double pdev = 0.0;
-			double pdevy = 0.0;
-			if(centroid.getX() < wcsPoint.getX()) {
-				
-				// right hand X
-				
-				// deviation
-				double devx = Math.abs(Math.abs(wcsPoint.getX()) - Math.abs(centroid.getX()));
-				double maxRelC = maxX - centroid.getX();
-				pdev = devx / maxRelC;
-				pdev = Math.floor(pdev * 10000) / 10000;
-			}
-			
-			if(centroid.getX() > wcsPoint.getX()) {
-				// left hand X
-				
-				double devx = Math.abs(Math.abs(wcsPoint.getX()) - Math.abs(centroid.getX()));
-				double maxRelC = minX - centroid.getX();
-				pdev = (devx / maxRelC);
-				
-				
-				pdev = Math.floor(pdev * 10000) / 10000;
-	
-			}
-			
-			if(centroid.getY() < wcsPoint.getY()) {
-				// right hand X
-				
-				// deviation
-				double devy = Math.abs(Math.abs(wcsPoint.getY()) - Math.abs(centroid.getY()));
-				double maxRelC = maxY - centroid.getY();
-				pdevy = devy / maxRelC;
-				pdevy = Math.floor(pdevy * 10000) / 10000;
-			}
-			
-			if(centroid.getY() > wcsPoint.getY()) {
-				// left hand X
-				
-				double devY = Math.abs(Math.abs(wcsPoint.getY()) - Math.abs(centroid.getY()));
-				double maxRelC = minY - centroid.getY();
-				pdevy = (devY / maxRelC);
-				
-				
-				pdevy = Math.floor(pdevy * 10000) / 10000;
-	
-			}
-			
-			//System.out.println(pdev);
-			
-			Point2D imageCoord = new Point2D.Double(panelCenter.getX() + (panelCenter.getX() * pdev), panelCenter.getY() + (panelCenter.getY() * pdevy));
-			list.get(i).setImagePoint(imageCoord);
-			
-			//System.out.println(pdev);
-			//list.get(i).setImagePoint(imagePoint);
-		}
-		
-		
-		
-	}
-	
-	/**
-	 * Searches the centroid of a RPoint list
-	 * @param list the RPoint list to set
-	 * @return the centroid
-	 */
-	public static Point2D findCentroid(List<RPoint> list) {
-		
-		double xSum = 0.0;
-		double ySum = 0.0;
-		
-		maxX = list.get(0).getRealPoint().getX();
-		maxY = list.get(0).getRealPoint().getY();
-		
-		minX = list.get(0).getRealPoint().getX();
-		minY = list.get(0).getRealPoint().getY();
-		
-		for(RPoint item : list) {
-			
-			xSum += item.getRealPoint().getX();
-			ySum += item.getRealPoint().getY();
-			
-			// Max values
-			if(maxX < item.getRealPoint().getX()) {
-				maxX = item.getRealPoint().getX();
-			}
-			
-			if(maxY < item.getRealPoint().getY()) {
-				maxY = item.getRealPoint().getY();
-			}
-			
-			// Min values
-			if(minX > item.getRealPoint().getX()) {
-				minX = item.getRealPoint().getX();
-			}
-			
-			if(minY > item.getRealPoint().getY()) {
-				minY = item.getRealPoint().getY();
-			}		
-		}
-		
-		Point2D centroid = new Point2D.Double(xSum/list.size(), ySum/list.size());
-		System.out.print(centroid.getX() + " " + centroid.getY());
-		return centroid;
-	}
+
 	
 	/**
 	 * Searches for the minimum of a List of the type double

@@ -1,9 +1,7 @@
 package file_handling;
 
 import java.awt.Point;
-import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -21,14 +19,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import application_frames.MainFrame;
-import application_frames.SettingsFrame;
 import core_classes.Feature;
 import core_classes.Layer;
-import core_components.TableOfContents;
 import features.PointItem;
 import features.PolygonItem;
 import features.PolylineItem;
-import toolset.RPoint;
 import toolset.Tools;
 
 /**
@@ -68,15 +63,9 @@ public class FileHandler {
 	 private static ArrayList<Point> pointlist = new ArrayList<Point>();
 	 
 	/**
-
 	 * Read  GeoJson File
 	 * @param SelectedDatum First Datum WGS84 ellipsoid parameter to set
 	 * @return the Feature Info 
-
-	 * Reading GeoJson File
-	 * @param SelectedDatum
-	 * @return
-
 	 */
 	 public static Feature readFromGeoJson(String SelectedDatum) {
 		 String slectedDatum = SelectedDatum;
@@ -112,7 +101,6 @@ public class FileHandler {
 					 JSONArray feature = (JSONArray) jsonObject.get("features");
 					 String id = (String) jsonObject.get("type");
 					
-					 List<RPoint> wcsPoints = new ArrayList<RPoint>();
 					
 					 for(int i= 0; i<feature.size();i++) {
 									
@@ -145,17 +133,14 @@ public class FileHandler {
 						    double xImageCoords = (findMaxOfArray(poinsList2d).getX()- point2d.getX())*0.0029;
 						    double yImageCoords = (findMaxOfArray(poinsList2d).getY()- point2d.getY())*0.0029;
 					        Point2D ImagePoint = new Point2D.Double(xImageCoords,yImageCoords);
-							wcsPoints.add(new RPoint(ImagePoint));
+							
 						}
 						
-						Tools.wcsToImageCoords(wcsPoints, MainFrame.panel);					
-						for(RPoint point : wcsPoints) {
-							System.out.println("X: " + point.getImagePoint().getX() + " Y: " + point.getImagePoint().getY());
-						}
+						
 						
 					}
-					System.out.println(MainFrame.panel.getSize());
-					System.out.println( poinsList2d.size());
+					//System.out.println(MainFrame.panel.getSize());
+					//System.out.println( poinsList2d.size());
 					
 				}catch (Exception e) {
 						e.printStackTrace();
@@ -166,6 +151,11 @@ public class FileHandler {
 			return FeatureInfo; 
     }
 	 
+	 /**
+	  * Find maximum of array
+	  * @param list list of point
+	  * @return the maximum point
+	  */
 	 public static Point2D findMaxOfArray(List<Point2D> list) {
 			Point2D MaxPoint2d = null;
 				double MaxX = 0;
@@ -190,12 +180,7 @@ public class FileHandler {
 				return MaxPoint2d;
 			}
 	 /**
-
-	  * Sets the transformation parameters
-	  * @param semiMajorAxis the semiMajorAxis to set
-	  * @param semiMinorAxis the semiMinorAxis to set
-
-	  * the method the Image Coordinates
+	  * The method the Image Coordinates
 	  * @param MaxPoint2d
 	  * @param worldCoord
 	  * @return

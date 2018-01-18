@@ -44,9 +44,12 @@ import application_frames.MainFrame;
 import application_frames.SettingsFrame;
 
 /**
- * Panel for drawing items.
- * 
- * Supports simple drawing guides, such as snap and grid.
+ * The class handles all the drawing of features in the application.<br>
+ * It supports simple drawing guides, such as snap and grid and user can undo last drawn feature using
+ * right mouse click.<br>
+ * For drawing features, the edit mode must be turned on.
+ * It highlights feature when selected from the attribute table or using the selection tool.
+ * All coordinates are in image coordinates and does not support zoom.
  * 
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
@@ -65,6 +68,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	/**Snapping mode*/
 	public boolean snappingModeIsOn = false;
 	
+	/**Parameter to turn off/on the vertices of the drawn features*/
 	public boolean displayVertices = true;
 	
 	/**Grid state*/
@@ -139,7 +143,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	/**Graphics font metrics for getting graphic details of strings to*/
 	private FontMetrics g2dFontMetrics;
 	
-	/** Tip following the mouse poistion*/
+	/** Tip following the mouse position*/
 	private TextItem movingMouseTip;
 	
 	/** Text of the mouse tip*/

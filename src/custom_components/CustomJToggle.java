@@ -24,6 +24,10 @@ import application_frames.SettingsFrame;
 public class CustomJToggle extends JButton {
 
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Current state of the button 
+	 */
 	private boolean state = true;
 
 

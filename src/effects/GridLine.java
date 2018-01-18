@@ -8,7 +8,13 @@ import java.awt.geom.Line2D;
  * @since Dec 7, 2017
  */
 public class GridLine {
+	/**
+	 * Current weight of the gird line.
+	 */
 	private int weight = 0;
+	/**
+	 * A single line in the grid
+	 */
 	private Line2D line;
 	
 	/**

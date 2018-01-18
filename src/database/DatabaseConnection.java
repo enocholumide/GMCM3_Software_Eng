@@ -17,7 +17,9 @@ import core_classes.Layer;
  */
 public class DatabaseConnection {
 
-
+	/**
+	 * Connection to the database through which all changes are brokered.
+	 */
     private Connection conn;
     /**
      * String representing the host address where the database is hosted.

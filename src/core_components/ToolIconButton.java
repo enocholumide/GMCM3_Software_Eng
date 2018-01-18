@@ -24,6 +24,9 @@ public class ToolIconButton extends JButton {
 	
 	private static final long serialVersionUID = 1387944835690709531L;
 	
+	/**
+	 * Release the button from pressed state by changing the background
+	 */
 	private boolean buttonReleased = false;
 
 	/**

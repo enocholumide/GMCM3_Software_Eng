@@ -18,6 +18,9 @@ import java.awt.Polygon;
  */
 public class PolygonItem extends Feature {
 	
+	/**
+	 * Shape representing the polygon item
+	 */
 	private Shape shape;
 	
 	/**

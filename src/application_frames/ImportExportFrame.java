@@ -60,6 +60,9 @@ public class ImportExportFrame extends CustomJFrame {
 	    panel.setBackground(Color.WHITE);
 	    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    setResizable(false);
+	    
+	    // Turning off the geoJson loader
+	    geoJsonLoader.setEnabled(false);
 	}
 	
 	/**

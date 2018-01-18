@@ -31,6 +31,9 @@ public class SessionManager {
      * String array representing the names of currently active layers in the table of contents.
      */
     String[] currentActiveLayers;
+    /**
+     * File filter for only selecting .gmcm files.
+     */
     FileNameExtensionFilter sessionFileFilter = new FileNameExtensionFilter("GMCM Application Session Files", "gmcm");
 
     /**
@@ -39,7 +42,7 @@ public class SessionManager {
      */
     public SessionManager(TableOfContents tableOfContents) {
 
-        currentActiveLayers = tableOfContents.getListOfLayersInString();
+        currentActiveLayers = TableOfContents.getListOfLayersInString();
 
     }
 
