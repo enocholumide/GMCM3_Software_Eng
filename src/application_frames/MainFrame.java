@@ -1016,8 +1016,12 @@ public class MainFrame extends CustomJFrame {
 			
 			String datumSelected = group.getSelection().getActionCommand();
 			
-			System.out.println(datumSelected);
-			FileHandler.readFromGeoJson(datumSelected);
+			//System.out.println(datumSelected);
+			Layer layer = new Layer(TableOfContents.getNewLayerID(), true, SettingsFrame.POINT_GEOMETRY, "Test");
+			FileHandler.readFromGeoJson(datumSelected, layer);
+			
+			tableOfContents.addRowLayer(layer);
+			layer.setNotSaved(false);
 			
 		} else {
 			importExportFrame.setVisible(true);
