@@ -10,7 +10,7 @@ public class CSVTester {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Layer layer = new Layer(0, false, "", "");
-		FileHandler.readFromGeoJson("WGS84");
+		FileHandler.readFromGeoJson("WGS84", layer);
 	}
 
 }
