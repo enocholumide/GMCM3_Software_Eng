@@ -36,7 +36,6 @@ import toolset.RPoint;
 import toolset.Tools;
 
 /**
-
  * Class for Import and Export Handling of CSV and GEOJson Files
  * @author Musa Fadul
  * @since  Dec12
@@ -66,14 +65,11 @@ public class FileHandler {
 	    static double radiusOfCurvature ;
 	    static final double scalingFactor = 0.029;
         static  final double center = 200.00;
-    
-       static List<Point2D> poinsList2d = new ArrayList<Point2D>();
-	 
-	  static Point point = null;
-	  private static ArrayList<Point> pointlist = new ArrayList<Point>();
+        static List<Point2D> poinsList2d = new ArrayList<Point2D>();
+	    static Point point = null;
+	    private static ArrayList<Point> pointlist = new ArrayList<Point>();
 	 
 	/**
-
 	 * Read  GeoJson File
 	 * @param SelectedDatum First Datum WGS84 ellipsoid parameter to set
 	 * @return the Feature Info 
@@ -111,38 +107,24 @@ public class FileHandler {
 	 
 				try {
 					 FileReader readfile = new FileReader (saveSession);
-					
 					 Object obj = parser.parse(readfile);
 					 JSONObject jsonObject = (JSONObject) obj;
 					 JSONArray feature =   (JSONArray) jsonObject.get("features");
-					
 					 List<RPoint> wcsPoints = new ArrayList<RPoint>();
-					
 					 for(int i= 0; i<feature.size();i++) {
-						 
-						 String item = feature.get(i).toString();
-						 
-						 int index = item.indexOf("type");
-						 
+						 String item = feature.get(i).toString();						 
+						 int index = item.indexOf("type");						 
 						 System.out.println(item.substring(index+7, index+12));
-						 String type = item.substring(index+7, index+12);
-									
-						int start = (feature.get(i).toString()).indexOf("[");
-						int end = (feature.get(i).toString()).lastIndexOf("]");
+						 String type = item.substring(index+7, index+12);									
+						 int start = (feature.get(i).toString()).indexOf("[");
+						 int end = (feature.get(i).toString()).lastIndexOf("]");
 						
-						String coords = (feature.get(i).toString()).substring(start, end);
+						 String coords = (feature.get(i).toString()).substring(start, end);						
+						 String replacer1 = coords.replace("[", "");
+						 String replacer2 = replacer1.replace("]", "");					
+						 String[] coordsString = replacer2.split(",");
 						
-						String replacer1 = coords.replace("[", "");
-						String replacer2 = replacer1.replace("]", "");					
-						String[] coordsString = replacer2.split(",");
-						
-						
-						//if(type.equals("Polyg")) {
-							
-							//Path2D path = new Path2D.Double();
-							layer.setLayerType(SettingsFrame.POLYGON_GEOMETRY);
-							
-							
+							layer.setLayerType(SettingsFrame.POLYGON_GEOMETRY);							
 							List<Rectangle2D> pointList = new ArrayList<Rectangle2D>();
 							
 						    for(int j = 0 ; j < coordsString.length - 1; j++) {
@@ -237,16 +219,11 @@ public class FileHandler {
 	    			 
 	    			  XimageCor =  (MaxPoint2d.getX()-point1.getX());
 	    			 Yimagecor  =  (MaxPoint2d.getY()-point1.getY());
-	    			 point = new Point2D.Double(XimageCor, Yimagecor);
-	     	   
-	    	     }
-	    	
-	    		   
+	    			 point = new Point2D.Double(XimageCor, Yimagecor);   
+	    	     }  		   
 	    	 }
 	    	
-	    	
 			return MaxPoint2d;
-	    
 	    }
 	 /**
 	  * setting transformation parameter
@@ -264,9 +241,6 @@ public class FileHandler {
 	    	inverseFlattening = 1/ ((SemiMajorAxis - SemiMinorAxis)/SemiMajorAxis ) ;
 	    	
 	    }
-		 
-		 
-	     
 		 /**
 		  * Reads PolylineFeatures from a CSV file.
 		  * @param spliter the split character so set
@@ -308,8 +282,7 @@ public class FileHandler {
 		  * @return the PolygonInfo PolygonItem
 		  */
 		private static PolygonItem readPolygonFeature(String[] spliter) {
-			PolygonItem PolygonInfor = null;
-			// TODO Auto-generated method stub
+			   PolygonItem PolygonInfor = null;			
 		       int i;
 		       int j ;
 		       int xcoord1 =0;
@@ -322,7 +295,7 @@ public class FileHandler {
 				     String isellipse = spliter[2];			 
 			   	     String []strxcoord = sprx.split(",");
 			   	     String []strycoord = spry.split(",");
-			   	
+	
 		   		     for( i=0;i<strxcoord.length; i++) {
 		   				xcoord1 = (int) Double.parseDouble(strxcoord[i]);
 		   			    ycoord1 = (int) Double.parseDouble(strycoord[i]);
@@ -345,32 +318,32 @@ public class FileHandler {
 
 		  */
 		 public static PointItem readPointFeature(String[] spliter) {
-			 PointItem PointInfo = null;
-			 int id = 0 ;
-			 try {
-				 
-				 String iid = spliter[0];
-				 String type = spliter[1];
-				 String isellipse = spliter[2];
-				 id = Integer.parseInt(iid);
-		       	 double a =  Double.parseDouble(spliter[3]);
-		       	 double b =  Double.parseDouble(spliter[4]);
-		       	 int xcoord= (int) a;
-		         int ycoord = (int) b;
-		         point = new Point(xcoord,ycoord);
-			     Ellipse2D ellipse = new Ellipse2D.Double(xcoord, ycoord, 10, 10);
-			     System.out.println(ellipse);
-			     pointlist.add(point);
-			    
+				 PointItem PointInfo = null;
+				 int id = 0 ;
+				 try {
+					 
+					 String iid = spliter[0];
+					 String type = spliter[1];
+					 String isellipse = spliter[2];
+					 id = Integer.parseInt(iid);
+			       	 double a =  Double.parseDouble(spliter[3]);
+			       	 double b =  Double.parseDouble(spliter[4]);
+			       	 int xcoord= (int) a;
+			         int ycoord = (int) b;
+			         point = new Point(xcoord,ycoord);
+				     Ellipse2D ellipse = new Ellipse2D.Double(xcoord, ycoord, 10, 10);
+				     System.out.println(ellipse);
+				     pointlist.add(point);
+				    
+					
+					 
+				 }catch(Exception e) {
+					 e.printStackTrace();
+				 }
+				 PointInfo = new PointItem (id , point);
+				 return PointInfo;
 				
-				 
-			 }catch(Exception e) {
-				 e.printStackTrace();
-			 }
-			 PointInfo = new PointItem (id , point);
-			 return PointInfo;
-			
-		}
+			}
   
 	 	/**
 	 	 * Reads a CSV File
@@ -379,75 +352,55 @@ public class FileHandler {
 	 	 * @return null
 	 	 * @throws IOException throws an IOException
 	 	 */
-		 public static Feature readFromCSV(Layer newLayer, String geomSelected) throws IOException {
+		 public static Feature readFromCSV(Layer newLayer, String geomSelected) throws IOException {  	  
+				 Feature FeatureInfo = null;			 
+			     JFileChooser CSVFile = new JFileChooser ();
+			     int geoJsonReturnValu = CSVFile.showOpenDialog(MainFrame.panel);
+			     File file = CSVFile.getSelectedFile();
+		         JSONParser parser = new JSONParser();  
+		         if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {     
+				       FileReader filereader = null;
+				       BufferedReader bfreader = null;
+				
+			          try {	  
+						        	  
+			        	  filereader = new FileReader(file);
+			        	  bfreader = new BufferedReader(filereader);				         
+				          String line;
+				          int count = 0;				          
+				          while((line = bfreader.readLine()) != null) {
+				        	  if(count > 0) {				        		  					        	  String [] splitedline= line.split(";");
+					        	  if(splitedline.length > 6) {
+	
+						        	  String layerType = splitedline[1];
+						        	  boolean isEllipse = Boolean.valueOf(splitedline[2].toLowerCase());
+						        	  Double aX[] = Tools.copyFromStringArray(splitedline[3].split(","));
+						   	   	      Double aY[] = Tools.copyFromStringArray(splitedline[4].split(","));
+						   	   	      double rx = Double.parseDouble(splitedline[5]);
+						   	   	      double ry = Double.parseDouble(splitedline[6]);
+						   		      
+							   	   	if(geomSelected.toUpperCase().equals(layerType.toUpperCase())) {
+							   	   		MainFrame.createFeatureFromResultSet(newLayer, layerType, isEllipse, aX, aY, rx, ry);
+							   	   	}
+					        	} 
+				        	  }
+				        	  
+				        	  count++;
+				          } // while close 
 			 
-	       	  
-			 Feature FeatureInfo = null;
-			 
-		     JFileChooser CSVFile = new JFileChooser ();
-		     int geoJsonReturnValu = CSVFile.showOpenDialog(MainFrame.panel);
-		     File file = CSVFile.getSelectedFile();
-	         JSONParser parser = new JSONParser();
-	     
-	       if (geoJsonReturnValu == JFileChooser.APPROVE_OPTION) {
-	            
-		       FileReader filereader = null;
-
-		       BufferedReader bfreader = null;
-			      
-		       
-			       
-
-		         // Reading the  CSV file 
-
-    
-		          try {	  
-
-		        	  
-		        	  filereader = new FileReader(file);
-		        	  bfreader = new BufferedReader(filereader);
-			         
-			          String line;
-			          int count = 0;
+			       }catch(IOException e){
+			        	  e.printStackTrace();
+			        	  
+			        	  
+			      }finally {
+			        	  filereader.close();
+			          }
 			          
-			          while((line = bfreader.readLine()) != null) {
-			        	  
-			        	// skip the first line
-			        	  if(count > 0) {
-			        		  
-				        	  String [] splitedline= line.split(";");
-				        	  if(splitedline.length > 6) {
-				        		  
-					        	  String layerType = splitedline[1];
-					        	  boolean isEllipse = Boolean.valueOf(splitedline[2].toLowerCase());
-					        	  Double aX[] = Tools.copyFromStringArray(splitedline[3].split(","));
-					   	   	      Double aY[] = Tools.copyFromStringArray(splitedline[4].split(","));
-					   	   	      double rx = Double.parseDouble(splitedline[5]);
-					   	   	      double ry = Double.parseDouble(splitedline[6]);
-					   	   	      
-					   	   	      
-						   	   	if(geomSelected.toUpperCase().equals(layerType.toUpperCase())) {
-						   	   		MainFrame.createFeatureFromResultSet(newLayer, layerType, isEllipse, aX, aY, rx, ry);
-						   	   	}
-				        	} 
-			        	  }
-			        	  
-			        	  count++;
-			          } // while close 
-		 
-		       }catch(IOException e){
-		        	  e.printStackTrace();
-		        	  
-		        	  
-		      }finally {
-		        	  filereader.close();
-		          }
-		          
-	       }        
-		          
-				return null;
-	               
-	   }
+		       }        
+			          
+					return null;
+		               
+		   }
 
 	/**
 	 * Writs Layers to a CSV File 	 
