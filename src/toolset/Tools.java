@@ -1,5 +1,6 @@
 package toolset;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.Line2D;
@@ -15,13 +16,14 @@ import core_components.DrawingJPanel;
 
 /**
  * Class which contains miscellaneous utilities used throughout the application.
- * @author 
- * @since
+ * @author Olumide Igbiloba
+ * @since Dec 7, 2017
  * @version 1
  */
 public class Tools {
 	
 	public static double maxX, maxY, minX, minY;
+	private static Random rand = new Random();
 	
 	/**
 	 * Returns true if the a Point lies on a Line
@@ -42,6 +44,18 @@ public class Tools {
 			return true;
 		}
 		return false;
+	}
+	
+	public static Color getRandomColor() {
+		
+		// Java 'Color' class takes 3 floats, from 0 to 1.
+		float r = rand.nextFloat();
+		float g = rand.nextFloat();
+		float b = rand.nextFloat();
+
+		Color randomColor = new Color(r, g, b);
+		
+		return randomColor;
 	}
 
 	/**

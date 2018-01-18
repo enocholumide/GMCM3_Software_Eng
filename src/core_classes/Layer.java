@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import application_frames.SettingsFrame;
+import toolset.Tools;
 
 /**
  * Defines the structure of a layer in the system.<br>
@@ -72,6 +73,7 @@ public class Layer  {
 		this.layerType = layerType;
 		this.tableData = new Object[] {isVisible, layerType, layerName, "", id};
 		
+		setLayerColor(Tools.getRandomColor());
 	}
 	
 	/**
