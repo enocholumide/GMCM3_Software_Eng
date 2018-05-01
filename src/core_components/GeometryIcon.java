@@ -1,5 +1,6 @@
 package core_components;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -34,6 +35,8 @@ public class GeometryIcon extends JPanel {
 	 */
 	private String geometryType ="";
 	
+	private Layer layer;
+	
 	/**
 	 * Creates the GeometryTableIcon
 	 */
@@ -55,7 +58,8 @@ public class GeometryIcon extends JPanel {
 	 * @param layer the layer to set
 	 */
 	public void setLayer(Layer layer) {
-		this.color = layer.getLayerColor();
+		this.layer = layer;
+		this.color = layer.getFillColor();
 		this.geometryType = layer.getLayerType();
 		MainFrame.panel.repaint();
 		repaint();
@@ -86,7 +90,17 @@ public class GeometryIcon extends JPanel {
 			Rectangle bounds = new Rectangle (getWidth(), getHeight());
 			
 			if(geometryType.equals(SettingsFrame.POLYGON_GEOMETRY)) {
+				
+				Color c = layer.getFillColor();
+				g2D.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), layer.getTransparencyLevel()));
 				g2D.fill(new Rectangle2D.Double(bounds.getCenterX() - (25/2), bounds.getCenterY() - (20/2), 25, 20));
+				
+				if(layer != null) {
+					g2D.setColor(layer.getOutlineColor());
+					g2D.setStroke(new BasicStroke(layer.getLineWeight()));
+					g2D.draw(new Rectangle2D.Double(bounds.getCenterX() - (25/2), bounds.getCenterY() - (20/2), 25, 20));
+				}
+				
 			}
 			
 			if(geometryType.equals(SettingsFrame.POINT_GEOMETRY)) {

@@ -80,17 +80,7 @@ public class LayerNameEditor extends DefaultCellEditor implements CellEditorList
 		// 1. Check if there is a difference between the old name and the new name, if there us a difference:
 		if(!this.oldValue.equals(newValue)) {
 			
-			boolean changedNameDoesNotExistsInTable = true;
-			int count = 0;
-			for(String name : TableOfContents.getListOfLayersInString()) {
-				if(count != row) {
-					if(name.equals(newValue)) {
-						changedNameDoesNotExistsInTable = false;
-						break;
-					}
-				}
-				count++;
-			}
+			boolean changedNameDoesNotExistsInTable = MainFrame.tableOfContents.validateLayer(newValue);
 			
 			if(changedNameDoesNotExistsInTable) {
 			
@@ -158,5 +148,7 @@ public class LayerNameEditor extends DefaultCellEditor implements CellEditorList
 				MainFrame.tableOfContents.getModel().setValueAt(oldValue, row, TableOfContents.LAYER_NAME_COL_INDEX);
 			}
 		}
+		
+		MainFrame.updateLayerComboBoxModel(TableOfContents.getListOfLayersInString());
 	}
 }

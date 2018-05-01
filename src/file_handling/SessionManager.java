@@ -110,8 +110,8 @@ public class SessionManager {
 			// Write the relevant properties of each layer
         	for(Layer layer : TableOfContents.layerList) {
         		MainFrame.saveLayerToDB(layer);
-        		sessionWriter.write(layer.getLayerName() + " "  + layer.getLayerColor().getRed() + " "
-						+ layer.getLayerColor().getGreen() + " "  + layer.getLayerColor().getBlue() + " "
+        		sessionWriter.write(layer.getLayerName() + " "  + layer.getFillColor().getRed() + " "
+						+ layer.getFillColor().getGreen() + " "  + layer.getFillColor().getBlue() + " "
 						+ layer.isVisible() +  "\n");
         	}
         	sessionWriter.close();
@@ -299,7 +299,7 @@ public class SessionManager {
 						Layer newLayer = MainFrame.createLayerFromResultSet(layerContents, layerName);
 
 						// set layer properties from blueprints (name is already set from createLayerFromResultSet
-						newLayer.setLayerColor(layerColor);
+						newLayer.setFillColor(layerColor);
 						newLayer.setVisible(layerVisible);
 
 						// Check or uncheck the checkbox indicating layer visibility

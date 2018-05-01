@@ -25,6 +25,7 @@ import toolset.Tools;
 
 import javax.swing.border.EmptyBorder;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.*;
@@ -39,6 +40,8 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -206,9 +209,10 @@ public class MainFrame extends CustomJFrame {
 		setVisible(true);
 		
 		// Set title
-		setTitle("GMCM3 Software Engineering (Group 1), Geomatics, Karlsruhe University of Applied Sciences (HsKA)");
+		setTitle("Exploring Java's Swing for a GIS/CAD Application");
 		
 		// Position at the middle of the screen
+		
 		setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - SettingsFrame.MAINFRAME_SIZE.width) / 2, 
 				SettingsFrame.window.y + (SettingsFrame.window.height - SettingsFrame.MAINFRAME_SIZE.height) / 2,
 				SettingsFrame.MAINFRAME_SIZE.width,
@@ -249,7 +253,7 @@ public class MainFrame extends CustomJFrame {
 		projectName.setFont(new Font("Tahoma", Font.BOLD, 18));
 		projectName.setColumns(10);
 		
-		JLabel lblTableOfContents = new JLabel("Table of contents");
+		JLabel lblTableOfContents = new JLabel("Contents");
 		lblTableOfContents.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTableOfContents.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		
@@ -258,6 +262,21 @@ public class MainFrame extends CustomJFrame {
 		// Table of contents inside a J scroll pane
 		tableOfContents = new TableOfContents();
 		JScrollPane scrollPane2 = new JScrollPane(tableOfContents);
+		
+		ToolIconButton layerUp = new ToolIconButton("Files", "/images/up.png", 10, 10);
+		layerUp.setToolTipText("Open previous projects");
+		
+		layerUp.addActionListener( new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				tableOfContents.moveRow(-1);
+			}
+		});
+		
+		ToolIconButton layerDown = new ToolIconButton("Files", "/images/down.png", 10, 10);
+		layerDown.setToolTipText("Open previous projects");
 		GroupLayout gl_sidePanel = new GroupLayout(sidePanel);
 		gl_sidePanel.setHorizontalGroup(
 			gl_sidePanel.createParallelGroup(Alignment.LEADING)
@@ -266,7 +285,13 @@ public class MainFrame extends CustomJFrame {
 					.addComponent(label)
 					.addContainerGap())
 				.addComponent(projectName, GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
-				.addComponent(lblTableOfContents, GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+				.addGroup(gl_sidePanel.createSequentialGroup()
+					.addComponent(lblTableOfContents, GroupLayout.PREFERRED_SIZE, 81, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+					.addComponent(layerUp, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(layerDown, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap())
 				.addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
 		);
 		gl_sidePanel.setVerticalGroup(
@@ -278,11 +303,23 @@ public class MainFrame extends CustomJFrame {
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(projectName, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblTableOfContents, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE))
+					.addGroup(gl_sidePanel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblTableOfContents, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+						.addComponent(layerDown, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+						.addComponent(layerUp, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrollPane2, GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE))
 		);
 		sidePanel.setLayout(gl_sidePanel);
+		
+		layerDown.addActionListener( new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				tableOfContents.moveRow(+1);
+			}
+		});
 		
 		JPanel toolBar = new JPanel();
 		toolBar.setBackground(Color.WHITE);
@@ -525,7 +562,7 @@ public class MainFrame extends CustomJFrame {
 		);
 		toolBar.setLayout(gl_toolBar);
 		rightPanel.setLayout(gl_rightPanel);
-		splitPane.setDividerLocation((int)(getBounds().width / 8));
+		splitPane.setDividerLocation((int)(getBounds().width / 8 + 5));
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -592,10 +629,12 @@ public class MainFrame extends CustomJFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				/**
 				if(!panel.editModeIsOn) {
 					log("Attempted to delete feature, but edit mode is off");
 					panel.showAnimatedHint("Edit mode if off", SettingsFrame.DEFAULT_ERROR_COLOR);
 				} else
+				*/
 					panel.deleteSelectedItem();
 			}
 		});
@@ -1016,12 +1055,8 @@ public class MainFrame extends CustomJFrame {
 			
 			String datumSelected = group.getSelection().getActionCommand();
 			
-			//System.out.println(datumSelected);
-			Layer layer = new Layer(TableOfContents.getNewLayerID(), true, SettingsFrame.POINT_GEOMETRY, "Test");
-			FileHandler.readFromGeoJson(datumSelected, layer);
-			
-			tableOfContents.addRowLayer(layer);
-			layer.setNotSaved(false);
+			System.out.println(datumSelected);
+			FileHandler.readFromGeoJson(datumSelected);
 			
 		} else {
 			importExportFrame.setVisible(true);
@@ -1235,9 +1270,9 @@ public class MainFrame extends CustomJFrame {
  			  }
  		   }
 			
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			
-			e.printStackTrace();
+			//e.printStackTrace();
 			
 			panel.showAnimatedHint("Something went wrong /n Cannot save to DB", SettingsFrame.DEFAULT_ERROR_COLOR);
 			log(e.getMessage());

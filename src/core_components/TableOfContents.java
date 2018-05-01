@@ -8,6 +8,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JMenuItem;
@@ -20,6 +21,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import application_frames.AttributeTableFrame;
 import application_frames.MainFrame;
+import application_frames.PropertiesFrame;
 import core_classes.Layer;
 import renderers_and_editors.GeometryPanelEditor;
 import renderers_and_editors.GeometryTableIconRenderer;
@@ -53,6 +55,9 @@ public class TableOfContents extends JTable {
 	
 	/**The index of the layer id at the table model*/
 	public static final int LAYER_VISIBILTY_COL_INDEX = 0;
+	
+	/**The index of the layer icon for updating purposes*/
+	public static final int LAYER_ICON_COL_INDEX = 1;
 	
 	/**The index of the layer id at the table model*/
 	public static final int LAYER_NAME_COL_INDEX = 2;
@@ -113,9 +118,67 @@ public class TableOfContents extends JTable {
 		if(e.getColumn() == LAYER_NAME_COL_INDEX) {
 			//
 			// Rename layer
+			//MainFrame.updateLayerComboBoxModel(getListOfLayersInString());
 		}
 	}
 	
+	public void moveRow(int by) {
+		
+		try {
+			
+			// Get the current table model
+		    DefaultTableModel model = (DefaultTableModel) getModel();
+		    
+		    // Get the selected rows
+		    int[] rows = getSelectedRows();
+		    
+		    //
+		    int destination = rows[0] + by;
+		    
+		    int rowCount = model.getRowCount();
+	
+		    if (destination < 0 || destination >= rowCount)
+		    {
+		        return;
+		    }
+	
+		    model.moveRow(rows[0], rows[rows.length - 1], destination);
+		    setRowSelectionInterval(rows[0] + by, rows[rows.length - 1] + by);
+		    
+		    
+		    // Change the rendering index of the layers
+		    for(int i = 0; i < model.getRowCount(); i++) {
+		    	
+				int layerID = (int) (getValueAt(i, LAYER_ID_COL_INDEX));
+				Layer layer = findLayerWithID(layerID);
+				layer.setRenderingIndex(i);	
+		    }
+		    
+		    sortLayerList();
+	
+		    
+		} catch (ArrayIndexOutOfBoundsException e) {
+			
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void sortLayerList() {
+		// Sort the list based on the new rendering index
+	    Collections.sort(
+				layerList,
+                (layer1, layer2) -> layer1.getRenderingIndex()
+                        - layer2.getRenderingIndex());
+	    
+	    // Update the combo box model
+	 	MainFrame.updateLayerComboBoxModel( getListOfLayersInString());
+	 	
+	 	Collections.reverse(layerList);
+		
+	}
+
 	/**
 	 * Attaches popup menu to the table
 	 */
@@ -125,26 +188,35 @@ public class TableOfContents extends JTable {
 		menu = new JPopupMenu();
 		
 		JMenuItem attributeTable  = new JMenuItem ("Open attribute table");
+		JMenuItem properties  = new JMenuItem ("Properties");
 		
 		attributeTable.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Component c = (Component) e.getSource();
-				JPopupMenu popup = (JPopupMenu) c.getParent();
-				JTable table = (JTable) popup.getInvoker();
-				int layerID = (int) (table.getValueAt(table.getSelectedRow(), LAYER_ID_COL_INDEX));
 				
-				Layer layer = findLayerWithID(layerID);
-				
-				System.out.println(layer.getLayerType() + " " + layer.getLayerName());
-				
+				Layer layer = getLayerFromTableClick(e);
+								
 				new AttributeTableFrame(layer).setVisible(true);
 			
 			}
 		});
 		
+		properties.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				Layer layer = getLayerFromTableClick(e);
+				
+				new PropertiesFrame(layer).setVisible(true);;
+			
+			}
+		});
+		
+		
 		menu.add(attributeTable);
+		menu.add(properties);
 		
 		menu.addFocusListener(new FocusListener() {
 			
@@ -159,6 +231,18 @@ public class TableOfContents extends JTable {
 		});
 	}
 	
+	protected Layer getLayerFromTableClick(ActionEvent e) {
+		
+		Component c = (Component) e.getSource();
+		JPopupMenu popup = (JPopupMenu) c.getParent();
+		JTable table = (JTable) popup.getInvoker();
+		int layerID = (int) (table.getValueAt(table.getSelectedRow(), LAYER_ID_COL_INDEX));
+		
+		Layer layer = findLayerWithID(layerID);
+		
+		return layer;
+	}
+
 	/**
 	 * Handles the Layer Visibility from a Click
 	 * @param e the TableModelEvent to set
@@ -275,7 +359,7 @@ public class TableOfContents extends JTable {
 		
 		// Validate layer
 		
-		if(validateLayer(layer)) {
+		if(validateLayer(layer.getLayerName())) {
 		
 			// Add to the layer list
 			layerList.add(layer);
@@ -286,8 +370,8 @@ public class TableOfContents extends JTable {
 			// Increase the layer id
 			layerID++;
 			
-			// Update the combo box model
-			MainFrame.updateLayerComboBoxModel( getListOfLayersInString() );
+			// Update the rendering view of the layers
+			sortLayerList();
 			
 			return true;
 			
@@ -303,10 +387,10 @@ public class TableOfContents extends JTable {
 	 * @param layer the layer to set
 	 * @return false is layer name already exist
 	 */
-	public boolean validateLayer(Layer layer) {
+	public boolean validateLayer(String layerName) {
 
 		for(String existingLayerNames : getListOfLayersInString()) {
-			if(existingLayerNames.equals(layer.getLayerName())) {
+			if(existingLayerNames.equals(layerName)) {
 				return false;
 			}
 		}
@@ -402,5 +486,18 @@ public class TableOfContents extends JTable {
 		}
 		
 		return layerNames;
+	}
+	
+	/**
+	 * 
+	 * @param row
+	 * @param col
+	 */
+	public static void updateTableCell(int row, int col) {
+		
+		DefaultTableModel model = (DefaultTableModel) MainFrame.tableOfContents.getModel();
+		model.fireTableCellUpdated(row, col);
+		MainFrame.tableOfContents.repaint();
+		
 	}
 }
