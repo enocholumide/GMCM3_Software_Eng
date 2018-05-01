@@ -3,7 +3,6 @@ package file_handling;
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,15 +18,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.sun.javafx.geom.Rectangle;
-
 import application_frames.MainFrame;
 import core_classes.Feature;
 import core_classes.Layer;
-
-import core_components.DrawingJPanel;
-import core_components.TableOfContents;
-
 import features.PointItem;
 import features.PolygonItem;
 import features.PolylineItem;
@@ -37,7 +30,7 @@ import toolset.Tools;
 
  * Class for Import and Export Handling of CSV and GEOJson Files
  * @author Musa Fadul
- * @since  Dec12
+ * @since
  * @version 1
  */
 
@@ -62,23 +55,22 @@ public class FileHandler {
 		static double inverseFlattening;
 		static double semiMajorAxisForCurvature ;
 	    static double radiusOfCurvature ;
-	    static final double scalingFactor = 0.029;
     
     
-       static List<Point2D> poinsList2d = new ArrayList<Point2D>();
-	 
-	  static Point point = null;
-	  private static ArrayList<Point> pointlist = new ArrayList<Point>();
+    static List<Point2D> poinsList2d = new ArrayList<Point2D>();
+	
+	 static Point point = null;
+	 private static ArrayList<Point> pointlist = new ArrayList<Point>();
 	 
 	/**
 	 * Read  GeoJson File
 	 * @param SelectedDatum First Datum WGS84 ellipsoid parameter to set
 	 * @return the Feature Info 
 	 */
-	 public static void  readFromGeoJson(String SelectedDatum, Layer layer) {
+	 public static Feature readFromGeoJson(String SelectedDatum) {
 		 String slectedDatum = SelectedDatum;
 		 
-		
+		// tesing the sected datum 
 	     if(slectedDatum.equals("WGS84")) {
 	    	 
 			setParametr(semiMajorAxisWGS84, semiMinorAxisWGS84); 
@@ -106,17 +98,11 @@ public class FileHandler {
 					
 					 Object obj = parser.parse(readfile);
 					 JSONObject jsonObject = (JSONObject) obj;
-					 JSONArray feature =   (JSONArray) jsonObject.get("features");
+					 JSONArray feature = (JSONArray) jsonObject.get("features");
+					 String id = (String) jsonObject.get("type");
 					
 					
 					 for(int i= 0; i<feature.size();i++) {
-						 
-						 String item = feature.get(i).toString();
-						 
-						 int index = item.indexOf("type");
-						 
-						 System.out.println(item.substring(index+7, index+12));
-						 String type = item.substring(index+7, index+12);
 									
 						int start = (feature.get(i).toString()).indexOf("[");
 						int end = (feature.get(i).toString()).lastIndexOf("]");
@@ -128,10 +114,18 @@ public class FileHandler {
 						String[] coordsString = replacer2.split(",");
 						
 						
-						//if(type.equals("Polyg")) {
+						
+					    for(int j = 0 ; j < coordsString.length - 1; j++) {
+											
+							double latitude = Double.parseDouble(coordsString[j]);
+							double longitude = Double.parseDouble(coordsString[j+1]);
 							
-							//Path2D path = new Path2D.Double();
-							layer.setLayerType(SettingsFrame.POLYGON_GEOMETRY);
+							double latitudeInDegree = latitude * Math.PI / 180;
+							double longitudeInDegree = longitude * Math.PI / 180;
+											
+							radiusOfCurvature = (semiMajorAxisForCurvature)/(Math.sqrt(1-(eccentrycitysquare*Math.sin(latitudeInDegree))));
+							double xWordCoord =  (radiusOfCurvature + sllipsoidalHeight ) * Math.cos(latitudeInDegree)*Math.cos(longitudeInDegree);
+							double yWordCoord = (radiusOfCurvature + sllipsoidalHeight) * Math.cos(latitudeInDegree)*Math.sin(longitudeInDegree);
 							
 						    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
 						    // world coordinates must be converted to image coordinates
@@ -147,49 +141,6 @@ public class FileHandler {
 					}
 					//System.out.println(MainFrame.panel.getSize());
 					//System.out.println( poinsList2d.size());
-							
-							List<Rectangle2D> pointList = new ArrayList<Rectangle2D>();
-							
-						    for(int j = 0 ; j < coordsString.length - 1; j++) {
-												
-								double latitude = Double.parseDouble(coordsString[j]);
-								double longitude = Double.parseDouble(coordsString[j+1]);
-								
-								double latitudeInDegree = latitude * Math.PI / 180;
-								double longitudeInDegree = longitude * Math.PI / 180;
-												
-								radiusOfCurvature = (semiMajorAxisForCurvature)/(Math.sqrt(1-(eccentrycitysquare*Math.sin(latitudeInDegree))));
-								double xWordCoord =  (radiusOfCurvature + sllipsoidalHeight ) * Math.cos(latitudeInDegree)*Math.cos(longitudeInDegree);
-								double yWordCoord = (radiusOfCurvature + sllipsoidalHeight) * Math.cos(latitudeInDegree)*Math.sin(longitudeInDegree);
-								
-							    Point2D point2d = new Point2D.Double(xWordCoord, yWordCoord);	
-							    // world coordinates must be converted to image coordinates
-							    poinsList2d.add(point2d);
-							    double xImageCoords = (findMaxOfArray(poinsList2d).getX()- point2d.getX())*scalingFactor;
-							    double yImageCoords = (findMaxOfArray(poinsList2d).getY()- point2d.getY())*scalingFactor;
-						        Point2D ImagePoint = new Point2D.Double(xImageCoords,yImageCoords);
-						        System.out.println(ImagePoint);
-			
-						        Feature point  = new PointItem(layer.getNextFeatureID(), ImagePoint);
-								point.setFeatureType(SettingsFrame.POINT_GEOMETRY);
-								point.setLayerID(layer.getId());
-								point.setShape(new Ellipse2D.Double(xImageCoords + SettingsFrame.POINT_SIZE/2,
-										yImageCoords + SettingsFrame.POINT_SIZE/2,
-										SettingsFrame.POINT_SIZE, SettingsFrame.POINT_SIZE));
-								Rectangle2D vertex = new Rectangle2D.Double(xImageCoords - SettingsFrame.GRID_MM/2,
-										yImageCoords - SettingsFrame.GRID_MM/2,
-										SettingsFrame.GRID_MM, SettingsFrame.GRID_MM);
-								point.getVertices().add(vertex);
-								
-								layer.getListOfFeatures().add(point);
-							}
-						    
-						    MainFrame.panel.finishPath(pointList, layer);
-						    
-						}
-				
-					//}
-					
 					
 				}catch (Exception e) {
 						e.printStackTrace();
@@ -197,6 +148,7 @@ public class FileHandler {
 						
 					}
 		        }
+			return FeatureInfo; 
     }
 	 
 	 /**
