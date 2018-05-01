@@ -1,13 +1,12 @@
 package renderers_and_editors;
 
-import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.DefaultCellEditor;
-import javax.swing.JColorChooser;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
+import application_frames.PropertiesFrame;
 import core_classes.Layer;
 import core_components.GeometryIcon;
 import core_components.TableOfContents;
@@ -55,10 +54,15 @@ public class GeometryPanelEditor extends DefaultCellEditor {
 		int id = (int) table.getModel().getValueAt(row, 4);
 		Layer layer = TableOfContents.findLayerWithID(id);
 		
-		Color color = JColorChooser.showDialog(null, "Set Layer Color",layer.getLayerColor());
+		/**
+		Color color = JColorChooser.showDialog(null, "Set Layer Color",layer.getFillColor());
 		if(color != null) {
-			layer.setLayerColor(color);
+			layer.setFillColor(color);
 		}
+		*/
+		
+		new PropertiesFrame(layer).setVisible(true);;
+		
 		panel.setLayer(layer);
 		
 		return panel;

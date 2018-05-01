@@ -125,6 +125,8 @@ public class SettingsFrame {
 			} 
 		});
 		
+		SettingsFrame.window = getWindow();
+		
 		frame.setBounds(SettingsFrame.window.x  + (SettingsFrame.window.width - 1210) / 2, 
 				SettingsFrame.window.y + (SettingsFrame.window.height - 735) / 2,
 				1210, 
@@ -531,7 +533,7 @@ public class SettingsFrame {
 		lblGI.setBounds(10, 89, 131, 28);
 		drawingSettingsSubPanel.add(lblGI);
 		
-		snapSizeSpinner = new JSpinner(new SpinnerNumberModel(10, 10, 20, 1));
+		snapSizeSpinner = new JSpinner(new SpinnerNumberModel(SettingsFrame.SNAP_SIZE, 10, 20, 1));
 		snapSizeSpinner.setBounds(140, 89, 36, 28);
 		drawingSettingsSubPanel.add(snapSizeSpinner);
 		
@@ -733,14 +735,17 @@ public class SettingsFrame {
 	 * Returns the Window
 	 * @return the window
 	 */
-	private static Rectangle getWindow() {
+	public static Rectangle getWindow() {
 		
 		int screen = 0;
 		if(monitorSpinner.getValue().toString() != null) {
 			screen = Integer.parseInt(monitorSpinner.getValue().toString()) - 1;
 		}
 		
-		return gs[screen].getDefaultConfiguration().getBounds();
+		Rectangle rec = gs[screen].getDefaultConfiguration().getBounds();
+		
+		
+		return rec;
 		
 	}
 
@@ -840,7 +845,7 @@ public class SettingsFrame {
 	
 	// Drawing settings
 	public static int GRID_MM = 5;
-	public static int SNAP_SIZE = 20;
+	public static int SNAP_SIZE = 10;
 	public static int GRID_MAJOR_INTERVAL = GRID_MM;
 	public static int cursorSize = 25;
 
@@ -858,7 +863,7 @@ public class SettingsFrame {
 	public static final String FINISH_POLYLINE_MESSAGE = "Double click the last point to finish drawing the polyline";
 	public static final String DEFAULT_MOUSE_TIP = "Click the last point to finish shape";
 
-	public static final int DEFAULT_LAYER_LINE_WEIGHT = 3;
+	public static final int DEFAULT_LAYER_LINE_WEIGHT = 1;
 	public static final int TRANSPARENCY_LEVEL_1 = 180;
 	public static final int TRANSPARENCY_LEVEL_2 = 100;
 	public static final int TOOL_TIP_PADDING = 5;
@@ -891,6 +896,7 @@ public class SettingsFrame {
 	public static final int MONITOR_SCREEN = 1;
 	public static final Dimension MAINFRAME_SIZE = new Dimension(1366, 768);
 	public static final int FONT_SIZE = 15;
+	public static final int DEFAULT_LAYER_TRANSPARENCY_LEVEL = 100;
 
 	
 	public static JTextField txtNewlayer;

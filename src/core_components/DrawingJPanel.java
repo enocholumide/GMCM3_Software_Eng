@@ -213,10 +213,10 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			// 2. Render the layers in the table of contents
 			// ----------------------------------------------
 			for(Layer layer : TableOfContents.layerList) {
-				
+								
 				if(layer.isVisible()) {
 					
-					Color c = layer.getLayerColor();
+					Color c = layer.getFillColor();
 					
 					for(Feature feature : layer.getListOfFeatures()) {
 						
@@ -227,19 +227,20 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 							} 
 							
 							else if (!feature.isHighlighted()) {
-								c = layer.getLayerColor();
+								c = layer.getFillColor();
 							}
 							
 							if (!layer.getLayerType().equals(SettingsFrame.POINT_GEOMETRY)) {
 							
 								if(layer.getLayerType().equals(SettingsFrame.POLYGON_GEOMETRY)) {
 									// Fill the shape
-									g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 100));
+									g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), layer.getTransparencyLevel()));
 									g2d.fill(feature.getShape());
+									
 								}
 								
 								// Draw only outline for non-polygon shapes
-								g2d.setColor(c);
+								g2d.setColor(layer.getOutlineColor());
 								g2d.setStroke(new BasicStroke(layer.getLineWeight()));
 								g2d.draw(feature.getShape());
 								
@@ -266,6 +267,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 								PointItem point = (PointItem) feature;
 								g2d.setColor(c);
 								g2d.fill(point.getShape());
+			
 							}
 						}
 					}
@@ -276,7 +278,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			// -------------------------------
 			for(Line2D line : this.tempLine) {
 				g2d.setStroke(new BasicStroke(currentLayer.getLineWeight()));
-				g2d.setColor(currentLayer.getLayerColor());
+				g2d.setColor(currentLayer.getFillColor());
 				g2d.draw(line);
 			}
 			
@@ -284,7 +286,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			// ---------------------------------------------------
 			if(tempShape != null) {
 				
-				Color c = currentLayer.getLayerColor();
+				Color c = currentLayer.getFillColor();
 				Stroke stroke = new BasicStroke(currentLayer.getLineWeight());
 				
 				g2d.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 100));
@@ -324,7 +326,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 			int count = 0;
 			for(Rectangle2D item : this.vertexList) {
 				
-				g2d.setColor(currentLayer.getLayerColor());
+				g2d.setColor(currentLayer.getFillColor());
 				
 				if(count == 0) {
 					g2d.setColor(SettingsFrame.HIGHLIGHTED_STATE_COLOR);
@@ -484,7 +486,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 		// Change the current editing layer and feature type
 		changeCurrentLayerAndFeatureType(layerIndex, featureType);
 		
-		System.out.println(featureType);
+		//System.out.println(featureType);
 		
 		if(signal == null) {
 			signal = "";
@@ -682,9 +684,14 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	 */
 	private void changeCurrentLayerAndFeatureType(int layerIndex, String featureType) {
 		
+		
+		
 		int layerID = (int) MainFrame.tableOfContents.getModel().getValueAt(layerIndex, TableOfContents.LAYER_ID_COL_INDEX);
+			
 		currentLayer = TableOfContents.findLayerWithID(layerID);
 		currentFeatureType = MainFrame.getCurrentFeatureType();
+		
+		System.out.println(currentLayer.getLayerName());
 	}
 	
 	/**
@@ -2518,6 +2525,7 @@ public class DrawingJPanel extends JPanel implements MouseMotionListener, MouseL
 	public void deleteSelectedItem() {
 		
 		if(DrawingJPanel.currentLayer != null) {
+						
 			for(int i = 0; i < DrawingJPanel.currentLayer.getListOfFeatures().size(); i++) {
 				Feature feature = DrawingJPanel.currentLayer.getListOfFeatures().get(i);
 				if(feature.isHighlighted()) {
