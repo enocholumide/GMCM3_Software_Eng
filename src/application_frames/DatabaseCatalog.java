@@ -56,7 +56,7 @@ import java.awt.event.ActionListener;
  * 
  * @since Dec 14, 2017
  * @version
- * a. Dec 17, 2017 - Commented the functionality to create a new empty layer from the catalog due to 
+ * 1. Dec 17, 2017 - Commented the functionality to create a new empty layer from the catalog due to 
  * inability if the database to store empty layer without features.
  * b. Dec 28, 2017 - Auto-refresh node tree when new layer have been added to the database
  *

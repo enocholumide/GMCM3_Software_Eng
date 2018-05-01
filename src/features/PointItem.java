@@ -11,6 +11,9 @@ import java.awt.geom.Point2D;
  */
 public class PointItem extends Feature {
     
+	/*
+	 * The geometry of the point item
+	 */
     private Point2D geometry;
 
     /**

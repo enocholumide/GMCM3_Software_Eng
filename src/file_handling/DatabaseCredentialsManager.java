@@ -16,10 +16,21 @@ import java.io.*;
  *     @version 1
  */
 public class DatabaseCredentialsManager {
-
+	/**
+	 * String representing the host address where the database is hosted.
+	 */
     public String host = "";
+    /**
+     * Integer representing the port number on which the database listens.
+     */
     public int port = 0;
+    /**
+     * String representing the name of the database to which to connect.
+     */
     public String database = "";
+    /**
+     * String representing the username with which to connect to the database.
+     */
     public String user = "";
 
     /**
@@ -37,7 +48,7 @@ public class DatabaseCredentialsManager {
             port = Integer.parseInt(databaseCredentialsFileReader.readLine());
             database = databaseCredentialsFileReader.readLine();
             user = databaseCredentialsFileReader.readLine();
-
+            databaseCredentialsFileReader.close();
         } catch (FileNotFoundException e0) {
 
             try {
@@ -46,6 +57,7 @@ public class DatabaseCredentialsManager {
                 File databaseCredentialFile = new File("dbconfig.cfg");
                 databaseCredentialFile.createNewFile();
                 setDatabaseCredentials(host, port, database, user);
+                
 
             } catch (IOException e1) {
                 e1.printStackTrace();

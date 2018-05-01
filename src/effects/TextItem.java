@@ -6,16 +6,28 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * Class for the creation of a TextItem used in the drawing panel for rendering mouse hints
+ * Class for the creation of a TextItem used in the drawing panel for rendering mouse hints and general guides
  * 
  * @author Olumide Igbiloba
  * @since Dec 7, 2017
  */
 public class TextItem {
 	
+	/**
+	 * The base coordinates of the text item
+	 */
 	private Point2D basePosition;
+	/**
+	 * The text contained in the text item
+	 */
 	private String text;
+	/**
+	 * Color of the text
+	 */
 	private Color color;
+	/**
+	 * A rounded rectangle border rectangle wrapping the text
+	 */
 	private RoundRectangle2D borderRectangleInPanel;
 
 	/**
